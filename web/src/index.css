@@ -126,6 +126,20 @@
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
         -webkit-tap-highlight-color: transparent;
+
+        /* Full screen adaptation */
+        min-height: 100dvh;
+        overscroll-behavior-y: none;
+        /* Prevent pull-to-refresh effect if not needed */
+    }
+
+    /* Safe Area padding utilities */
+    .pt-safe {
+        padding-top: env(safe-area-inset-top);
+    }
+
+    .pb-safe {
+        padding-bottom: env(safe-area-inset-bottom);
     }
 }
 

@@ -7,9 +7,10 @@ export const AppLayout = () => {
     const { user } = useUser();
 
     return (
-        <div className="flex min-h-screen w-full flex-col bg-background">
+        <div className="flex min-h-[100dvh] w-full flex-col bg-background">
             <AppHeader />
-            <main className="flex-1 pb-16 pt-14 lg:pb-0 lg:pt-[3.5rem]">
+            {/* Add padding-top to account for header + safe area */}
+            <main className="flex-1 pb-16 pt-[calc(3.5rem+env(safe-area-inset-top))] lg:pb-0 lg:pt-[3.5rem]">
                 <div className="mx-auto w-full max-w-[1400px]">
                     <Outlet />
                 </div>
