@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Bug, User as UserIcon, Shield, ShoppingCart, Briefcase, Info } from 'lucide-react';
+import { Bug, User as UserIcon, Shield, ShoppingCart, Briefcase } from 'lucide-react';
 import { Button } from './ui/button';
 import { UserRole } from '../types';
 import { useUser } from '../contexts/UserContext';
