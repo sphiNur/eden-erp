@@ -13,12 +13,29 @@ elif DATABASE_URL.startswith("postgresql://") and "+asyncpg" not in DATABASE_URL
     DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://", 1)
 
 # --- SSL handling for Neon / cloud Postgres ---
+# asyncpg does NOT understand ?sslmode= or ?ssl= in URLs.
+# We must strip them and pass SSL context via connect_args.
 connect_args: dict = {}
 _clean_url = DATABASE_URL
+_needs_ssl = False
 
-if "ssl=require" in DATABASE_URL:
-    # asyncpg doesn't parse ?ssl=require from URLs; pass via connect_args
-    _clean_url = DATABASE_URL.replace("?ssl=require", "").replace("&ssl=require", "")
+# Check for any ssl-related query params
+for _ssl_param in ["?sslmode=require", "&sslmode=require", "?ssl=require", "&ssl=require"]:
+    if _ssl_param in _clean_url:
+        _clean_url = _clean_url.replace(_ssl_param, "")
+        _needs_ssl = True
+
+# Also strip channel_binding param (not supported by asyncpg)
+for _cb_param in ["?channel_binding=require", "&channel_binding=require"]:
+    if _cb_param in _clean_url:
+        _clean_url = _clean_url.replace(_cb_param, "")
+
+# Fix broken URL if stripping left a dangling ? or &
+_clean_url = _clean_url.rstrip("?").rstrip("&")
+if "?&" in _clean_url:
+    _clean_url = _clean_url.replace("?&", "?")
+
+if _needs_ssl:
     ssl_ctx = _ssl.create_default_context()
     ssl_ctx.check_hostname = False
     ssl_ctx.verify_mode = _ssl.CERT_NONE
