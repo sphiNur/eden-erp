@@ -109,7 +109,20 @@ async def get_current_user(request: Request, db: AsyncSession = Depends(get_db))
         )
         user = result.scalars().first()
         if not user:
-            raise HTTPException(status_code=403, detail="User not registered in system")
+            # Auto-register: first user becomes admin, others get store_manager
+            from app.models import UserRole
+            existing_count = (await db.execute(select(User))).scalars().all()
+            auto_role = UserRole.ADMIN if len(existing_count) == 0 else UserRole.STORE_MANAGER
+
+            user = User(
+                telegram_id=telegram_id,
+                username=tg_user.get("username", tg_user.get("first_name", "user")),
+                role=auto_role,
+            )
+            db.add(user)
+            await db.commit()
+            await db.refresh(user)
+            logger.info("AUTO-REGISTERED user: tg_id=%s, username=%s, role=%s", telegram_id, user.username, user.role.value)
         return user
 
     # --- Development fallback ---
