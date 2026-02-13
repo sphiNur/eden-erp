@@ -1,14 +1,10 @@
 import asyncio
 import uuid
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-from sqlalchemy.orm import sessionmaker
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 from app import models
-from app.database import Base
+from app.database import engine, AsyncSessionLocal
 
-# Database config
-# Credentials from docker-compose.yml
-DATABASE_URL = "postgresql+asyncpg://user:password@db/dbname"
 
 DATA = {
     "Meat, Fats & Eggs": {
@@ -107,11 +103,11 @@ DATA = {
     }
 }
 
-async def seed_products():
-    engine = create_async_engine(DATABASE_URL, echo=False)
-    async_session = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
-    async with async_session() as session:
+async def seed_products():
+    # Engine is already configured in app.database based on env vars
+    
+    async with AsyncSessionLocal() as session:
         print("--- Seeding Stores ---")
         STORES = [
             {"id": "0a853e43-fe35-4a2e-a68e-4cae40372f9c", "name": "Magic Store"},
