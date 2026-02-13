@@ -27,7 +27,7 @@ export const MarketRun = () => {
     const [loading, setLoading] = useState(true);
     const [priceInputs, setPriceInputs] = useState<Record<string, string>>({});
     const [qtyInputs, setQtyInputs] = useState<Record<string, string>>({});
-    const [marketLocation, setMarketLocation] = useState('Chorsu');
+    const [marketLocation] = useState('Chorsu');
 
     const fetchConsolidation = async () => {
         try {
