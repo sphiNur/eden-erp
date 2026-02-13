@@ -140,17 +140,18 @@ async def get_consolidated_requirements(db: AsyncSession = Depends(get_db)):
     """
     Phase 2: System Consolidation
     Aggregates all PENDING/APPROVED items by Product.
-    "Magic(10) + Seoul(20) = Total(30)"
+    Returns Total Quantity + Per-Store Breakdown.
     """
-
     stmt = (
         select(
             models.Product,
             models.Category,
-            func.sum(models.OrderItem.quantity_approved).label("total_quantity"),
+            models.OrderItem.quantity_approved,
+            models.Store.name.label("store_name"),
         )
         .join(models.OrderItem, models.Product.id == models.OrderItem.product_id)
         .join(models.PurchaseOrder, models.OrderItem.purchase_order_id == models.PurchaseOrder.id)
+        .join(models.Store, models.PurchaseOrder.store_id == models.Store.id)
         .join(models.Category, models.Product.category_id == models.Category.id)
         .where(
             models.OrderItem.quantity_approved > 0,
@@ -161,20 +162,42 @@ async def get_consolidated_requirements(db: AsyncSession = Depends(get_db)):
                 models.OrderStatus.PURCHASING,
             ]),
         )
-        .group_by(models.Product.id, models.Category.id)
+        .order_by(models.Category.sort_order, models.Product.name_i18n)
     )
 
     results = await db.execute(stmt)
 
-    consolidated_list = []
-    for product, category, total_qty in results:
-        consolidated_list.append({
-            "product_id": product.id,
-            "product_name": product.name_i18n,
-            "unit": product.unit_i18n,
-            "category_name": category.name_i18n if category else {"en": "Uncategorized"},
-            "price_reference": product.price_reference,
-            "total_quantity_needed": total_qty,
-        })
+    # Group by Product ID in Python
+    grouped = {} 
+    
+    for product, category, qty, store_name in results:
+        pid = product.id
+        if pid not in grouped:
+            grouped[pid] = {
+                "product_id": product.id,
+                "product_name": product.name_i18n,
+                "unit": product.unit_i18n,
+                "category_name": category.name_i18n if category else {"en": "Uncategorized"},
+                "price_reference": product.price_reference,
+                "total_quantity_needed": Decimal("0"),
+                "breakdown": []
+            }
+        
+        # Accumulate totals
+        grouped[pid]["total_quantity_needed"] += qty
+        
+        # Add to breakdown
+        # Check if store already in breakdown (to merge multiple orders from same store if necessary)
+        # Assuming one order per store per day usually, but simpler to just append or merge.
+        # Let's simple append for now, frontend can handle, or we merge here.
+        # Merging by store name for cleaner UI:
+        existing_store = next((b for b in grouped[pid]["breakdown"] if b["store_name"] == store_name), None)
+        if existing_store:
+            existing_store["quantity"] += qty
+        else:
+            grouped[pid]["breakdown"].append({
+                "store_name": store_name,
+                "quantity": qty
+            })
 
-    return consolidated_list
+    return list(grouped.values())

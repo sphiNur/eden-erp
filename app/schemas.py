@@ -94,6 +94,10 @@ class BatchItemInput(BaseModel):
     total_cost_uzs: Decimal = Field(..., gt=0)
 
 
+class StoreNeed(BaseModel):
+    store_name: str
+    quantity: Decimal
+
 class ConsolidatedItem(BaseModel):
     product_id: UUID
     product_name: Dict[str, str]
@@ -101,6 +105,7 @@ class ConsolidatedItem(BaseModel):
     category_name: Dict[str, str]
     price_reference: Optional[Decimal] = None
     total_quantity_needed: Decimal
+    breakdown: List[StoreNeed] = []
 
 class OrderStatusUpdate(BaseModel):
     status: OrderStatus

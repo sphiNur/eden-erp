@@ -67,6 +67,7 @@ export interface ConsolidatedItem {
     category_name: I18nString;
     price_reference?: number;
     total_quantity_needed: number;
+    breakdown: Array<{ store_name: string; quantity: number }>;
 }
 
 export interface BatchItemInput {
