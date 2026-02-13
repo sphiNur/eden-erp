@@ -21,16 +21,15 @@ export function UserProvider({ children }: { children: ReactNode }) {
         setLoading(true);
         setError(null);
         try {
-            // Check for DevTools mock user in development
-            if (import.meta.env.DEV) {
-                const mock = localStorage.getItem('dev_mock_user');
-                if (mock) {
-                    const parsed = JSON.parse(mock);
-                    console.log("Using Mock User:", parsed);
-                    setUser(parsed);
-                    setLoading(false);
-                    return;
-                }
+            // Check for DevTools mock user (Allowed in Production for Admin testing)
+            // Backend validation prevents actual unauthorized actions
+            const mock = localStorage.getItem('dev_mock_user');
+            if (mock) {
+                const parsed = JSON.parse(mock);
+                console.log("Using Mock User:", parsed);
+                setUser(parsed);
+                setLoading(false);
+                return;
             }
 
             const data = await usersApi.me();

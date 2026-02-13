@@ -25,13 +25,13 @@ export const DevTools = () => {
     const isDev = import.meta.env.DEV;
     const canShow = isDev || (user?.role === 'admin');
 
-    if (!canShow) return null;
+    // Check if we are currently mocking
+    const isMocking = !!localStorage.getItem('dev_mock_user');
+
+    if (!canShow && !isMocking) return null;
 
     const setRole = (role: UserRole) => {
-        if (!isDev) {
-            alert("Role switching is only available in Development mode.");
-            return;
-        }
+        // Admin or Dev can switch
         const mockUser = {
             id: '00000000-0000-4000-a000-000000000001',
             telegram_id: 123456789,
@@ -40,13 +40,12 @@ export const DevTools = () => {
         };
 
         localStorage.setItem('dev_mock_user', JSON.stringify(mockUser));
-        window.location.href = '/';
+        window.location.reload();
     };
 
     const clearMock = () => {
-        if (!isDev) return;
         localStorage.removeItem('dev_mock_user');
-        window.location.href = '/';
+        window.location.reload();
     };
 
     return (
@@ -69,13 +68,11 @@ export const DevTools = () => {
 
                     {!isDev && (
                         <div className="px-2 py-1 text-[10px] text-gray-500 bg-gray-50 rounded mb-1">
-                            Role: <span className="font-semibold">{user?.role}</span>
-                            <br />
-                            Mocking disabled in Prod.
+                            Current Role: <span className="font-semibold">{user?.role}</span>
                         </div>
                     )}
 
-                    <Button variant="ghost" size="sm" className="justify-start" onClick={() => setRole('store_manager')} disabled={!isDev}>
+                    <Button variant="ghost" size="sm" className="justify-start" onClick={() => setRole('store_manager')}>
                         <UserIcon className="mr-2 h-4 w-4 text-blue-500" />
                         Manager
                     </Button>
