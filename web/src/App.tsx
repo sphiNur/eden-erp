@@ -98,7 +98,8 @@ const ProtectedRoute = ({ children, allowedRoles }: { children: ReactNode, allow
         );
     }
 
-    if (!user || !allowedRoles.includes(user.role)) {
+    // Admin has access to everything
+    if (!user || (user.role !== 'admin' && !allowedRoles.includes(user.role))) {
         return <Navigate to="/" replace />;
     }
 

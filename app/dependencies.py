@@ -159,6 +159,10 @@ def require_role(allowed_roles: List[str]):
     async def role_checker(
         current_user=Depends(get_current_user)
     ):
+        # Admin has access to everything
+        if current_user.role.value == "admin":
+            return current_user
+
         if current_user.role.value not in allowed_roles:
             raise HTTPException(
                 status_code=403,
