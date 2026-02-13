@@ -1,0 +1,24 @@
+# Production override — use with:
+#   docker-compose -f docker-compose.yml -f docker-compose.prod.yml up --build
+#
+# This override:
+#   - Removes the local db service (uses Neon cloud DB)
+#   - Points backend to .env.production
+#   - Disables hot-reload and volume mounts
+
+services:
+  # Disable local database (using Neon)
+  db:
+    profiles: ["disabled"]
+
+  backend:
+    env_file: .env.production
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+    environment:
+      PYTHONUNBUFFERED: 1
+    depends_on: []
+    volumes: []
+
+  frontend:
+    environment:
+      - PROXY_TARGET=http://backend:8000

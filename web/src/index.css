@@ -1,0 +1,141 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        /* ─── Layout ─── */
+        --header-h: 3.5rem;
+        --nav-h: 4rem;
+
+        /* ─── Z-Index Scale ─── */
+        --z-toolbar: 10;
+        --z-fab: 20;
+        --z-header: 30;
+        --z-nav: 30;
+        --z-drawer: 40;
+        --z-overlay: 50;
+
+        /* ─── Radius (12px standard) ─── */
+        --radius: 0.75rem;
+
+        /* ─── Brand: Eden Premium ─── */
+        --eden-50: 249 95% 97%;
+        --eden-500: 249 72% 51%;
+        --eden-600: 249 72% 46%;
+        --eden-700: 249 72% 38%;
+
+        /* ─── Surfaces (Light Mode: Slate 50 Background) ─── */
+        --background: 210 40% 98%;
+        /* Slate 50 - Page BG */
+        --foreground: 222.2 84% 4.9%;
+        /* Slate 900 - Main Text */
+
+        --card: 0 0% 100%;
+        /* White - Cards */
+        --card-foreground: 222.2 84% 4.9%;
+
+        --popover: 0 0% 100%;
+        --popover-foreground: 222.2 84% 4.9%;
+
+        /* ─── Primary: Deep Indigo ─── */
+        --primary: 249 72% 51%;
+        /* Indigo 600 */
+        --primary-foreground: 210 40% 98%;
+
+        /* ─── Secondary: Slate 100 ─── */
+        --secondary: 210 40% 96.1%;
+        --secondary-foreground: 222.2 47.4% 11.2%;
+
+        /* ─── Muted: Slate 100 ─── */
+        --muted: 210 40% 96.1%;
+        --muted-foreground: 215.4 16.3% 46.9%;
+        /* Slate 500 */
+
+        --accent: 210 40% 96.1%;
+        --accent-foreground: 222.2 47.4% 11.2%;
+
+        --destructive: 0 84.2% 60.2%;
+        --destructive-foreground: 210 40% 98%;
+
+        --border: 214.3 31.8% 91.4%;
+        /* Slate 200 */
+        --input: 214.3 31.8% 91.4%;
+        --ring: 249 72% 51%;
+        /* Primary Ring */
+
+        /* ─── Semantic Colors ─── */
+        --success: 142 71% 45%;
+        --warning: 38 92% 50%;
+        --danger: 0 84% 60%;
+
+        /* ─── Typography ─── */
+        --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+
+        /* ─── Animation ─── */
+        --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .dark {
+        /* ─── Surfaces (Dark Mode: Slate 950 Background) ─── */
+        --background: 222.2 84% 4.9%;
+        /* Slate 950 */
+        --foreground: 210 40% 98%;
+        /* Slate 50 */
+
+        --card: 222.2 84% 6.5%;
+        /* Slate 900 */
+        --card-foreground: 210 40% 98%;
+
+        --popover: 222.2 84% 6.5%;
+        --popover-foreground: 210 40% 98%;
+
+        /* ─── Primary: Indigo 500 (Brighter for Dark Mode) ─── */
+        --primary: 249 72% 60%;
+        --primary-foreground: 210 40% 98%;
+
+        --secondary: 217.2 32.6% 17.5%;
+        /* Slate 800 */
+        --secondary-foreground: 210 40% 98%;
+
+        --muted: 217.2 32.6% 17.5%;
+        --muted-foreground: 215 20.2% 65.1%;
+
+        --accent: 217.2 32.6% 17.5%;
+        --accent-foreground: 210 40% 98%;
+
+        --destructive: 0 62.8% 30.6%;
+        --destructive-foreground: 210 40% 98%;
+
+        --border: 217.2 32.6% 17.5%;
+        --input: 217.2 32.6% 17.5%;
+        --ring: 249 72% 60%;
+    }
+}
+
+@layer base {
+    * {
+        @apply border-border;
+    }
+
+    body {
+        @apply bg-background text-foreground;
+        font-family: var(--font-sans);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        -webkit-tap-highlight-color: transparent;
+    }
+}
+
+@layer utilities {
+    .scrollbar-hide {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
+}
