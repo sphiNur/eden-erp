@@ -107,8 +107,13 @@ const ProtectedRoute = ({ children, allowedRoles }: { children: ReactNode, allow
 
 function App() {
     useEffect(() => {
-        WebApp.ready();
-        WebApp.expand();
+        if (WebApp.initDataUnsafe) {
+            WebApp.ready();
+            // Small delay to ensure Telegram UI is ready for expansion
+            setTimeout(() => {
+                WebApp.expand();
+            }, 100);
+        }
     }, []);
 
     return (

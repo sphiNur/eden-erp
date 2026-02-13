@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
-import { Bug, User as UserIcon, Shield, ShoppingCart, Briefcase } from 'lucide-react';
+import { Bug, User as UserIcon, Shield, ShoppingCart, Briefcase, Info } from 'lucide-react';
 import { Button } from './ui/button';
 import { UserRole } from '../types';
+import { useUser } from '../contexts/UserContext';
 
 export const DevTools = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -19,10 +20,18 @@ export const DevTools = () => {
         return () => document.removeEventListener('mousedown', handleClick);
     }, [isOpen]);
 
-    // Only show in development — must be AFTER hooks
-    if (!import.meta.env.DEV) return null;
+    // Show in DEV, OR if user is admin in PROD
+    const { user } = useUser();
+    const isDev = import.meta.env.DEV;
+    const canShow = isDev || (user?.role === 'admin');
+
+    if (!canShow) return null;
 
     const setRole = (role: UserRole) => {
+        if (!isDev) {
+            alert("Role switching is only available in Development mode.");
+            return;
+        }
         const mockUser = {
             id: '00000000-0000-4000-a000-000000000001',
             telegram_id: 123456789,
@@ -35,6 +44,7 @@ export const DevTools = () => {
     };
 
     const clearMock = () => {
+        if (!isDev) return;
         localStorage.removeItem('dev_mock_user');
         window.location.href = '/';
     };
@@ -52,9 +62,20 @@ export const DevTools = () => {
 
             {isOpen && (
                 <div className="absolute right-0 top-11 bg-white border border-gray-200 shadow-xl rounded-xl p-2 flex flex-col gap-1 w-48 z-[1000] animate-in fade-in slide-in-from-top-2">
-                    <div className="text-xs font-bold text-gray-400 px-2 uppercase tracking-wider">Dev Tools</div>
+                    <div className="flex items-center justify-between text-xs font-bold text-gray-400 px-2 uppercase tracking-wider">
+                        <span>Dev Tools</span>
+                        {!isDev && <span className="text-[10px] bg-red-100 text-red-600 px-1 rounded">PROD</span>}
+                    </div>
 
-                    <Button variant="ghost" size="sm" className="justify-start" onClick={() => setRole('store_manager')}>
+                    {!isDev && (
+                        <div className="px-2 py-1 text-[10px] text-gray-500 bg-gray-50 rounded mb-1">
+                            Role: <span className="font-semibold">{user?.role}</span>
+                            <br />
+                            Mocking disabled in Prod.
+                        </div>
+                    )}
+
+                    <Button variant="ghost" size="sm" className="justify-start" onClick={() => setRole('store_manager')} disabled={!isDev}>
                         <UserIcon className="mr-2 h-4 w-4 text-blue-500" />
                         Manager
                     </Button>
