@@ -109,10 +109,19 @@ function App() {
     useEffect(() => {
         if (WebApp.initDataUnsafe) {
             WebApp.ready();
-            // Small delay to ensure Telegram UI is ready for expansion
-            setTimeout(() => {
+
+            // Try to force full screen / expanded mode
+            try {
                 WebApp.expand();
-            }, 100);
+
+                // Check for Mini Apps 2.0 FullScreen API (v8.0+)
+                // We use type assertion or checking existence to avoid TS errors on older SDK types
+                if (parseFloat(WebApp.version) >= 8.0 && (WebApp as any).requestFullscreen) {
+                    (WebApp as any).requestFullscreen();
+                }
+            } catch (e) {
+                console.error("Error setting full screen:", e);
+            }
         }
     }, []);
 
