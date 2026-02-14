@@ -508,26 +508,20 @@ export const StoreRequest = () => {
                 ) : (
                     <div className="space-y-1 divide-y divide-gray-100">
                         {cartItems.map(({ product, qty }) => (
-                            <div key={product?.id} className="flex justify-between items-center py-3">
-                                <div className="min-w-0 flex-1">
-                                    <h3 className="font-bold text-gray-900 truncate">{product ? t(product.name_i18n) : 'Unknown'}</h3>
-                                    <p className="text-xs text-gray-500">{product ? t(product.unit_i18n) : ''}</p>
+                            <div key={product?.id} className="flex justify-between items-center py-2 px-1">
+                                <div className="flex-1 min-w-0 pr-2 flex items-center gap-1.5 overflow-hidden">
+                                    <div className="font-semibold text-gray-900 text-[13px] truncate">
+                                        {product ? t(product.name_i18n) : 'Unknown'}
+                                    </div>
+                                    <div className="text-[10px] text-gray-400 shrink-0">
+                                        {product ? t(product.unit_i18n) : ''}
+                                    </div>
                                 </div>
-                                <div className="flex items-center gap-3 shrink-0">
-                                    <button
-                                        onClick={() => product && setQty(product.id, Math.max(0, qty <= 1 ? 0 : qty - 1))}
-                                        className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center active:scale-90 transition-transform"
-                                    >
-                                        <Minus size={16} />
-                                    </button>
-                                    <span className="font-bold w-8 text-center tabular-nums">{qty}</span>
-                                    <button
-                                        onClick={() => product && setQty(product.id, qty + 1)}
-                                        className="w-8 h-8 rounded-full bg-eden-50 text-eden-500 flex items-center justify-center active:scale-90 transition-transform"
-                                    >
-                                        <Plus size={16} />
-                                    </button>
-                                </div>
+
+                                <QuantityControl
+                                    value={qty}
+                                    onChange={(val) => product && setQty(product.id, val)}
+                                />
                             </div>
                         ))}
                     </div>
