@@ -137,5 +137,13 @@ export const storesApi = {
     list: () => request<import('../types').Store[]>('/stores/'),
 };
 
+// --- Templates ---
+
+export const templatesApi = {
+    list: (store_id: string) => request<import('../types').OrderTemplate[]>(`/templates/?store_id=${store_id}`),
+    create: (data: import('../types').TemplateCreate) => request<import('../types').OrderTemplate>('/templates/', { method: 'POST', body: data }),
+    delete: (id: string) => request<void>(`/templates/${id}`, { method: 'DELETE' }),
+};
+
 export { ApiError };
-export default { productsApi, ordersApi, purchasesApi, usersApi, storesApi, categoriesApi };
+export default { productsApi, ordersApi, purchasesApi, usersApi, storesApi, categoriesApi, templatesApi };

@@ -108,3 +108,23 @@ export interface User {
     is_active?: boolean;
 }
 
+export interface TemplateItem {
+    product_id: string;
+    quantity: number;
+    notes?: Record<string, string>;
+}
+
+export interface OrderTemplate {
+    id: string;
+    store_id: string;
+    name: string;
+    items: TemplateItem[];
+    created_at: string;
+}
+
+export interface TemplateCreate {
+    store_id: string;
+    name: string;
+    items: TemplateItem[];
+}
+

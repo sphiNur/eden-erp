@@ -165,3 +165,15 @@ class BatchItem(Base):
 
     batch: Mapped["PurchaseBatch"] = relationship("PurchaseBatch", back_populates="items")
     product: Mapped["Product"] = relationship("Product")
+
+
+class OrderTemplate(Base):
+    __tablename__ = "order_templates"
+
+    id: Mapped[UUID] = mapped_column(PG_UUID(as_uuid=True), primary_key=True, default=uuid4)
+    store_id: Mapped[UUID] = mapped_column(ForeignKey("stores.id"))
+    name: Mapped[str] = mapped_column(String)
+    items: Mapped[List[Dict]] = mapped_column(JSONB) # List of {product_id, quantity, notes}
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
+
+    store: Mapped["Store"] = relationship("Store")

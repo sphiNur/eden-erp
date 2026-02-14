@@ -1,13 +1,13 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Plus, Minus, Loader2, Search, ListFilter, X, Store, CalendarDays } from 'lucide-react';
-import { Product, OrderItemInput } from '../types';
+import { Plus, Minus, Loader2, Search, ListFilter, X, Store, CalendarDays, Save, Trash2, Zap } from 'lucide-react';
+import { Product, OrderItemInput, OrderTemplate } from '../types';
 import { formatCurrency, cn } from '../lib/utils';
 import { getLocale } from '../lib/locale';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useUser } from '../contexts/UserContext';
 
-import { productsApi, ordersApi, storesApi } from '../api/client';
+import { productsApi, ordersApi, storesApi, templatesApi } from '../api/client';
 import WebApp from '@twa-dev/sdk';
 import { Button } from './ui/button';
 import Fuse from 'fuse.js';
@@ -33,6 +33,7 @@ export const StoreRequest = () => {
     // --- State ---
     const [products, setProducts] = useState<Product[]>([]);
     const [stores, setStores] = useState<StoreOption[]>([]);
+    const [templates, setTemplates] = useState<OrderTemplate[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -80,6 +81,79 @@ export const StoreRequest = () => {
     }, [user]);
 
     useEffect(() => { fetchData(); }, [fetchData]);
+
+    // Fetch templates when store changes
+    useEffect(() => {
+        if (!selectedStore) {
+            setTemplates([]);
+            return;
+        }
+        templatesApi.list(selectedStore)
+            .then(setTemplates)
+            .catch(console.error);
+    }, [selectedStore]);
+
+    // --- Template Actions ---
+    const handleLoadTemplate = (template: OrderTemplate) => {
+        const newQuantities = { ...quantities };
+        let addedCount = 0;
+
+        template.items.forEach(item => {
+            // Only add if product exists
+            if (products.some(p => p.id === item.product_id)) {
+                newQuantities[item.product_id] = (newQuantities[item.product_id] || 0) + item.quantity;
+                addedCount++;
+            }
+        });
+
+        setQuantities(newQuantities);
+        WebApp.HapticFeedback.notificationOccurred('success');
+
+        // Show brief visual feedback (could be toast)
+        // For now, just impact
+    };
+
+    const handleSaveTemplate = async () => {
+        if (!selectedStore) return;
+
+        // Simple prompt for MVP
+        const name = window.prompt("Template Name (e.g., 'Daily Veggies')");
+        if (!name) return;
+
+        try {
+            WebApp.MainButton.showProgress(true);
+            const items = Object.entries(quantities)
+                .filter(([_, qty]) => qty > 0)
+                .map(([pid, qty]) => ({ product_id: pid, quantity: qty }));
+
+            const newTemplate = await templatesApi.create({
+                store_id: selectedStore,
+                name,
+                items
+            });
+
+            setTemplates(prev => [...prev, newTemplate]);
+            WebApp.HapticFeedback.notificationOccurred('success');
+            // Assuming we're in the drawer, keep it open
+        } catch (err) {
+            console.error(err);
+            WebApp.showAlert("Failed to save template");
+        } finally {
+            WebApp.MainButton.hideProgress();
+        }
+    };
+
+    const handleDeleteTemplate = async (e: React.MouseEvent, id: string) => {
+        e.stopPropagation();
+        if (!window.confirm("Delete this template?")) return;
+
+        try {
+            await templatesApi.delete(id);
+            setTemplates(prev => prev.filter(t => t.id !== id));
+        } catch (err) {
+            console.error(err);
+        }
+    };
 
     // --- Categories ---
     const allLabel = ui('all');
@@ -258,6 +332,32 @@ export const StoreRequest = () => {
                         )}
                     </div>
 
+                    {/* Quick Order Templates (Chips) */}
+                    {templates.length > 0 && (
+                        <div className="overflow-x-auto -mx-3 px-3 scrollbar-hide mb-1">
+                            <div className="flex gap-2">
+                                <div className="text-[10px] uppercase font-bold text-gray-400 flex items-center shrink-0">
+                                    <Zap size={10} className="mr-1" /> Quick Order:
+                                </div>
+                                {templates.map(tmpl => (
+                                    <div
+                                        key={tmpl.id}
+                                        onClick={() => handleLoadTemplate(tmpl)}
+                                        className="bg-indigo-50 text-indigo-600 border border-indigo-100 px-2.5 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5 active:bg-indigo-100 active:scale-95 transition-all cursor-pointer select-none"
+                                    >
+                                        {tmpl.name}
+                                        <button
+                                            onClick={(e) => handleDeleteTemplate(e, tmpl.id)}
+                                            className="w-4 h-4 rounded-full bg-indigo-100 flex items-center justify-center hover:bg-indigo-200"
+                                        >
+                                            <X size={10} />
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
                     {/* Category pills with selection counts */}
                     <div className="overflow-x-auto -mx-3 px-3 scrollbar-hide">
                         <div className="flex gap-1.5">
@@ -379,6 +479,18 @@ export const StoreRequest = () => {
                                 </span>
                             </div>
                         )}
+
+                        <div className="flex gap-2">
+                            <Button
+                                variant="outline"
+                                onClick={handleSaveTemplate}
+                                className="flex-1 border-dashed border-gray-300 text-gray-500 hover:text-eden-600 hover:border-eden-300"
+                            >
+                                <Save size={16} className="mr-2" />
+                                Save as Template
+                            </Button>
+                        </div>
+
                         <Button
                             onClick={handleSubmit}
                             disabled={submitting || cartItemCount === 0}

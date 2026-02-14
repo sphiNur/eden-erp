@@ -38,6 +38,8 @@ app.include_router(products.router, prefix="/api")
 app.include_router(users.router, prefix="/api")
 app.include_router(stores.router, prefix="/api")
 app.include_router(categories.router, prefix="/api")
+from app.routers import templates
+app.include_router(templates.router, prefix="/api")
 
 # --- Static Files & SPA Catch-All (Production) ---
 # When deployed to Koyeb, FastAPI serves the React build.
