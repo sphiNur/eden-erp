@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Plus, Minus, Loader2, Search, ListFilter, X, Store, CalendarDays, Save, Trash2, Zap } from 'lucide-react';
+import { Plus, Minus, Loader2, Search, ListFilter, X, Store, CalendarDays, Save, Zap } from 'lucide-react';
 import { Product, OrderItemInput, OrderTemplate } from '../types';
 import { formatCurrency, cn } from '../lib/utils';
 import { getLocale } from '../lib/locale';
