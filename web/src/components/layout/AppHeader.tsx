@@ -1,9 +1,6 @@
 import { useLocation } from 'react-router-dom';
-import { Menu } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
-import { LanguageSwitcher } from '../LanguageSwitcher';
-import { DevTools } from '../DevTools';
-import { Button } from '../ui/button';
+import { SettingsMenu } from './SettingsMenu';
 
 const ROUTE_TITLES: Record<string, string> = {
     '/store': 'storeRequest',
@@ -26,16 +23,12 @@ export const AppHeader = () => {
         <header className="fixed top-0 z-header flex h-[var(--header-h)] w-full flex-col justify-end border-b bg-background/80 backdrop-blur-md transition-all">
             <div className="flex h-[var(--header-base)] w-full items-center justify-between px-4 lg:px-6">
                 <div className="flex items-center gap-2">
-                    <Button variant="ghost" size="icon" className="-ml-2 lg:hidden">
-                        <Menu className="h-5 w-5" />
-                    </Button>
                     <h1 className="text-lg font-semibold tracking-tight text-foreground">{title}</h1>
                 </div>
 
                 {/* Right — Actions */}
                 <div className="flex items-center gap-2 shrink-0">
-                    <LanguageSwitcher />
-                    <DevTools />
+                    <SettingsMenu />
                 </div>
             </div>
         </header>

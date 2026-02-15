@@ -21,6 +21,9 @@ export const BottomTabBar = () => {
     // Only show for admin and finance roles
     if (!user || !['admin', 'finance'].includes(user.role)) return null;
 
+    // Hide on Market Run page (overlaps with sticky footer)
+    if (location.pathname === '/market') return null;
+
     const handleNav = (path: string) => {
         if (location.pathname !== path) {
             WebApp.HapticFeedback.selectionChanged();
