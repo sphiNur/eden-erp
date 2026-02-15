@@ -180,18 +180,18 @@ export const MarketRun = () => {
     return (
         <div className="bg-[var(--tg-theme-bg-color,#f3f4f6)] min-h-screen flex flex-col">
             {/* Header with Mode Toggle */}
-            <div className="sticky top-header z-toolbar bg-white/80 backdrop-blur-md border-b shadow-sm">
-                <div className="px-3 py-2 flex gap-2">
+            <div className="sticky top-header z-toolbar bg-white/90 backdrop-blur-md border-b shadow-sm pt-2 pb-2 px-3">
+                <div className="flex bg-gray-100/80 p-1 rounded-xl">
                     <button
                         onClick={() => setViewMode('shopping')}
                         className={cn(
                             "flex-1 flex items-center justify-center gap-2 py-1.5 rounded-lg text-xs font-semibold transition-all",
                             viewMode === 'shopping'
-                                ? "bg-eden-500 text-white shadow-md shadow-eden-500/20"
-                                : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                                ? "bg-eden-50 text-eden-600 ring-1 ring-inset ring-eden-200"
+                                : "bg-transparent text-gray-500 hover:bg-gray-100"
                         )}
                     >
-                        <ShoppingCart size={14} />
+                        <ShoppingCart size={14} className={viewMode === 'shopping' ? "text-eden-600" : "text-gray-400"} />
                         Shopping
                     </button>
                     <button
@@ -199,11 +199,11 @@ export const MarketRun = () => {
                         className={cn(
                             "flex-1 flex items-center justify-center gap-2 py-1.5 rounded-lg text-xs font-semibold transition-all",
                             viewMode === 'distribution'
-                                ? "bg-blue-500 text-white shadow-md shadow-blue-500/20"
-                                : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                                ? "bg-blue-50 text-blue-600 ring-1 ring-inset ring-blue-200"
+                                : "bg-transparent text-gray-500 hover:bg-gray-100"
                         )}
                     >
-                        <Store size={14} />
+                        <Store size={14} className={viewMode === 'distribution' ? "text-blue-600" : "text-gray-400"} />
                         Distribution
                     </button>
                 </div>
