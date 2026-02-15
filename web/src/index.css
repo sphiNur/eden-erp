@@ -7,8 +7,10 @@
 @layer base {
     :root {
         /* ─── Layout ─── */
-        --header-h: 3.5rem;
-        --nav-h: 4rem;
+        /* ─── Layout ─── */
+        --header-base: 3.5rem;
+        --header-h: calc(var(--header-base) + env(safe-area-inset-top));
+        --nav-h: calc(4rem + env(safe-area-inset-bottom));
 
         /* ─── Z-Index Scale ─── */
         --z-toolbar: 10;

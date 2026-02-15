@@ -23,7 +23,7 @@ export const AppHeader = () => {
     const title = titleKey ? ui(titleKey as Parameters<typeof ui>[0]) : '';
 
     return (
-        <header className="fixed top-0 z-header flex h-14 w-full items-center justify-between border-b bg-background/80 px-4 backdrop-blur-md transition-all lg:px-6">
+        <header className="fixed top-0 z-header flex h-[var(--header-h)] pt-safe w-full items-center justify-between border-b bg-background/80 px-4 backdrop-blur-md transition-all lg:px-6">
             <div className="flex items-center gap-2">
                 <Button variant="ghost" size="icon" className="-ml-2 lg:hidden">
                     <Menu className="h-5 w-5" />

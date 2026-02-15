@@ -10,7 +10,7 @@ export const AppLayout = () => {
         <div className="flex min-h-[100dvh] w-full flex-col bg-background">
             <AppHeader />
             {/* Add padding-top to account for header + safe area */}
-            <main className="flex-1 pb-16 pt-[calc(3.5rem+env(safe-area-inset-top))] lg:pb-0 lg:pt-[3.5rem]">
+            <main className="flex-1 pb-16 pt-[var(--header-h)] lg:pb-0">
                 <div className="mx-auto w-full max-w-[1400px]">
                     <Outlet />
                 </div>
