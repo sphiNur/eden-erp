@@ -1,13 +1,13 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Settings, Check, Bug, Shield, User as UserIcon, ShoppingCart, Briefcase, Globe } from 'lucide-react';
-import { Button } from './ui/button';
-import { useLanguage, SUPPORTED_LANGUAGES, Language } from '../contexts/LanguageContext';
-import { useUser } from '../contexts/UserContext';
-import { UserRole } from '../types';
+import { Button } from '../ui/button';
+import { useLanguage, SUPPORTED_LANGUAGES } from '../../contexts/LanguageContext';
+import { useUser } from '../../contexts/UserContext';
+import { UserRole } from '../../types';
 
 export const SettingsMenu = () => {
-    const { language, setLanguage, t } = useLanguage();
+    const { language, setLanguage } = useLanguage();
     const { user } = useUser();
     const [isOpen, setIsOpen] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
