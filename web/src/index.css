@@ -9,7 +9,7 @@
         /* ─── Layout ─── */
         /* ─── Layout ─── */
         --header-base: 3.5rem;
-        --header-h: calc(var(--header-base) + env(safe-area-inset-top));
+        --header-h: calc(var(--header-base) + env(safe-area-inset-top) + 8px);
         --nav-h: calc(4rem + env(safe-area-inset-bottom));
 
         /* ─── Z-Index Scale ─── */
