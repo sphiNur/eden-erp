@@ -115,27 +115,41 @@ export const SettingsMenu = () => {
                                             animate={{ height: 'auto', opacity: 1 }}
                                             className="space-y-1 pt-1"
                                         >
-                                            <div className="text-[10px] text-center bg-yellow-50 text-yellow-700 py-1 rounded">
+                                            <div className="text-[10px] text-center bg-yellow-50 text-yellow-700 py-1 rounded font-medium border border-yellow-100">
                                                 Role Switcher (Mock Mode)
                                             </div>
-                                            <Button variant="ghost" size="sm" className="w-full justify-start h-8 text-xs" onClick={() => handleSetRole('admin')}>
-                                                <Shield className="mr-2 h-3 w-3 text-purple-500" /> Admin
-                                            </Button>
-                                            <Button variant="ghost" size="sm" className="w-full justify-start h-8 text-xs" onClick={() => handleSetRole('store_manager')}>
-                                                <UserIcon className="mr-2 h-3 w-3 text-blue-500" /> Manager
-                                            </Button>
-                                            <Button variant="ghost" size="sm" className="w-full justify-start h-8 text-xs" onClick={() => handleSetRole('global_purchaser')}>
-                                                <ShoppingCart className="mr-2 h-3 w-3 text-green-500" /> Purchaser
-                                            </Button>
-                                            <Button variant="ghost" size="sm" className="w-full justify-start h-8 text-xs" onClick={() => handleSetRole('finance')}>
-                                                <Briefcase className="mr-2 h-3 w-3 text-amber-500" /> Finance
-                                            </Button>
+
+                                            <div className="grid grid-cols-1 gap-1">
+                                                {[
+                                                    { role: 'admin', icon: Shield, label: 'Admin', color: 'text-purple-500' },
+                                                    { role: 'store_manager', icon: UserIcon, label: 'Manager', color: 'text-blue-500' },
+                                                    { role: 'global_purchaser', icon: ShoppingCart, label: 'Purchaser', color: 'text-green-500' },
+                                                    { role: 'finance', icon: Briefcase, label: 'Finance', color: 'text-amber-500' }
+                                                ].map(({ role, icon: Icon, label, color }) => {
+                                                    const isActive = user?.role === role;
+                                                    return (
+                                                        <button
+                                                            key={role}
+                                                            onClick={() => handleSetRole(role as UserRole)}
+                                                            className={`flex items-center w-full px-2 py-1.5 rounded-md text-xs transition-colors
+                                                                ${isActive
+                                                                    ? 'bg-eden-50 text-eden-700 font-medium border border-eden-100'
+                                                                    : 'hover:bg-gray-50 text-gray-600 border border-transparent'
+                                                                }`}
+                                                        >
+                                                            <Icon className={`mr-2 h-3.5 w-3.5 ${isActive ? 'text-eden-600' : color}`} />
+                                                            <span className="flex-1 text-left">{label}</span>
+                                                            {isActive && <Check size={12} className="text-eden-600" />}
+                                                        </button>
+                                                    );
+                                                })}
+                                            </div>
 
                                             {isMocking && (
                                                 <Button
                                                     variant="destructive"
                                                     size="sm"
-                                                    className="w-full mt-2 h-7 text-xs"
+                                                    className="w-full mt-2 h-7 text-xs font-normal opacity-90 hover:opacity-100"
                                                     onClick={handleClearMock}
                                                 >
                                                     Reset to Real User
