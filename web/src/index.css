@@ -9,7 +9,8 @@
         /* ─── Layout ─── */
         /* ─── Layout ─── */
         --header-base: 3.5rem;
-        --header-h: calc(var(--header-base) + env(safe-area-inset-top) + 8px);
+        /* Add 44px (approx 2.75rem) buffer for Telegram Native Controls */
+        --header-h: calc(var(--header-base) + env(safe-area-inset-top) + 44px);
         --nav-h: calc(4rem + env(safe-area-inset-bottom));
 
         /* ─── Z-Index Scale ─── */
