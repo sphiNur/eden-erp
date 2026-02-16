@@ -11,23 +11,29 @@ const ROUTE_TITLES: Record<string, string> = {
     '/admin/analytics': 'analytics',
 };
 
+
+
 export const AppHeader = () => {
     const location = useLocation();
     const { ui } = useLanguage();
 
-    // Find the matching route title
     const titleKey = ROUTE_TITLES[location.pathname] || '';
     const title = titleKey ? ui(titleKey as Parameters<typeof ui>[0]) : '';
 
     return (
-        <header className="fixed top-0 z-header flex h-[var(--header-h)] w-full flex-col justify-end border-b bg-background/80 backdrop-blur-md transition-all">
-            <div className="flex h-[var(--header-base)] w-full items-center justify-between px-4 lg:px-6">
-                <div className="flex items-center gap-2">
-                    <h1 className="text-lg font-semibold tracking-tight text-foreground">{title}</h1>
-                </div>
+        <header className="fixed top-0 z-header w-full border-b bg-background/80 backdrop-blur-md pt-safe transition-all">
+            <div className="relative flex h-[var(--header-base)] w-full items-center justify-center px-4">
+                {/* Left Placeholer (Close Button Area) */}
+                <div className="absolute left-4 w-8" />
 
-                {/* Right — Actions */}
-                <div className="flex items-center gap-2 shrink-0">
+                {/* Center Title */}
+                <h1 className="text-[17px] font-semibold text-foreground truncate max-w-[60%] text-center">
+                    {title}
+                </h1>
+
+                {/* Right Settings Button */}
+                {/* Positioned to be left of the native 'More' button (approx 44px from right edge) */}
+                <div className="absolute right-[50px] flex items-center">
                     <SettingsMenu />
                 </div>
             </div>

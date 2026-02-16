@@ -8,9 +8,10 @@
     :root {
         /* ─── Layout ─── */
         /* ─── Layout ─── */
-        --header-base: 3.5rem;
-        /* Add 44px (approx 2.75rem) buffer for Telegram Native Controls */
-        --header-h: calc(var(--header-base) + env(safe-area-inset-top) + 44px);
+        /* ─── Layout ─── */
+        --header-base: 44px;
+        /* Standard Navigation Bar Height (Inline Title) */
+        --header-h: calc(var(--header-base) + env(safe-area-inset-top));
         --nav-h: calc(4rem + env(safe-area-inset-bottom));
 
         /* ─── Z-Index Scale ─── */
