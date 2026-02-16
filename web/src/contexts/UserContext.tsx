@@ -21,8 +21,15 @@ export function UserProvider({ children }: { children: ReactNode }) {
         setLoading(true);
         setError(null);
         try {
-            // Check for DevTools mock user (Allowed in Production for Admin testing)
-            // Backend validation prevents actual unauthorized actions
+            // 1. Priority: Production/Real Telegram User
+            // If we have initData, we ALWAYS use the API and ignore mocks
+            if (WebApp.initData) {
+                const data = await usersApi.me();
+                setUser(data);
+                return;
+            }
+
+            // 2. Fallback: Local Mock User (Dev/Admin Simulation only)
             const mock = localStorage.getItem('dev_mock_user');
             if (mock) {
                 const parsed = JSON.parse(mock);
