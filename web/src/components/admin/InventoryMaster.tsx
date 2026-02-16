@@ -5,6 +5,7 @@ import { Button } from '../ui/button';
 import { Product } from '../../types';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { productsApi } from '../../api/client';
+import WebApp from '@twa-dev/sdk';
 
 import { ProductForm } from './ProductForm';
 
@@ -100,6 +101,7 @@ export const InventoryMaster = () => {
                                             key={product.id}
                                             className="px-3 py-2.5 flex items-center justify-between hover:bg-gray-50 cursor-pointer transition-colors active:bg-gray-100"
                                             onClick={() => {
+                                                WebApp.HapticFeedback.impactOccurred('light');
                                                 setEditingProduct(product);
                                                 setIsAddOpen(true);
                                             }}

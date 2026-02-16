@@ -25,6 +25,7 @@ const translations = {
     authenticating: { en: 'Authenticating...', ru: 'Авторизация...', uz: 'Autentifikatsiya...', cn: '认证中...' },
     accessDenied: { en: 'Access Denied', ru: 'Доступ запрещён', uz: 'Ruxsat berilmagan', cn: '拒绝访问' },
     accessDeniedMsg: { en: 'Could not verify your identity. Please contact support.', ru: 'Не удалось подтвердить вашу личность.', uz: 'Shaxsingiz tasdiqlanmadi.', cn: '无法验证您的身份，请联系支持。' },
+    noResults: { en: 'No results found', ru: 'Ничего не найдено', uz: 'Hech narsa topilmadi', cn: '未找到结果' },
 
     // --- StoreRequest ---
     storeRequest: { en: 'Store Request', ru: 'Заявка магазина', uz: 'Do\'kon buyurtmasi', cn: '门店需求' },

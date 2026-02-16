@@ -1,12 +1,14 @@
-import { useState, useEffect } from 'react';
-import { Loader2, User as UserIcon, Store as StoreIcon, Shield, ShoppingCart } from 'lucide-react';
+import { useState, useEffect, useMemo } from 'react';
+import { Loader2, User as UserIcon, Store as StoreIcon, Shield, ShoppingCart, Search, X } from 'lucide-react';
 import { Button } from '../ui/button';
+import { Input } from '../ui/input';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter } from '../ui/sheet';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Label } from '../ui/label';
 import { User, UserRole } from '../../types';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { usersApi, storesApi } from '../../api/client';
+import WebApp from '@twa-dev/sdk';
 
 interface StoreOption {
     id: string;
@@ -21,6 +23,7 @@ export const UserList = () => {
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const [isSheetOpen, setIsSheetOpen] = useState(false);
     const [updating, setUpdating] = useState(false);
+    const [search, setSearch] = useState('');
 
     // Form State
     const [role, setRole] = useState<UserRole>('store_manager');
@@ -65,6 +68,7 @@ export const UserList = () => {
             await usersApi.update(selectedUser.id, payload);
             await fetchData();
             setIsSheetOpen(false);
+            WebApp.HapticFeedback.notificationOccurred('success');
         } catch (err) {
             console.error(err);
             alert(ui('updateFailed'));
@@ -82,42 +86,73 @@ export const UserList = () => {
         }
     };
 
+    const filteredUsers = useMemo(() => {
+        const term = search.toLowerCase();
+        return users.filter(u =>
+            (u.username || '').toLowerCase().includes(term) ||
+            u.telegram_id.toString().includes(term)
+        );
+    }, [users, search]);
+
     return (
-        <div className="bg-gray-50 flex flex-col">
-            <div className="bg-white border-b px-3 py-2 sticky top-header z-toolbar">
-                <p className="text-xs text-gray-500">{users.length} {ui('users')}</p>
+        <div className="bg-gray-50 flex flex-col min-h-[calc(100vh-var(--header-h))]">
+            {/* ─── Sticky Toolbar ─── */}
+            <div className="sticky top-header z-toolbar bg-white border-b shadow-sm px-3 py-2 flex items-center gap-3">
+                <div className="relative flex-1">
+                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" size={15} />
+                    <Input
+                        placeholder={ui('search')}
+                        className="w-full pl-8 pr-8 h-9 bg-gray-100 border-transparent focus:bg-white focus:border-eden-500 rounded-lg text-sm transition-all"
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                    />
+                    {search && (
+                        <button onClick={() => setSearch('')} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                            <X size={14} />
+                        </button>
+                    )}
+                </div>
             </div>
 
-            <main className="p-3">
+            <main className="flex-1 p-3">
                 {loading ? (
                     <div className="flex justify-center p-8"><Loader2 className="animate-spin text-gray-400" /></div>
                 ) : (
-                    <div className="space-y-2">
-                        {users.map(user => (
-                            <div
-                                key={user.id}
-                                className="bg-white px-3 py-2.5 rounded-lg border shadow-sm flex items-center justify-between cursor-pointer active:scale-[0.98] transition-all"
-                                onClick={() => {
-                                    setSelectedUser(user);
-                                    setIsSheetOpen(true);
-                                }}
-                            >
-                                <div className="flex items-center gap-2.5">
-                                    <div className="h-9 w-9 rounded-full bg-gray-100 flex items-center justify-center">
-                                        <span className="font-bold text-sm text-gray-500">{user.username?.[0]?.toUpperCase() || 'U'}</span>
-                                    </div>
-                                    <div>
-                                        <div className="font-semibold text-[13px] text-gray-900">{user.username || `User ${user.telegram_id}`}</div>
-                                        <div className="flex items-center gap-1.5 mt-1">
-                                            {getRoleIcon(user.role)}
-                                            <span className="text-xs text-gray-500 capitalize">{user.role.replace('_', ' ')}</span>
+                    filteredUsers.length === 0 ? (
+                        <div className="text-center py-10 text-gray-400 text-sm">{ui('noResults')}</div>
+                    ) : (
+                        <div className="bg-white rounded-lg shadow-sm border overflow-hidden divide-y divide-gray-100 space-y-0">
+                            {filteredUsers.map(user => (
+                                <div
+                                    key={user.id}
+                                    className="px-3 py-3 flex items-center justify-between cursor-pointer hover:bg-gray-50 active:bg-gray-100 transition-colors"
+                                    onClick={() => {
+                                        WebApp.HapticFeedback.impactOccurred('light');
+                                        setSelectedUser(user);
+                                        setIsSheetOpen(true);
+                                    }}
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <div className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 font-bold text-xs">
+                                            {user.username?.[0]?.toUpperCase() || 'U'}
+                                        </div>
+                                        <div>
+                                            <div className="font-semibold text-[13px] text-gray-900 leading-none mb-1">
+                                                {user.username || `User ${user.telegram_id}`}
+                                            </div>
+                                            <div className="flex items-center gap-1.5">
+                                                {getRoleIcon(user.role)}
+                                                <span className="text-[11px] text-gray-500 capitalize">{user.role.replace('_', ' ')}</span>
+                                            </div>
                                         </div>
                                     </div>
+                                    <div className="text-eden-500">
+                                        <span className="text-xs font-medium px-2 py-1 bg-eden-50 rounded-full">{ui('edit')}</span>
+                                    </div>
                                 </div>
-                                <Button variant="ghost" size="sm" className="text-eden-500 text-xs">{ui('edit')}</Button>
-                            </div>
-                        ))}
-                    </div>
+                            ))}
+                        </div>
+                    )
                 )}
             </main>
 
@@ -174,3 +209,4 @@ export const UserList = () => {
         </div>
     );
 };
+
