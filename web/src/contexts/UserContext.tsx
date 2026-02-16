@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { User, UserRole } from '../types';
 import { usersApi } from '../api/client';
+import WebApp from '@twa-dev/sdk';
 
 interface UserContextType {
     user: User | null;
