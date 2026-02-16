@@ -7,24 +7,28 @@ import { useLanguage } from '../../contexts/LanguageContext';
 import { storesApi } from '../../api/client';
 import type { Store as StoreType } from '../../types';
 import WebApp from '@twa-dev/sdk';
+import { StoreForm } from './StoreForm';
 
 export const StoreList = () => {
     const { ui } = useLanguage();
     const [stores, setStores] = useState<StoreType[]>([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
+    const [isFormOpen, setIsFormOpen] = useState(false);
+    const [editingStore, setEditingStore] = useState<StoreType | null>(null);
+
+    const fetchStores = async () => {
+        try {
+            const data = await storesApi.list();
+            setStores(data);
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchStores = async () => {
-            try {
-                const data = await storesApi.list();
-                setStores(data);
-            } catch (err) {
-                console.error(err);
-            } finally {
-                setLoading(false);
-            }
-        };
         fetchStores();
     }, []);
 
@@ -35,6 +39,18 @@ export const StoreList = () => {
             (s.address || '').toLowerCase().includes(term)
         );
     }, [stores, search]);
+
+    const handleAdd = () => {
+        WebApp.HapticFeedback.impactOccurred('light');
+        setEditingStore(null);
+        setIsFormOpen(true);
+    };
+
+    const handleEdit = (store: StoreType) => {
+        WebApp.HapticFeedback.impactOccurred('light');
+        setEditingStore(store);
+        setIsFormOpen(true);
+    };
 
     return (
         <div className="bg-gray-50 flex flex-col min-h-[calc(100vh-var(--header-h))]">
@@ -57,10 +73,7 @@ export const StoreList = () => {
                 <Button
                     size="sm"
                     className="h-9 w-9 p-0 rounded-full bg-eden-500 hover:bg-eden-600 text-white shadow-sm shrink-0"
-                    onClick={() => {
-                        WebApp.HapticFeedback.impactOccurred('light');
-                        // Add store logic would go here
-                    }}
+                    onClick={handleAdd}
                 >
                     <Plus className="h-5 w-5" />
                 </Button>
@@ -78,7 +91,7 @@ export const StoreList = () => {
                                 <div
                                     key={store.id}
                                     className="px-3 py-3 flex items-center justify-between hover:bg-gray-50 active:bg-gray-100 cursor-pointer transition-colors"
-                                    onClick={() => WebApp.HapticFeedback.impactOccurred('light')}
+                                    onClick={() => handleEdit(store)}
                                 >
                                     <div className="flex items-center gap-3">
                                         <div className="h-9 w-9 rounded-full bg-orange-50 flex items-center justify-center text-orange-500">
@@ -99,6 +112,13 @@ export const StoreList = () => {
                     )
                 )}
             </main>
+
+            <StoreForm
+                isOpen={isFormOpen}
+                onClose={() => setIsFormOpen(false)}
+                onSuccess={fetchStores}
+                storeToEdit={editingStore}
+            />
         </div>
     );
 };

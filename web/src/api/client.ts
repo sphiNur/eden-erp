@@ -135,6 +135,10 @@ export const usersApi = {
 
 export const storesApi = {
     list: () => request<import('../types').Store[]>('/stores/'),
+    create: (data: { name: string; address?: string; location?: string }) =>
+        request<import('../types').Store>('/stores/', { method: 'POST', body: data }),
+    update: (id: string, data: { name?: string; address?: string; location?: string }) =>
+        request<import('../types').Store>(`/stores/${id}`, { method: 'PUT', body: data }),
 };
 
 // --- Templates ---

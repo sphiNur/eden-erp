@@ -129,73 +129,75 @@ function App() {
     return (
         <LanguageProvider>
             <UserProvider>
-                <ErrorBoundary>
-                    <HashRouter>
-                        <Routes>
-                            <Route path="/" element={<AppDispatcher />} />
+                <ToastProvider>
+                    <ErrorBoundary>
+                        <HashRouter>
+                            <Routes>
+                                <Route path="/" element={<AppDispatcher />} />
 
-                            {/* All authenticated pages under AppLayout */}
-                            <Route element={<AppLayout />}>
-                                <Route
-                                    path="/store"
-                                    element={
-                                        <ProtectedRoute allowedRoles={['store_manager', 'admin']}>
-                                            <StoreRequest />
-                                        </ProtectedRoute>
-                                    }
-                                />
-                                <Route
-                                    path="/market"
-                                    element={
-                                        <ProtectedRoute allowedRoles={['global_purchaser', 'admin']}>
-                                            <MarketRun />
-                                        </ProtectedRoute>
-                                    }
-                                />
+                                {/* All authenticated pages under AppLayout */}
+                                <Route element={<AppLayout />}>
+                                    <Route
+                                        path="/store"
+                                        element={
+                                            <ProtectedRoute allowedRoles={['store_manager', 'admin']}>
+                                                <StoreRequest />
+                                            </ProtectedRoute>
+                                        }
+                                    />
+                                    <Route
+                                        path="/market"
+                                        element={
+                                            <ProtectedRoute allowedRoles={['global_purchaser', 'admin']}>
+                                                <MarketRun />
+                                            </ProtectedRoute>
+                                        }
+                                    />
 
-                                {/* Admin routes */}
-                                <Route
-                                    path="/admin"
-                                    element={<Navigate to="/admin/products" replace />}
-                                />
-                                <Route
-                                    path="/admin/products"
-                                    element={
-                                        <ProtectedRoute allowedRoles={['admin', 'finance']}>
-                                            <InventoryMaster />
-                                        </ProtectedRoute>
-                                    }
-                                />
-                                <Route
-                                    path="/admin/users"
-                                    element={
-                                        <ProtectedRoute allowedRoles={['admin']}>
-                                            <UserList />
-                                        </ProtectedRoute>
-                                    }
-                                />
-                                <Route
-                                    path="/admin/analytics"
-                                    element={
-                                        <ProtectedRoute allowedRoles={['admin', 'finance']}>
-                                            <AnalyticsDashboard />
-                                        </ProtectedRoute>
-                                    }
-                                />
-                                <Route
-                                    path="/admin/stores"
-                                    element={
-                                        <ProtectedRoute allowedRoles={['admin']}>
-                                            <StoreList />
-                                        </ProtectedRoute>
-                                    }
-                                />
-                            </Route>
+                                    {/* Admin routes */}
+                                    <Route
+                                        path="/admin"
+                                        element={<Navigate to="/admin/products" replace />}
+                                    />
+                                    <Route
+                                        path="/admin/products"
+                                        element={
+                                            <ProtectedRoute allowedRoles={['admin', 'finance']}>
+                                                <InventoryMaster />
+                                            </ProtectedRoute>
+                                        }
+                                    />
+                                    <Route
+                                        path="/admin/users"
+                                        element={
+                                            <ProtectedRoute allowedRoles={['admin']}>
+                                                <UserList />
+                                            </ProtectedRoute>
+                                        }
+                                    />
+                                    <Route
+                                        path="/admin/analytics"
+                                        element={
+                                            <ProtectedRoute allowedRoles={['admin', 'finance']}>
+                                                <AnalyticsDashboard />
+                                            </ProtectedRoute>
+                                        }
+                                    />
+                                    <Route
+                                        path="/admin/stores"
+                                        element={
+                                            <ProtectedRoute allowedRoles={['admin']}>
+                                                <StoreList />
+                                            </ProtectedRoute>
+                                        }
+                                    />
+                                </Route>
 
-                            <Route path="*" element={<Navigate to="/" replace />} />
-                        </Routes>
-                    </HashRouter>
-                </ErrorBoundary>
+                                <Route path="*" element={<Navigate to="/" replace />} />
+                            </Routes>
+                        </HashRouter>
+                    </ErrorBoundary>
+                </ToastProvider>
             </UserProvider>
         </LanguageProvider>
     );

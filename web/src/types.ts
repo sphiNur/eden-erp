@@ -29,6 +29,7 @@ export interface Store {
     id: string;
     name: string;
     address?: string;
+    location?: string;
     config?: Record<string, unknown>;
     is_active?: boolean;
     created_at?: string;

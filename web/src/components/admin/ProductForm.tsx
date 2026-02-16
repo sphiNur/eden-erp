@@ -32,8 +32,13 @@ interface ProductFormProps {
     productToEdit?: Product | null;
 }
 
+import { useToast } from '../../contexts/ToastContext';
+
+// ...
+
 export const ProductForm = ({ isOpen, onClose, onSuccess, productToEdit }: ProductFormProps) => {
     const { t, ui } = useLanguage();
+    const { success, error } = useToast();
     const [categories, setCategories] = useState<Category[]>([]);
     const [submitting, setSubmitting] = useState(false);
 
@@ -113,15 +118,17 @@ export const ProductForm = ({ isOpen, onClose, onSuccess, productToEdit }: Produ
 
             if (productToEdit) {
                 await productsApi.update(productToEdit.id, payload);
+                success(ui('saveChanges'));
             } else {
                 await productsApi.create(payload);
+                success(ui('addProduct'));
             }
 
             onSuccess();
             onClose();
-        } catch (error) {
-            console.error(error);
-            alert(ui('saveFailed'));
+        } catch (err) {
+            console.error(err);
+            error(ui('saveFailed'));
         } finally {
             setSubmitting(false);
         }

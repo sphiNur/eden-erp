@@ -9,6 +9,7 @@ import { User, UserRole } from '../../types';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { usersApi, storesApi } from '../../api/client';
 import WebApp from '@twa-dev/sdk';
+import { useToast } from '../../contexts/ToastContext';
 
 interface StoreOption {
     id: string;
@@ -17,6 +18,7 @@ interface StoreOption {
 
 export const UserList = () => {
     const { ui } = useLanguage();
+    const { success, error } = useToast();
     const [users, setUsers] = useState<User[]>([]);
     const [stores, setStores] = useState<StoreOption[]>([]);
     const [loading, setLoading] = useState(true);
@@ -68,10 +70,10 @@ export const UserList = () => {
             await usersApi.update(selectedUser.id, payload);
             await fetchData();
             setIsSheetOpen(false);
-            WebApp.HapticFeedback.notificationOccurred('success');
+            success(ui('saveChanges'));
         } catch (err) {
             console.error(err);
-            alert(ui('updateFailed'));
+            error(ui('updateFailed'));
         } finally {
             setUpdating(false);
         }

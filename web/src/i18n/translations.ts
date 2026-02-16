@@ -12,6 +12,7 @@ export type TranslationKey = keyof typeof translations;
 const translations = {
     // --- Common ---
     search: { en: 'Search...', ru: 'Поиск...', uz: 'Qidirish...', cn: '搜索...' },
+    name: { en: 'Name', ru: 'Название', uz: 'Nomi', cn: '名称' },
     loading: { en: 'Loading...', ru: 'Загрузка...', uz: 'Yuklanmoqda...', cn: '加载中...' },
     save: { en: 'Save', ru: 'Сохранить', uz: 'Saqlash', cn: '保存' },
     cancel: { en: 'Cancel', ru: 'Отмена', uz: 'Bekor qilish', cn: '取消' },
