@@ -10,6 +10,7 @@ import { StoreList } from './components/admin/StoreList';
 import { AppLayout } from './components/layout/AppLayout';
 import { LanguageProvider, useLanguage } from './contexts/LanguageContext';
 import { UserProvider, useUser } from './contexts/UserContext';
+import { ToastProvider } from './contexts/ToastContext';
 import { Loader2 } from 'lucide-react';
 
 // Dispatcher Component matches role to route
