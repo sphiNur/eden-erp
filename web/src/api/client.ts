@@ -30,17 +30,17 @@ function getAuthHeaders(): Record<string, string> {
     if (initData) {
         return { 'X-Telegram-Init-Data': initData };
     }
-    // Development fallback: send dev telegram ID from mock user
-    if (import.meta.env.DEV) {
-        const mock = localStorage.getItem('dev_mock_user');
-        if (mock) {
-            try {
-                const parsed = JSON.parse(mock);
-                if (parsed.telegram_id) {
-                    return { 'X-Dev-Telegram-Id': String(parsed.telegram_id) };
-                }
-            } catch { /* ignore */ }
-        }
+    // Development / Admin Simulation fallback
+    // We allow this in production because the backend validates if the *real* user is an Admin
+    // before accepting the X-Dev-Telegram-Id header.
+    const mock = localStorage.getItem('dev_mock_user');
+    if (mock) {
+        try {
+            const parsed = JSON.parse(mock);
+            if (parsed.telegram_id) {
+                return { 'X-Dev-Telegram-Id': String(parsed.telegram_id) };
+            }
+        } catch { /* ignore */ }
     }
     return {};
 }
