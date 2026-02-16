@@ -28,7 +28,7 @@ export const StoreRequest = () => {
 
     // --- Data Hooks ---
     const { products, stores, templates, loading, error, refresh, setTemplates } = useStoreCatalog();
-    const { filteredProducts, groupedProducts, searchTerm, setSearchTerm, activeCategory, setActiveCategory, categories } = useProductFilter(products);
+    const { groupedProducts, searchTerm, setSearchTerm, activeCategory, setActiveCategory, categories } = useProductFilter(products);
     const { quantities, setQty, cartItems, totalCount, estimatedTotal, reset: resetCart } = useCart(products);
 
     // --- Local State ---
