@@ -29,12 +29,13 @@ export const SettingsMenu = ({ children }: SettingsMenuProps) => {
             role: role
         };
         localStorage.setItem('dev_mock_user', JSON.stringify(mockUser));
-        window.location.reload();
+        // Force navigate to root so AppDispatcher can route based on the new role
+        window.location.href = '/';
     };
 
     const handleClearMock = () => {
         localStorage.removeItem('dev_mock_user');
-        window.location.reload();
+        window.location.href = '/';
     };
 
     return (

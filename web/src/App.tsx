@@ -1,6 +1,6 @@
 import { useEffect, ReactNode, Component, type ErrorInfo } from 'react';
 import WebApp from '@twa-dev/sdk';
-import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { HashRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { MarketRun } from './components/MarketRun';
 import { StoreRequest } from './components/StoreRequest';
 import { InventoryMaster } from './components/admin/InventoryMaster';
@@ -130,7 +130,7 @@ function App() {
         <LanguageProvider>
             <UserProvider>
                 <ErrorBoundary>
-                    <BrowserRouter>
+                    <HashRouter>
                         <Routes>
                             <Route path="/" element={<AppDispatcher />} />
 
@@ -194,7 +194,7 @@ function App() {
 
                             <Route path="*" element={<Navigate to="/" replace />} />
                         </Routes>
-                    </BrowserRouter>
+                    </HashRouter>
                 </ErrorBoundary>
             </UserProvider>
         </LanguageProvider>
