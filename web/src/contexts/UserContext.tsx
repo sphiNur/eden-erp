@@ -23,18 +23,27 @@ export function UserProvider({ children }: { children: ReactNode }) {
         setError(null);
         try {
             // 1. Priority: Production/Real Telegram User
-            // If we have initData, we ALWAYS use the API and ignore mocks
             if (WebApp.initData) {
-                const data = await usersApi.me();
-                setUser(data);
+                const realUser = await usersApi.me();
+
+                // Allow Admin to simulate other roles
+                const mock = localStorage.getItem('dev_mock_user');
+                if (mock && realUser.role === 'admin') {
+                    const parsed = JSON.parse(mock);
+                    console.log("Admin Simulating Role:", parsed.role);
+                    setUser(parsed);
+                } else {
+                    setUser(realUser);
+                }
                 return;
             }
 
             // 2. Fallback: Local Mock User (Dev/Admin Simulation only)
+            // This path is taken when running locally without Telegram InitData
             const mock = localStorage.getItem('dev_mock_user');
             if (mock) {
                 const parsed = JSON.parse(mock);
-                console.log("Using Mock User:", parsed);
+                console.log("Using Mock User (Local):", parsed);
                 setUser(parsed);
                 setLoading(false);
                 return;
