@@ -1,7 +1,8 @@
-import { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Settings, Check, Bug, Shield, User as UserIcon, ShoppingCart, Briefcase, Globe } from 'lucide-react';
+import { useState } from 'react';
+
+import { Settings, Check, Bug, Shield, User as UserIcon, ShoppingCart, Briefcase, Globe, Power } from 'lucide-react';
 import { Button } from '../ui/button';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '../ui/sheet';
 import { useLanguage, SUPPORTED_LANGUAGES } from '../../contexts/LanguageContext';
 import { useUser } from '../../contexts/UserContext';
 import { UserRole } from '../../types';
@@ -9,21 +10,7 @@ import { UserRole } from '../../types';
 export const SettingsMenu = () => {
     const { language, setLanguage } = useLanguage();
     const { user } = useUser();
-    const [isOpen, setIsOpen] = useState(false);
-    const containerRef = useRef<HTMLDivElement>(null);
-    const [showDevTools, setShowDevTools] = useState(false);
-
-    // Close on click outside
-    useEffect(() => {
-        if (!isOpen) return;
-        const handleClick = (e: MouseEvent) => {
-            if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-                setIsOpen(false);
-            }
-        };
-        document.addEventListener('mousedown', handleClick);
-        return () => document.removeEventListener('mousedown', handleClick);
-    }, [isOpen]);
+    const [open, setOpen] = useState(false);
 
     // DevTools Logic
     const isDev = import.meta.env.DEV;
@@ -47,122 +34,120 @@ export const SettingsMenu = () => {
     };
 
     return (
-        <div className="relative" ref={containerRef}>
-            <Button
-                variant="ghost"
-                size="icon"
-                className="h-9 w-9 rounded-full hover:bg-gray-100"
-                onClick={() => setIsOpen(!isOpen)}
-            >
-                <Settings className="h-5 w-5 text-gray-600" />
-            </Button>
+        <Sheet open={open} onOpenChange={setOpen}>
+            <SheetTrigger asChild>
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-9 w-9 rounded-full hover:bg-gray-100"
+                >
+                    <Settings className="h-5 w-5 text-gray-600" />
+                </Button>
+            </SheetTrigger>
 
-            <AnimatePresence>
-                {isOpen && (
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.95, y: -5 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.95, y: -5 }}
-                        className="absolute right-0 top-11 bg-white border border-gray-200 shadow-xl rounded-xl p-3 w-64 z-[1000] flex flex-col gap-3"
-                    >
-                        {/* ─── Language Section ─── */}
-                        <div className="space-y-1.5">
-                            <div className="flex items-center gap-2 text-xs font-semibold text-gray-500 uppercase tracking-widest px-1">
-                                <Globe size={12} />
-                                <span>Language</span>
+            <SheetContent side="bottom" className="rounded-t-2xl max-h-[85vh] overflow-y-auto">
+                <SheetHeader className="mb-4">
+                    <SheetTitle className="text-xl font-bold flex items-center gap-2">
+                        <Settings className="h-5 w-5" />
+                        Settings
+                    </SheetTitle>
+                </SheetHeader>
+
+                <div className="space-y-6 pb-8">
+                    {/* ─── Language Section ─── */}
+                    <div className="space-y-3">
+                        <div className="flex items-center gap-2 text-xs font-bold text-gray-500 uppercase tracking-widest px-1">
+                            <Globe size={14} />
+                            <span>Language</span>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                            {SUPPORTED_LANGUAGES.map((lang) => (
+                                <button
+                                    key={lang.code}
+                                    onClick={() => setLanguage(lang.code)}
+                                    className={`flex items-center gap-3 p-3 rounded-xl border transition-all text-left group
+                                        ${language === lang.code
+                                            ? 'bg-eden-50 border-eden-200 shadow-sm ring-1 ring-eden-100'
+                                            : 'bg-white border-gray-100 hover:bg-gray-50'
+                                        }`}
+                                >
+                                    <span className="text-2xl">{lang.flag}</span>
+                                    <div className="flex-1">
+                                        <div className={`text-sm font-semibold ${language === lang.code ? 'text-eden-900' : 'text-gray-900'}`}>{lang.label}</div>
+                                        <div className="text-[10px] text-gray-400 font-medium uppercase">{lang.code}</div>
+                                    </div>
+                                    {language === lang.code && (
+                                        <div className="w-5 h-5 rounded-full bg-eden-100 flex items-center justify-center">
+                                            <Check size={12} className="text-eden-600" />
+                                        </div>
+                                    )}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* ─── DevTools Section (Always visible if allowed) ─── */}
+                    {(canShowDevTools || isMocking) && (
+                        <div className="space-y-3 pt-2 border-t border-dashed border-gray-200">
+                            <div className="flex items-center justify-between px-1">
+                                <div className="flex items-center gap-2 text-xs font-bold text-gray-500 uppercase tracking-widest">
+                                    <Bug size={14} />
+                                    <span>Developer Tools</span>
+                                </div>
+                                {isMocking && (
+                                    <span className="text-[10px] bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full font-bold">
+                                        MOCK ACTIVE
+                                    </span>
+                                )}
                             </div>
-                            <div className="grid grid-cols-3 gap-1">
-                                {SUPPORTED_LANGUAGES.map((lang) => (
-                                    <button
-                                        key={lang.code}
-                                        onClick={() => setLanguage(lang.code)}
-                                        className={`flex flex-col items-center justify-center py-2 rounded-lg border transition-all
-                                            ${language === lang.code
-                                                ? 'bg-eden-50 border-eden-200 text-eden-600 shadow-sm'
-                                                : 'bg-gray-50 border-transparent text-gray-600 hover:bg-gray-100'
-                                            }`}
+
+                            <div className="bg-gray-50 rounded-xl p-3 border border-gray-100 space-y-3">
+                                <div className="text-[11px] font-medium text-gray-500 px-1">
+                                    Simulate User Role:
+                                </div>
+                                <div className="grid grid-cols-2 gap-2">
+                                    {[
+                                        { role: 'admin', icon: Shield, label: 'Admin', color: 'text-purple-600', bg: 'bg-purple-50' },
+                                        { role: 'store_manager', icon: UserIcon, label: 'Manager', color: 'text-blue-600', bg: 'bg-blue-50' },
+                                        { role: 'global_purchaser', icon: ShoppingCart, label: 'Purchaser', color: 'text-green-600', bg: 'bg-green-50' },
+                                        { role: 'finance', icon: Briefcase, label: 'Finance', color: 'text-amber-600', bg: 'bg-amber-50' }
+                                    ].map(({ role, icon: Icon, label, color, bg }) => {
+                                        const isActive = user?.role === role;
+                                        return (
+                                            <button
+                                                key={role}
+                                                onClick={() => handleSetRole(role as UserRole)}
+                                                className={`flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm transition-all border
+                                                    ${isActive
+                                                        ? 'bg-white border-eden-200 shadow-sm ring-1 ring-eden-100 text-eden-700 font-semibold'
+                                                        : 'bg-white border-transparent text-gray-600 hover:bg-white hover:shadow-sm'
+                                                    }`}
+                                            >
+                                                <div className={`p-1.5 rounded-md ${bg}`}>
+                                                    <Icon className={`w-3.5 h-3.5 ${color}`} />
+                                                </div>
+                                                <span className="flex-1 text-left">{label}</span>
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+
+                                {isMocking && (
+                                    <Button
+                                        variant="destructive"
+                                        size="sm"
+                                        className="w-full mt-2"
+                                        onClick={handleClearMock}
                                     >
-                                        <span className="text-xl mb-0.5">{lang.flag}</span>
-                                        <span className="text-[10px] font-medium">{lang.label}</span>
-                                    </button>
-                                ))}
+                                        <Power size={14} className="mr-2" />
+                                        Reset to Real User
+                                    </Button>
+                                )}
                             </div>
                         </div>
-
-                        {/* ─── DevTools Toggle (Only if allowed) ─── */}
-                        {(canShowDevTools || isMocking) && (
-                            <>
-                                <div className="h-px bg-gray-100" />
-                                <div className="space-y-1">
-                                    <button
-                                        onClick={() => setShowDevTools(!showDevTools)}
-                                        className="flex items-center justify-between w-full px-1 py-1 text-sm font-medium text-gray-700 hover:text-gray-900"
-                                    >
-                                        <div className="flex items-center gap-2 text-xs font-semibold text-gray-500 uppercase tracking-widest">
-                                            <Bug size={12} />
-                                            <span>Developer Tools</span>
-                                        </div>
-                                        {showDevTools ? (
-                                            <Check size={14} className="text-eden-500" />
-                                        ) : (
-                                            <span className="text-[10px] text-gray-400">Expand</span>
-                                        )}
-                                    </button>
-
-                                    {showDevTools && (
-                                        <motion.div
-                                            initial={{ height: 0, opacity: 0 }}
-                                            animate={{ height: 'auto', opacity: 1 }}
-                                            className="space-y-1 pt-1"
-                                        >
-                                            <div className="text-[10px] text-center bg-yellow-50 text-yellow-700 py-1 rounded font-medium border border-yellow-100">
-                                                Role Switcher (Mock Mode)
-                                            </div>
-
-                                            <div className="grid grid-cols-1 gap-1">
-                                                {[
-                                                    { role: 'admin', icon: Shield, label: 'Admin', color: 'text-purple-500' },
-                                                    { role: 'store_manager', icon: UserIcon, label: 'Manager', color: 'text-blue-500' },
-                                                    { role: 'global_purchaser', icon: ShoppingCart, label: 'Purchaser', color: 'text-green-500' },
-                                                    { role: 'finance', icon: Briefcase, label: 'Finance', color: 'text-amber-500' }
-                                                ].map(({ role, icon: Icon, label, color }) => {
-                                                    const isActive = user?.role === role;
-                                                    return (
-                                                        <button
-                                                            key={role}
-                                                            onClick={() => handleSetRole(role as UserRole)}
-                                                            className={`flex items-center w-full px-2 py-1.5 rounded-md text-xs transition-colors
-                                                                ${isActive
-                                                                    ? 'bg-eden-50 text-eden-700 font-medium border border-eden-100'
-                                                                    : 'hover:bg-gray-50 text-gray-600 border border-transparent'
-                                                                }`}
-                                                        >
-                                                            <Icon className={`mr-2 h-3.5 w-3.5 ${isActive ? 'text-eden-600' : color}`} />
-                                                            <span className="flex-1 text-left">{label}</span>
-                                                            {isActive && <Check size={12} className="text-eden-600" />}
-                                                        </button>
-                                                    );
-                                                })}
-                                            </div>
-
-                                            {isMocking && (
-                                                <Button
-                                                    variant="destructive"
-                                                    size="sm"
-                                                    className="w-full mt-2 h-7 text-xs font-normal opacity-90 hover:opacity-100"
-                                                    onClick={handleClearMock}
-                                                >
-                                                    Reset to Real User
-                                                </Button>
-                                            )}
-                                        </motion.div>
-                                    )}
-                                </div>
-                            </>
-                        )}
-                    </motion.div>
-                )}
-            </AnimatePresence>
-        </div>
+                    )}
+                </div>
+            </SheetContent>
+        </Sheet>
     );
 };

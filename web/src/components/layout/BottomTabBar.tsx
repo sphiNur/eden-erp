@@ -18,11 +18,11 @@ export const BottomTabBar = () => {
     const location = useLocation();
     const navigate = useNavigate();
 
-    // Only show for admin and finance roles
-    if (!user || !['admin', 'finance'].includes(user.role)) return null;
+    // Only show on Admin routes
+    if (!location.pathname.startsWith('/admin')) return null;
 
-    // Hide on Market Run page (overlaps with sticky footer)
-    if (location.pathname === '/market') return null;
+    // Additional check for roles just in case
+    if (!user || !['admin', 'finance'].includes(user.role)) return null;
 
     const handleNav = (path: string) => {
         if (location.pathname !== path) {
