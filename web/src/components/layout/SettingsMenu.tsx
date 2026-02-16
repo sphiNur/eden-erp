@@ -7,7 +7,11 @@ import { useLanguage, SUPPORTED_LANGUAGES } from '../../contexts/LanguageContext
 import { useUser } from '../../contexts/UserContext';
 import { UserRole } from '../../types';
 
-export const SettingsMenu = () => {
+interface SettingsMenuProps {
+    children?: React.ReactNode;
+}
+
+export const SettingsMenu = ({ children }: SettingsMenuProps) => {
     const { language, setLanguage } = useLanguage();
     const { user } = useUser();
     const [open, setOpen] = useState(false);
@@ -36,13 +40,17 @@ export const SettingsMenu = () => {
     return (
         <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-9 w-9 rounded-full hover:bg-gray-100"
-                >
-                    <Settings className="h-5 w-5 text-gray-600" />
-                </Button>
+                {children ? (
+                    children
+                ) : (
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 rounded-full hover:bg-gray-100/50 text-gray-500"
+                    >
+                        <Settings className="h-5 w-5" />
+                    </Button>
+                )}
             </SheetTrigger>
 
             <SheetContent side="bottom" className="rounded-t-2xl max-h-[85vh] overflow-y-auto">
