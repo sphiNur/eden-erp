@@ -5,6 +5,7 @@ import { Button } from './ui/button';
 import { useMarketRun } from '../hooks/useMarketRun';
 import { MarketShoppingList } from './market-run/MarketShoppingList';
 import { MarketDistributionList } from './market-run/MarketDistributionList';
+import { PageLayout } from './layout/PageLayout';
 
 export const MarketRun = () => {
     const { ui } = useLanguage();
@@ -35,64 +36,66 @@ export const MarketRun = () => {
         );
     }
 
-    return (
-        <div className="bg-[var(--tg-theme-bg-color,#f3f4f6)] min-h-screen flex flex-col">
-            {/* Header with Mode Toggle */}
-            <div className="sticky top-header z-toolbar bg-white/90 backdrop-blur-md border-b shadow-sm pt-2 pb-2 px-3">
-                <div className="flex bg-gray-100/80 p-1 rounded-xl">
-                    <button
-                        onClick={() => setViewMode('shopping')}
-                        className={cn(
-                            "flex-1 flex items-center justify-center gap-2 py-1.5 rounded-lg text-xs font-semibold transition-all",
-                            viewMode === 'shopping'
-                                ? "bg-eden-50 text-eden-600 ring-1 ring-inset ring-eden-200"
-                                : "bg-transparent text-gray-500 hover:bg-gray-100"
-                        )}
-                    >
-                        <ShoppingCart size={14} className={viewMode === 'shopping' ? "text-eden-600" : "text-gray-400"} />
-                        Shopping
-                    </button>
-                    <button
-                        onClick={() => setViewMode('distribution')}
-                        className={cn(
-                            "flex-1 flex items-center justify-center gap-2 py-1.5 rounded-lg text-xs font-semibold transition-all",
-                            viewMode === 'distribution'
-                                ? "bg-blue-50 text-blue-600 ring-1 ring-inset ring-blue-200"
-                                : "bg-transparent text-gray-500 hover:bg-gray-100"
-                        )}
-                    >
-                        <Store size={14} className={viewMode === 'distribution' ? "text-blue-600" : "text-gray-400"} />
-                        Distribution
-                    </button>
-                </div>
-
-                {viewMode === 'shopping' && (
-                    <div className="px-3 pb-2 text-xs text-gray-500 flex justify-between">
-                        <span>{items.filter(i => i.status === 'bought').length} / {items.length} {ui('done')}</span>
-                    </div>
-                )}
+    const toolbar = (
+        <div className="pt-2 pb-2 px-3">
+            <div className="flex bg-gray-100/80 p-1 rounded-xl">
+                <button
+                    onClick={() => setViewMode('shopping')}
+                    className={cn(
+                        "flex-1 flex items-center justify-center gap-2 py-1.5 rounded-lg text-xs font-semibold transition-all",
+                        viewMode === 'shopping'
+                            ? "bg-eden-50 text-eden-600 ring-1 ring-inset ring-eden-200"
+                            : "bg-transparent text-gray-500 hover:bg-gray-100"
+                    )}
+                >
+                    <ShoppingCart size={14} className={viewMode === 'shopping' ? "text-eden-600" : "text-gray-400"} />
+                    Shopping
+                </button>
+                <button
+                    onClick={() => setViewMode('distribution')}
+                    className={cn(
+                        "flex-1 flex items-center justify-center gap-2 py-1.5 rounded-lg text-xs font-semibold transition-all",
+                        viewMode === 'distribution'
+                            ? "bg-blue-50 text-blue-600 ring-1 ring-inset ring-blue-200"
+                            : "bg-transparent text-gray-500 hover:bg-gray-100"
+                    )}
+                >
+                    <Store size={14} className={viewMode === 'distribution' ? "text-blue-600" : "text-gray-400"} />
+                    Distribution
+                </button>
             </div>
 
-            <main className="flex-1 p-3 pb-24">
-                {viewMode === 'shopping' ? (
-                    <MarketShoppingList
-                        shoppingSections={shoppingSections}
-                        shoppingSectionKeys={shoppingSectionKeys}
-                        priceInputs={priceInputs}
-                        qtyInputs={qtyInputs}
-                        expandedBreakdown={expandedBreakdown}
-                        onPriceChange={handlePriceChange}
-                        onQtyChange={handleQtyChange}
-                        onToggleBought={toggleBought}
-                        onToggleBreakdown={toggleBreakdown}
-                    />
-                ) : (
-                    <MarketDistributionList
-                        distributionSections={distributionSections}
-                        storeKeys={storeKeys}
-                    />
-                )}
-            </main>
+            {viewMode === 'shopping' && (
+                <div className="mt-2 text-xs text-gray-500 flex justify-between">
+                    <span>{items.filter(i => i.status === 'bought').length} / {items.length} {ui('done')}</span>
+                </div>
+            )}
+        </div>
+    );
+
+    return (
+        <PageLayout
+            toolbar={toolbar}
+            className="bg-[var(--tg-theme-bg-color,#f3f4f6)]"
+        >
+            {viewMode === 'shopping' ? (
+                <MarketShoppingList
+                    shoppingSections={shoppingSections}
+                    shoppingSectionKeys={shoppingSectionKeys}
+                    priceInputs={priceInputs}
+                    qtyInputs={qtyInputs}
+                    expandedBreakdown={expandedBreakdown}
+                    onPriceChange={handlePriceChange}
+                    onQtyChange={handleQtyChange}
+                    onToggleBought={toggleBought}
+                    onToggleBreakdown={toggleBreakdown}
+                />
+            ) : (
+                <MarketDistributionList
+                    distributionSections={distributionSections}
+                    storeKeys={storeKeys}
+                />
+            )}
 
             {/* Sticky Footer - ONLY IN SHOPPING MODE */}
             {viewMode === 'shopping' && (
@@ -106,6 +109,6 @@ export const MarketRun = () => {
                     </Button>
                 </div>
             )}
-        </div>
+        </PageLayout>
     );
 };

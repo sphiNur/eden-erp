@@ -35,7 +35,7 @@ export const StoreRequestToolbar = ({
     const { ui } = useLanguage();
 
     return (
-        <div className="sticky top-header z-toolbar bg-white border-b shadow-sm">
+        <div className="bg-white border-b">
             <div className="px-3 pt-2 pb-1">
                 {/* ─── Top Row: Store & Date ─── */}
                 <div className="flex items-center gap-1.5 mb-1.5">

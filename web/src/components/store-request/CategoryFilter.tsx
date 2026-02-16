@@ -23,7 +23,7 @@ export const CategoryFilter = ({
     // For now simple rendering is fine.
 
     return (
-        <div className="sticky top-[138px] z-toolbar bg-white border-b shadow-sm -mt-0.5">
+        <div className="bg-white border-b">
             <div className="overflow-x-auto px-3 py-2 scrollbar-hide">
                 <div className="flex gap-1.5">
                     {categories.map(cat => {

@@ -22,6 +22,7 @@ import { StoreRequestToolbar } from './store-request/StoreRequestToolbar';
 import { CategoryFilter } from './store-request/CategoryFilter';
 import { ProductListItem } from './store-request/ProductListItem';
 import { CartSheet } from './store-request/CartSheet';
+import { PageLayout } from './layout/PageLayout';
 
 export const StoreRequest = () => {
     const { ui } = useLanguage();
@@ -56,9 +57,6 @@ export const StoreRequest = () => {
     const handleLoadTemplate = useCallback((template: OrderTemplate) => {
         template.items.forEach(item => {
             if (products.some(p => p.id === item.product_id)) {
-                // We access the raw setQty from useCart indirectly via looping, 
-                // but useCart exposes setQuantities if needed for batch updates.
-                // For simplicity, we'll iterate. State updates are batched by React 18.
                 setQty(item.product_id, (quantities[item.product_id] || 0) + item.quantity);
             }
         });
@@ -69,7 +67,6 @@ export const StoreRequest = () => {
         if (!window.confirm("Delete this template?")) return;
         try {
             await templatesApi.delete(id);
-            // Optimistic update
             setTemplates(prev => prev.filter(t => t.id !== id));
         } catch (err) {
             console.error(err);
@@ -141,17 +138,11 @@ export const StoreRequest = () => {
     if (loading) return <ProductListSkeleton />;
     if (error) return <ErrorRetry message={error} onRetry={refresh} />;
 
-    // Selection counts for badges
-    const totalSelectedCount = totalCount; // Approximation: total unique items, not total qty
+    const totalSelectedCount = totalCount;
     const categoryCounts: Record<string, number> = {};
-    // We need to re-calculate category counts for the filter
-    // This logic could be moved to useCart if we pass categories map, 
-    // but it's purely UI derived state.
-    // ... For now, let's keep it simple or accept that markers might be missing until next iteration
-    // optimizing strictness vs speed.
 
-    return (
-        <div className="bg-gray-50 relative min-h-screen">
+    const toolbar = (
+        <>
             <StoreRequestToolbar
                 stores={stores}
                 selectedStoreId={selectedStore}
@@ -164,17 +155,41 @@ export const StoreRequest = () => {
                 onLoadTemplate={handleLoadTemplate}
                 onDeleteTemplate={handleDeleteTemplate}
             />
-
             <CategoryFilter
                 categories={categories}
                 activeCategory={activeCategory}
                 onSelectCategory={setActiveCategory}
-                categoryCounts={categoryCounts} // TODO: wire up if critical
+                categoryCounts={categoryCounts}
                 totalSelectedCount={totalSelectedCount}
                 allLabel={ui('all')}
             />
+        </>
+    );
 
-            <main className="p-3 space-y-3 pb-24">
+    const floatingAction = (
+        <AnimatePresence>
+            {totalCount > 0 && !showSuccess && (
+                <motion.button
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0, opacity: 0 }}
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={() => setShowCart(true)}
+                    className="w-14 h-14 bg-eden-500 text-white rounded-full shadow-lg flex items-center justify-center"
+                >
+                    <ListFilter size={22} />
+                    <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-white">
+                        {totalCount}
+                    </span>
+                </motion.button>
+            )}
+        </AnimatePresence>
+    );
+
+    return (
+        <PageLayout toolbar={toolbar} floatingAction={floatingAction} className="bg-gray-50">
+            <div className="space-y-3 pb-24">
                 {Object.keys(groupedProducts).length === 0 ? (
                     <EmptyState
                         title={ui('noProductsFound')}
@@ -199,26 +214,7 @@ export const StoreRequest = () => {
                         </div>
                     ))
                 )}
-            </main>
-
-            <AnimatePresence>
-                {totalCount > 0 && !showSuccess && (
-                    <motion.button
-                        initial={{ scale: 0, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        exit={{ scale: 0, opacity: 0 }}
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9 }}
-                        onClick={() => setShowCart(true)}
-                        className="fixed bottom-20 right-4 w-14 h-14 bg-eden-500 text-white rounded-full shadow-lg flex items-center justify-center z-fab"
-                    >
-                        <ListFilter size={22} />
-                        <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-white">
-                            {totalCount}
-                        </span>
-                    </motion.button>
-                )}
-            </AnimatePresence>
+            </div>
 
             <SuccessOverlay show={showSuccess} message={ui('orderSubmitted')} />
 
@@ -237,6 +233,6 @@ export const StoreRequest = () => {
                     onUpdateQty={setQty}
                 />
             </BottomDrawer>
-        </div>
+        </PageLayout>
     );
 };
