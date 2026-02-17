@@ -51,6 +51,7 @@ export const SettingsMenu = ({ children }: SettingsMenuProps) => {
             if (val) WebApp.HapticFeedback.impactOccurred('light');
             setOpen(val);
         }}>
+            {/* Standard Sheet Trigger */}
             <SheetTrigger asChild>
                 {children ? (
                     children
@@ -65,20 +66,11 @@ export const SettingsMenu = ({ children }: SettingsMenuProps) => {
                 )}
             </SheetTrigger>
 
-            {/* Custom Overlay that starts below the header */}
-            <div
-                className={cn(
-                    "fixed inset-0 z-40 bg-black/20 backdrop-blur-[1px] transition-opacity data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
-                    open ? "block" : "hidden"
-                )}
-                style={{ top: 'var(--header-h)' }}
-                onClick={() => setOpen(false)}
-            />
-
             <SheetContent
                 side="top"
+                overlayClassName="top-[var(--header-h)] z-20 bg-black/20 backdrop-blur-[1px]"
                 className={cn(
-                    "rounded-b-2xl border-b-0 shadow-xl bg-white/95 backdrop-blur-xl [&>button]:hidden",
+                    "rounded-b-2xl border-b-0 shadow-xl bg-white/95 backdrop-blur-xl [&>button]:hidden z-20",
                     "p-0 gap-0 w-full max-h-[80vh] overflow-hidden flex flex-col"
                 )}
                 style={{
