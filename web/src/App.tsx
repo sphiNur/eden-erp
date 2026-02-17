@@ -12,6 +12,9 @@ import { LanguageProvider, useLanguage } from './contexts/LanguageContext';
 import { UserProvider, useUser } from './contexts/UserContext';
 import { ToastProvider } from './contexts/ToastContext';
 import { Loader2 } from 'lucide-react';
+import { ProductFormPage } from './components/admin/ProductFormPage';
+import { StoreFormPage } from './components/admin/StoreFormPage';
+import { UserFormPage } from './components/admin/UserFormPage';
 
 // Dispatcher Component matches role to route
 const AppDispatcher = () => {
@@ -160,6 +163,11 @@ function App() {
                                         path="/admin"
                                         element={<Navigate to="/admin/products" replace />}
                                     />
+
+
+                                    // ... (existing imports)
+
+                                    // ... inside Routes ...
                                     <Route
                                         path="/admin/products"
                                         element={
@@ -169,6 +177,15 @@ function App() {
                                         }
                                     />
                                     <Route
+                                        path="/admin/products/:id"
+                                        element={
+                                            <ProtectedRoute allowedRoles={['admin', 'finance']}>
+                                                <ProductFormPage />
+                                            </ProtectedRoute>
+                                        }
+                                    />
+
+                                    <Route
                                         path="/admin/users"
                                         element={
                                             <ProtectedRoute allowedRoles={['admin']}>
@@ -176,6 +193,15 @@ function App() {
                                             </ProtectedRoute>
                                         }
                                     />
+                                    <Route
+                                        path="/admin/users/:id"
+                                        element={
+                                            <ProtectedRoute allowedRoles={['admin']}>
+                                                <UserFormPage />
+                                            </ProtectedRoute>
+                                        }
+                                    />
+
                                     <Route
                                         path="/admin/analytics"
                                         element={
@@ -192,6 +218,15 @@ function App() {
                                             </ProtectedRoute>
                                         }
                                     />
+                                    <Route
+                                        path="/admin/stores/:id"
+                                        element={
+                                            <ProtectedRoute allowedRoles={['admin']}>
+                                                <StoreFormPage />
+                                            </ProtectedRoute>
+                                        }
+                                    />
+
                                 </Route>
 
                                 <Route path="*" element={<Navigate to="/" replace />} />

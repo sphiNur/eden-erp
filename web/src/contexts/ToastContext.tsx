@@ -47,12 +47,12 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
     return (
         <ToastContext.Provider value={{ showToast, success, error, info }}>
             {children}
-            <div className="fixed top-20 left-0 right-0 z-[100] grid place-items-center pointer-events-none px-4 gap-2">
+            <div className="fixed bottom-24 left-0 right-0 z-[100] grid place-items-center pointer-events-none px-4 gap-2">
                 <AnimatePresence>
                     {toasts.map(toast => (
                         <motion.div
                             key={toast.id}
-                            initial={{ opacity: 0, y: -20, scale: 0.9 }}
+                            initial={{ opacity: 0, y: 20, scale: 0.9 }}
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
                             className={cn(
