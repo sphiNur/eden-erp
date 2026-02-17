@@ -9,11 +9,12 @@ interface MarketShoppingListProps {
     shoppingSections: Record<string, MarketItem[]>;
     shoppingSectionKeys: string[];
     priceInputs: Record<string, string>;
-    qtyInputs: Record<string, string>;
+    unitPriceInputs: Record<string, string>;
     expandedBreakdown: Record<string, boolean>;
 
-    onPriceChange: (id: string, val: string) => void;
-    onQtyChange: (id: string, val: string) => void;
+    onTotalPriceChange: (id: string, val: string) => void;
+    onUnitPriceChange: (id: string, val: string) => void;
+    onStoreQtyChange: (id: string, storeName: string, val: string) => void;
     onToggleBought: (id: string, checked: boolean) => void;
     onToggleBreakdown: (id: string) => void;
 }
@@ -22,10 +23,11 @@ export const MarketShoppingList = ({
     shoppingSections,
     shoppingSectionKeys,
     priceInputs,
-    qtyInputs,
+    unitPriceInputs,
     expandedBreakdown,
-    onPriceChange,
-    onQtyChange,
+    onTotalPriceChange,
+    onUnitPriceChange,
+    onStoreQtyChange,
     onToggleBought,
     onToggleBreakdown
 }: MarketShoppingListProps) => {
@@ -66,10 +68,11 @@ export const MarketShoppingList = ({
                                     key={item.product_id}
                                     item={item}
                                     priceInputValue={priceInputs[item.product_id] ?? ''}
-                                    qtyInputValue={qtyInputs[item.product_id] ?? ''}
+                                    unitPriceInputValue={unitPriceInputs[item.product_id] ?? ''}
                                     isExpanded={!!expandedBreakdown[item.product_id]}
-                                    onPriceChange={onPriceChange}
-                                    onQtyChange={onQtyChange}
+                                    onTotalPriceChange={onTotalPriceChange}
+                                    onUnitPriceChange={onUnitPriceChange}
+                                    onStoreQtyChange={onStoreQtyChange}
                                     onToggleBought={onToggleBought}
                                     onToggleBreakdown={onToggleBreakdown}
                                 />

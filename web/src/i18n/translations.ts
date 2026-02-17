@@ -42,6 +42,12 @@ const translations = {
     // --- MarketRun ---
     marketRun: { en: 'Market Run', ru: 'Закупка', uz: 'Bozor xaridi', cn: '市场采购' },
     qty: { en: 'Qty', ru: 'Кол-во', uz: 'Soni', cn: '数量' },
+    unitPrice: {
+        en: 'Unit Price',
+        ru: 'Цена за ед.',
+        uz: 'Birlik narxi',
+        cn: '单价'
+    },
     totalCost: { en: 'Total Cost', ru: 'Общая стоимость', uz: 'Umumiy narx', cn: '总费用' },
     noItemsFound: { en: 'No Items Found', ru: 'Товары не найдены', uz: 'Mahsulotlar topilmadi', cn: '未找到商品' },
     finalizeBatch: { en: 'Finalize Batch', ru: 'Завершить закупку', uz: 'Xaridni yakunlash', cn: '完成批次' },
@@ -87,6 +93,7 @@ const translations = {
     retry: { en: 'Retry', ru: 'Повторить', uz: 'Qayta urinish', cn: '重试' },
     errorOccurred: { en: 'Something went wrong', ru: 'Что-то пошло не так', uz: 'Xatolik yuz berdi', cn: '出现错误' },
     estimatedTotal: { en: 'Est. Total', ru: 'Ориент. итого', uz: 'Taxminiy jami', cn: '预估合计' },
+    progress: { en: 'Progress', ru: 'Прогресс', uz: 'Jarayon', cn: '进度' },
     items: { en: 'items', ru: 'товаров', uz: 'mahsulot', cn: '件商品' },
 } satisfies Record<string, I18nString>;
 

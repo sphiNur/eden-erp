@@ -1,6 +1,6 @@
 import { memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, ChevronUp, Calculator } from 'lucide-react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import { Checkbox } from '../ui/checkbox';
 import { Input } from '../ui/input';
 import { cn } from '../../lib/utils';
@@ -10,10 +10,11 @@ import { useLanguage } from '../../contexts/LanguageContext';
 interface MarketItemRowProps {
     item: MarketItem;
     priceInputValue: string;
-    qtyInputValue: string;
+    unitPriceInputValue: string;
     isExpanded: boolean;
-    onPriceChange: (id: string, val: string) => void;
-    onQtyChange: (id: string, val: string) => void;
+    onTotalPriceChange: (id: string, val: string) => void;
+    onUnitPriceChange: (id: string, val: string) => void;
+    onStoreQtyChange: (id: string, storeName: string, val: string) => void;
     onToggleBought: (id: string, checked: boolean) => void;
     onToggleBreakdown: (id: string) => void;
 }
@@ -21,19 +22,19 @@ interface MarketItemRowProps {
 export const MarketItemRow = memo(({
     item,
     priceInputValue,
-    qtyInputValue,
+    unitPriceInputValue,
     isExpanded,
-    onPriceChange,
-    onQtyChange,
+    onTotalPriceChange,
+    onUnitPriceChange,
+    onStoreQtyChange,
     onToggleBought,
     onToggleBreakdown
 }: MarketItemRowProps) => {
     const { t, ui } = useLanguage();
 
     // Derived values
-    const priceNum = parseFloat(priceInputValue);
-    const qtyNum = parseFloat(qtyInputValue || item.total_quantity_needed.toString());
-    const unitPrice = (priceNum && qtyNum) ? (priceNum / qtyNum) : 0;
+    // Qty is now the 'purchase_quantity' from the item (sum of stores)
+    const qtyNum = item.purchase_quantity || 0;
 
     return (
         <motion.div
@@ -50,22 +51,29 @@ export const MarketItemRow = memo(({
                 {/* Product Info */}
                 <div className="flex-1 min-w-0 pt-0.5" onClick={() => onToggleBreakdown(item.product_id)}>
                     <div className="flex flex-col gap-0.5">
-                        <div className={cn(
-                            "font-bold text-[15px] leading-tight text-gray-900",
-                            item.status === 'bought' && "text-emerald-800 opacity-60 line-through"
-                        )}>
-                            {t(item.product_name)}
-                        </div>
-                        {/* Unit Info Row */}
                         <div className="flex items-center gap-2">
-                            <span className="text-xs font-medium text-gray-500">
-                                {item.total_quantity_needed} {t(item.unit)} needed
-                            </span>
+                            <div className={cn(
+                                "font-bold text-[15px] leading-tight text-gray-900 truncate",
+                                item.status === 'bought' && "text-emerald-800 opacity-60 line-through"
+                            )}>
+                                {t(item.product_name)}
+                            </div>
 
+                            {/* Unit Info on same line */}
+                            <span className="text-xs font-medium text-gray-500 whitespace-nowrap">
+                                {qtyNum} {t(item.unit)}
+                            </span>
+                        </div>
+
+                        {/* Store Count (Sub-line or same line? "Move to same line" was request) 
+                            "List item layout optimization: The 'required weight unit' and 'store quantity' of each Item must be moved to the same line as the 'item name'"
+                            So: Potato 5kg 3 stores
+                        */}
+                        <div className="flex items-center gap-2">
                             {/* Store Count Badge */}
                             {item.breakdown.length > 0 && (
-                                <div className="flex items-center gap-1 px-1.5 py-0.5 bg-gray-100 rounded text-[10px] font-semibold text-gray-600">
-                                    {item.breakdown.length} stores
+                                <div className="flex items-center gap-1 text-[11px] font-medium text-eden-600 bg-eden-50 px-1.5 py-0.5 rounded">
+                                    {item.breakdown.length} {ui('stores')}
                                     {isExpanded ? <ChevronUp size={10} /> : <ChevronDown size={10} />}
                                 </div>
                             )}
@@ -81,7 +89,7 @@ export const MarketItemRow = memo(({
                 />
             </div>
 
-            {/* Detailed Breakdown */}
+            {/* Detailed Breakdown (Editable) */}
             <AnimatePresence>
                 {isExpanded && (
                     <motion.div
@@ -90,13 +98,20 @@ export const MarketItemRow = memo(({
                         exit={{ height: 0, opacity: 0 }}
                         className="overflow-hidden"
                     >
-                        <div className="bg-gray-50/80 rounded-lg p-2.5 text-xs space-y-1.5 mb-1 mt-1 border border-gray-100">
+                        <div className="bg-gray-50/80 rounded-lg p-2.5 space-y-2 mb-1 mt-1 border border-gray-100">
                             {item.breakdown.map((b, idx) => (
-                                <div key={idx} className="flex justify-between items-center">
-                                    <span className="text-gray-700 font-medium">{b.store_name}</span>
-                                    <span className="font-mono font-bold text-gray-900 bg-white px-1.5 py-0.5 rounded border border-gray-100 shadow-sm">
-                                        {b.quantity} {t(item.unit)}
-                                    </span>
+                                <div key={idx} className="flex justify-between items-center gap-2">
+                                    <span className="text-gray-700 font-medium text-xs flex-1 truncate">{b.store_name}</span>
+                                    {/* Editable Store Quantity */}
+                                    <div className="flex items-center gap-1">
+                                        <Input
+                                            type="number"
+                                            className="h-7 w-20 text-right text-xs font-mono font-bold bg-white border-gray-200 focus:border-eden-500 px-1"
+                                            value={b.quantity}
+                                            onChange={(e) => onStoreQtyChange(item.product_id, b.store_name, e.target.value)}
+                                        />
+                                        <span className="text-[10px] text-gray-400 font-medium w-6">{t(item.unit)}</span>
+                                    </div>
                                 </div>
                             ))}
                         </div>
@@ -104,7 +119,7 @@ export const MarketItemRow = memo(({
                 )}
             </AnimatePresence>
 
-            {/* Inputs Section */}
+            {/* Inputs Section: Unit Price & Total Price */}
             <AnimatePresence>
                 {item.status !== 'bought' && (
                     <motion.div
@@ -114,13 +129,13 @@ export const MarketItemRow = memo(({
                         className="grid grid-cols-2 gap-3 pt-1"
                     >
                         <div className="relative">
-                            <label className="absolute left-3 top-2 text-[10px] font-bold text-gray-500 uppercase tracking-wider">{ui('qty')}</label>
+                            <label className="absolute left-3 top-2 text-[10px] font-bold text-gray-500 uppercase tracking-wider">{ui('unitPrice')}</label>
                             <Input
                                 type="number"
-                                placeholder={item.total_quantity_needed.toString()}
-                                className="h-12 pt-4 text-right font-mono font-bold text-base bg-gray-50 border-transparent focus:bg-white focus:border-eden-500 transition-all rounded-xl"
-                                value={qtyInputValue}
-                                onChange={(e) => onQtyChange(item.product_id, e.target.value)}
+                                placeholder="0"
+                                className="h-12 pt-4 text-right font-mono font-bold text-base bg-gray-50 border-transparent focus:bg-white focus:border-eden-500 transition-all rounded-xl shadow-sm"
+                                value={unitPriceInputValue}
+                                onChange={(e) => onUnitPriceChange(item.product_id, e.target.value)}
                             />
                         </div>
                         <div className="relative">
@@ -128,22 +143,14 @@ export const MarketItemRow = memo(({
                             <Input
                                 type="number"
                                 placeholder="0"
-                                className="h-12 pt-4 text-right font-mono font-bold text-base bg-gray-50 border-transparent focus:bg-white focus:border-eden-500 transition-all rounded-xl"
+                                className="h-12 pt-4 text-right font-mono font-bold text-base bg-gray-50 border-transparent focus:bg-white focus:border-eden-500 transition-all rounded-xl shadow-sm"
                                 value={priceInputValue}
-                                onChange={(e) => onPriceChange(item.product_id, e.target.value)}
+                                onChange={(e) => onTotalPriceChange(item.product_id, e.target.value)}
                             />
                         </div>
                     </motion.div>
                 )}
             </AnimatePresence>
-
-            {/* Unit Price Calculation */}
-            {(unitPrice > 0 && item.status !== 'bought') && (
-                <div className="flex justify-end items-center gap-1.5 text-[11px] text-eden-600 font-semibold bg-eden-50/50 py-1 px-2 rounded-md self-end">
-                    <Calculator size={11} />
-                    <span>~{unitPrice.toLocaleString(undefined, { maximumFractionDigits: 0 })} UZS / {t(item.unit)}</span>
-                </div>
-            )}
         </motion.div>
     );
 });

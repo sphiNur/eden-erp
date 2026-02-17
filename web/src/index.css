@@ -17,10 +17,12 @@
         /* ─── Z-Index Scale ─── */
         --z-toolbar: 10;
         --z-fab: 20;
-        --z-header: 30;
-        --z-nav: 30;
-        --z-drawer: 40;
-        --z-overlay: 50;
+        --z-sticky: 30;
+        /* New intermediate layer for sticky headers */
+        --z-header: 40;
+        --z-nav: 40;
+        --z-drawer: 50;
+        --z-overlay: 60;
 
         /* ─── Radius (12px standard) ─── */
         --radius: 0.75rem;

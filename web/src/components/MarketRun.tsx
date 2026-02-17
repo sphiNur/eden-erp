@@ -13,7 +13,7 @@ export const MarketRun = () => {
         items,
         loading,
         priceInputs,
-        qtyInputs,
+        unitPriceInputs,
         viewMode,
         expandedBreakdown,
         shoppingSections,
@@ -21,8 +21,9 @@ export const MarketRun = () => {
         distributionSections,
         storeKeys,
         setViewMode,
-        handlePriceChange,
-        handleQtyChange,
+        handleTotalPriceChange,
+        handleUnitPriceChange,
+        updateStoreQuantity,
         toggleBought,
         toggleBreakdown,
         handleFinalize
@@ -37,15 +38,15 @@ export const MarketRun = () => {
     }
 
     const toolbar = (
-        <div className="pt-2 pb-2 px-3">
+        <div className="bg-white border-b px-3 pt-2 pb-2">
             <div className="flex bg-gray-100/80 p-1 rounded-xl">
                 <button
                     onClick={() => setViewMode('shopping')}
                     className={cn(
                         "flex-1 flex items-center justify-center gap-2 py-1.5 rounded-lg text-xs font-semibold transition-all",
                         viewMode === 'shopping'
-                            ? "bg-eden-50 text-eden-600 ring-1 ring-inset ring-eden-200"
-                            : "bg-transparent text-gray-500 hover:bg-gray-100"
+                            ? "bg-white text-eden-600 shadow-sm"
+                            : "bg-transparent text-gray-500 hover:bg-gray-200/50"
                     )}
                 >
                     <ShoppingCart size={14} className={viewMode === 'shopping' ? "text-eden-600" : "text-gray-400"} />
@@ -56,8 +57,8 @@ export const MarketRun = () => {
                     className={cn(
                         "flex-1 flex items-center justify-center gap-2 py-1.5 rounded-lg text-xs font-semibold transition-all",
                         viewMode === 'distribution'
-                            ? "bg-blue-50 text-blue-600 ring-1 ring-inset ring-blue-200"
-                            : "bg-transparent text-gray-500 hover:bg-gray-100"
+                            ? "bg-white text-blue-600 shadow-sm"
+                            : "bg-transparent text-gray-500 hover:bg-gray-200/50"
                     )}
                 >
                     <Store size={14} className={viewMode === 'distribution' ? "text-blue-600" : "text-gray-400"} />
@@ -66,8 +67,8 @@ export const MarketRun = () => {
             </div>
 
             {viewMode === 'shopping' && (
-                <div className="mt-2 text-xs text-gray-500 flex justify-between">
-                    <span>{items.filter(i => i.status === 'bought').length} / {items.length} {ui('done')}</span>
+                <div className="mt-2 text-xs font-medium text-gray-500 flex justify-between px-1">
+                    <span>{ui('progress')}: {items.filter(i => i.status === 'bought').length} / {items.length}</span>
                 </div>
             )}
         </div>
@@ -83,10 +84,11 @@ export const MarketRun = () => {
                     shoppingSections={shoppingSections}
                     shoppingSectionKeys={shoppingSectionKeys}
                     priceInputs={priceInputs}
-                    qtyInputs={qtyInputs}
+                    unitPriceInputs={unitPriceInputs}
                     expandedBreakdown={expandedBreakdown}
-                    onPriceChange={handlePriceChange}
-                    onQtyChange={handleQtyChange}
+                    onTotalPriceChange={handleTotalPriceChange}
+                    onUnitPriceChange={handleUnitPriceChange}
+                    onStoreQtyChange={updateStoreQuantity}
                     onToggleBought={toggleBought}
                     onToggleBreakdown={toggleBreakdown}
                 />

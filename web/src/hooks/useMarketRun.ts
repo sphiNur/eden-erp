@@ -17,7 +17,7 @@ export const useMarketRun = () => {
     const [items, setItems] = useState<MarketItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [priceInputs, setPriceInputs] = useState<Record<string, string>>({});
-    const [qtyInputs, setQtyInputs] = useState<Record<string, string>>({});
+    const [unitPriceInputs, setUnitPriceInputs] = useState<Record<string, string>>({});
     const [marketLocation] = useState('Chorsu');
     const [viewMode, setViewMode] = useState<ViewMode>('shopping');
     const [expandedBreakdown, setExpandedBreakdown] = useState<Record<string, boolean>>({});
@@ -28,7 +28,15 @@ export const useMarketRun = () => {
             const data = await purchasesApi.getConsolidation();
             const marketItems: MarketItem[] = data.map(i => ({
                 ...i,
-                status: 'pending'
+                status: 'pending',
+                // Initialize bought quantity with needed quantity
+                purchase_quantity: i.total_quantity_needed,
+                // Initialize breakdown "filled" quantity if we had a specific field, 
+                // but for now we'll assume the 'quantity' in breakdown is mutable or we map it.
+                // To support "Shortage" (Bought < Needed), we should ideally separate them.
+                // But for Market Run V1/V2, usually checking off means "Bought All".
+                // If editing, we update the local breakdown 'quantity' to reflect "Bought".
+                breakdown: i.breakdown.map(b => ({ ...b }))
             }));
             setItems(marketItems);
         } catch (err) {
@@ -63,6 +71,7 @@ export const useMarketRun = () => {
         items.forEach(item => {
             item.breakdown.forEach(b => {
                 if (!groups[b.store_name]) groups[b.store_name] = [];
+                // Use the modified quantity (which represents what was bought/allocated)
                 groups[b.store_name].push({
                     item: item,
                     qty: b.quantity
@@ -74,49 +83,72 @@ export const useMarketRun = () => {
 
     const storeKeys = useMemo(() => Object.keys(distributionSections).sort(), [distributionSections]);
 
-    const handlePriceChange = useCallback((id: string, val: string) => {
-        setPriceInputs(prev => ({ ...prev, [id]: val }));
-    }, []);
+    const handleUnitPriceChange = useCallback((id: string, val: string) => {
+        setUnitPriceInputs(prev => ({ ...prev, [id]: val }));
 
-    const handleQtyChange = useCallback((id: string, val: string) => {
-        setQtyInputs(prev => ({ ...prev, [id]: val }));
-    }, []);
+        // Auto-calculate Total Price if Quantity exists
+        const item = items.find(i => i.product_id === id);
+        if (item && val) {
+            const unitPrice = parseFloat(val);
+            const qty = item.purchase_quantity || 0;
+            if (!isNaN(unitPrice) && qty > 0) {
+                setPriceInputs(prev => ({ ...prev, [id]: Math.round(unitPrice * qty).toString() }));
+            }
+        }
+    }, [items]);
+
+    const handleTotalPriceChange = useCallback((id: string, val: string) => {
+        setPriceInputs(prev => ({ ...prev, [id]: val }));
+
+        // Auto-calculate Unit Price if Quantity exists
+        const item = items.find(i => i.product_id === id);
+        if (item && val) {
+            const totalPrice = parseFloat(val);
+            const qty = item.purchase_quantity || 0;
+            if (!isNaN(totalPrice) && qty > 0) {
+                setUnitPriceInputs(prev => ({ ...prev, [id]: Math.round(totalPrice / qty).toString() }));
+            }
+        }
+    }, [items]);
+
+    // Update specific store quantity in breakdown
+    const updateStoreQuantity = useCallback((productId: string, storeName: string, newQtyVal: string) => {
+        const newQty = parseFloat(newQtyVal);
+        if (isNaN(newQty) || newQty < 0) return;
+
+        setItems(prev => prev.map(item => {
+            if (item.product_id !== productId) return item;
+
+            const newBreakdown = item.breakdown.map(b => {
+                if (b.store_name === storeName) {
+                    return { ...b, quantity: newQty };
+                }
+                return b;
+            });
+
+            const newTotal = newBreakdown.reduce((sum, b) => sum + b.quantity, 0);
+
+            // Auto-update total price if unit price exists
+            const unitPrice = parseFloat(unitPriceInputs[productId] || '0');
+            if (unitPrice > 0) {
+                setPriceInputs(p => ({ ...p, [productId]: Math.round(unitPrice * newTotal).toString() }));
+            }
+
+            return {
+                ...item,
+                breakdown: newBreakdown,
+                purchase_quantity: newTotal
+            };
+        }));
+    }, [unitPriceInputs]);
 
     const toggleBought = useCallback((product_id: string, checked: boolean) => {
         setItems(prev => prev.map(i => {
             if (i.product_id !== product_id) return i;
-
-            const newStatus = checked ? 'bought' : 'pending';
-            // We use current state or defaults
-            // Note: In the original code, it read from state directly. 
-            // Inside setState callback, we strictly shouldn't read other state if we can avoid it, 
-            // but here priceInputs/qtyInputs are separate atoms. 
-            // We'll trust the user will fill them. 
-            // Actually, the original code logic was:
-            // const priceVal = priceInputs[i.product_id];
-            // ...
-            // This is tricky inside a callback if priceInputs isn't in dependency.
-            // Let's rely on the input values being present or defaulting at finalization time mostly, 
-            // but the Status toggle did some logic. 
-            // For now, let's keep status toggle simple and do the heavy lifting in finalize or render.
-            // Wait, the original code DID read priceInputs/qtyInputs inside the toggle.
-            // To do this cleanly, we might need `priceInputs` in dependency or usage of ref.
-
-            return { ...i, status: newStatus };
+            return { ...i, status: checked ? 'bought' : 'pending' };
         }));
         WebApp.HapticFeedback.impactOccurred('light');
     }, []);
-
-    // We need to fix the logic where toggleBought relied on current inputs to "freeze" them into the item?
-    // Actually, looking at original code:
-    // const priceVal = priceInputs[i.product_id]; ...
-    // It used the inputs to update the item's `purchase_price` field.
-    // If we want to preserve this behavior without stale closures, we should pass inputs to this function
-    // or use a ref for inputs.
-    // Let's use the latter approach for inputs in the hook to avoid re-creating handlers constantly?
-    // Or just accept that we might not "save" the intermediate input value into the item object until finalize.
-    // The Input fields rely on `qtyInputs` state primarily. The `item.purchase_price` is a fallback.
-    // So simple toggle is fine.
 
     const toggleBreakdown = useCallback((id: string) => {
         setExpandedBreakdown(prev => ({ ...prev, [id]: !prev[id] }));
@@ -132,23 +164,24 @@ export const useMarketRun = () => {
 
         const validItems: BatchItemInput[] = [];
         for (const item of boughtItems) {
-            const priceVal = priceInputs[item.product_id] || item.purchase_price?.toString();
-            const qtyVal = qtyInputs[item.product_id] || item.total_quantity_needed.toString();
+            const priceVal = priceInputs[item.product_id] || (item.purchase_price ? item.purchase_price.toString() : '');
+            // Use derived purchase_quantity
+            const qtyVal = item.purchase_quantity || 0;
+
             const finalPrice = parseFloat(priceVal || '0');
-            const finalQty = parseFloat(qtyVal || '0');
 
             if (finalPrice <= 0) {
                 WebApp.showAlert(`${ui('enterValidCost')} ${t(item.product_name)}`);
                 return;
             }
-            if (finalQty <= 0) {
+            if (qtyVal <= 0) {
                 WebApp.showAlert(`${ui('enterValidQty')} ${t(item.product_name)}`);
                 return;
             }
 
             validItems.push({
                 product_id: item.product_id,
-                total_quantity_bought: finalQty,
+                total_quantity_bought: qtyVal,
                 total_cost_uzs: finalPrice
             });
         }
@@ -163,7 +196,7 @@ export const useMarketRun = () => {
             await purchasesApi.submitBatch(payload);
             WebApp.showAlert(ui('batchFinalized'));
             setPriceInputs({});
-            setQtyInputs({});
+            setUnitPriceInputs({});
             await fetchConsolidation();
         } catch (err) {
             console.error(err);
@@ -178,7 +211,7 @@ export const useMarketRun = () => {
         items,
         loading,
         priceInputs,
-        qtyInputs,
+        unitPriceInputs,
         marketLocation,
         viewMode,
         expandedBreakdown,
@@ -191,8 +224,9 @@ export const useMarketRun = () => {
 
         // Actions
         setViewMode,
-        handlePriceChange,
-        handleQtyChange,
+        handleTotalPriceChange,
+        handleUnitPriceChange,
+        updateStoreQuantity,
         toggleBought,
         toggleBreakdown,
         handleFinalize,
