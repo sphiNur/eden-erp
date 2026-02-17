@@ -20,3 +20,6 @@ web/dist/
 
 # Docker
 postgres_data/
+
+# Database
+*.db
