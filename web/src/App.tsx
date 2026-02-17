@@ -115,6 +115,10 @@ function App() {
         if (WebApp.initDataUnsafe) {
             WebApp.ready();
 
+            // apply platform class
+            const platform = WebApp.platform;
+            document.body.classList.add(`os-${platform}`);
+
             // Try to force full screen / expanded mode
             try {
                 WebApp.expand();

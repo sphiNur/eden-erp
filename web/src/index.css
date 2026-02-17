@@ -145,6 +145,25 @@
     .pb-safe {
         padding-bottom: env(safe-area-inset-bottom);
     }
+
+    /* ─── Platform Adaptations ─── */
+    .os-ios {
+        --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+    }
+
+    .os-android {
+        --font-sans: "Roboto", "Helvetica", "Arial", sans-serif;
+    }
+
+    /* iOS: Active Opacity */
+    .os-ios button:active {
+        opacity: 0.7;
+    }
+
+    /* Android: Ripple Effect (Simulated via active scale/bg) */
+    .os-android button:active {
+        transform: scale(0.98);
+    }
 }
 
 @layer utilities {
