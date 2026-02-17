@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { Settings, Check, Bug, Globe, Power, User, X } from 'lucide-react';
+import { Settings, Bug, Globe, Power, User, X } from 'lucide-react';
 import { Button } from '../ui/button';
-import { Sheet, SheetContent, SheetTitle, SheetTrigger, SheetClose } from '../ui/sheet';
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '../ui/sheet';
 import { useLanguage, SUPPORTED_LANGUAGES } from '../../contexts/LanguageContext';
 import { useUser } from '../../contexts/UserContext';
 import { UserRole } from '../../types';
@@ -44,7 +44,6 @@ export const SettingsMenu = ({ children }: SettingsMenuProps) => {
     const handleLanguageChange = (code: typeof language) => {
         WebApp.HapticFeedback.selectionChanged();
         setLanguage(code);
-        // Optional: close after selection or keep open? keeping open for now.
     };
 
     return (
@@ -59,75 +58,84 @@ export const SettingsMenu = ({ children }: SettingsMenuProps) => {
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="h-9 w-9 rounded-full text-gray-500 hover:text-gray-900"
+                        className="h-8 w-8 rounded-full text-gray-500 hover:text-gray-900"
                     >
-                        <Settings className="h-5 w-5" />
+                        <Settings className="h-4 w-4" />
                     </Button>
                 )}
             </SheetTrigger>
 
+            {/* Custom Overlay that starts below the header */}
+            <div
+                className={cn(
+                    "fixed inset-0 z-40 bg-black/20 backdrop-blur-[1px] transition-opacity data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+                    open ? "block" : "hidden"
+                )}
+                style={{ top: 'var(--header-h)' }}
+                onClick={() => setOpen(false)}
+            />
+
             <SheetContent
                 side="top"
-                className="rounded-b-3xl border-b-0 shadow-2xl pt-safe bg-white/95 backdrop-blur-xl [&>button]:hidden"
+                className={cn(
+                    "rounded-b-2xl border-b-0 shadow-xl bg-white/95 backdrop-blur-xl [&>button]:hidden",
+                    "p-0 gap-0 w-full max-h-[80vh] overflow-hidden flex flex-col"
+                )}
+                style={{
+                    top: 'var(--header-h)',
+                    marginTop: 0
+                }}
             >
-                <div className="flex items-center justify-between px-1 pb-4 pt-2">
-                    <SheetTitle className="text-xl font-bold flex items-center gap-2 text-gray-900">
-                        Settings
-                    </SheetTitle>
-                    <SheetClose asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full bg-gray-100/50 hover:bg-gray-100">
-                            <X className="h-4 w-4 text-gray-500" />
-                        </Button>
-                    </SheetClose>
-                </div>
-
-                <div className="space-y-8 pb-8 overflow-auto max-h-[75vh]">
-                    {/* ─── Profile / Info ─── */}
-                    {user && (
-                        <div className="bg-gray-50/80 rounded-2xl p-4 flex items-center gap-4">
-                            <div className="h-12 w-12 rounded-full bg-white shadow-sm flex items-center justify-center text-eden-600">
-                                <User size={24} />
-                            </div>
-                            <div>
-                                <div className="font-semibold text-gray-900 text-base">{user.username || 'User'}</div>
-                                <div className="text-xs text-gray-500 font-mono mt-0.5 opacity-80 uppercase tracking-wider">
-                                    {user.role}
+                {/* Header Section */}
+                <div className="px-4 py-3 flex items-center justify-between border-b border-gray-100/50">
+                    <div className="flex items-center gap-3">
+                        {user ? (
+                            <div className="flex items-center gap-2">
+                                <div className="h-8 w-8 rounded-full bg-eden-50 flex items-center justify-center text-eden-600 border border-eden-100">
+                                    <User size={14} strokeWidth={2.5} />
+                                </div>
+                                <div className="flex flex-col">
+                                    <span className="text-sm font-semibold text-gray-900 leading-none">{user.username}</span>
+                                    <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider mt-0.5">{user.role}</span>
                                 </div>
                             </div>
-                        </div>
-                    )}
+                        ) : (
+                            <SheetTitle className="text-base font-bold text-gray-900">Settings</SheetTitle>
+                        )}
+                    </div>
 
-                    {/* ─── Language Section ─── */}
-                    <div className="space-y-3">
-                        <div className="flex items-center gap-2 text-xs font-bold text-gray-400 uppercase tracking-widest px-1">
-                            <Globe size={13} strokeWidth={2.5} />
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7 rounded-full bg-gray-100/50 text-gray-400 hover:text-gray-600"
+                        onClick={() => setOpen(false)}
+                    >
+                        <X size={14} />
+                    </Button>
+                </div>
+
+                <div className="p-4 space-y-5 overflow-y-auto">
+                    {/* ─── Compact Language Section ─── */}
+                    <div className="space-y-2">
+                        <div className="flex items-center gap-1.5 text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">
+                            <Globe size={11} />
                             <span>Language</span>
                         </div>
-                        <div className="grid grid-cols-2 gap-2.5">
+                        <div className="grid grid-cols-4 gap-2">
                             {SUPPORTED_LANGUAGES.map((lang) => (
                                 <button
                                     key={lang.code}
                                     onClick={() => handleLanguageChange(lang.code)}
                                     className={cn(
-                                        "relative flex items-center gap-3 p-3.5 rounded-xl border transition-all duration-200 text-left group overflow-hidden",
+                                        "flex flex-col items-center justify-center py-2 rounded-lg border transition-all duration-200",
                                         language === lang.code
-                                            ? "bg-eden-50 border-eden-200 shadow-sm"
-                                            : "bg-white border-transparent hover:bg-gray-50 hover:border-gray-100"
+                                            ? "bg-eden-50 border-eden-200 text-eden-700 shadow-sm"
+                                            : "bg-white border-transparent text-gray-600 hover:bg-gray-50"
                                     )}
                                 >
-                                    <span className="text-2xl z-10">{lang.flag}</span>
-                                    <div className="flex-1 z-10">
-                                        <div className={cn(
-                                            "text-[13px] font-semibold leading-none mb-1",
-                                            language === lang.code ? 'text-eden-900' : 'text-gray-900'
-                                        )}>
-                                            {lang.label}
-                                        </div>
-                                    </div>
+                                    <span className="text-xs font-bold">{lang.code.toUpperCase()}</span>
                                     {language === lang.code && (
-                                        <div className="absolute right-3 top-1/2 -translate-y-1/2 text-eden-600">
-                                            <Check size={16} strokeWidth={3} />
-                                        </div>
+                                        <div className="absolute top-1 right-1 h-1.5 w-1.5 rounded-full bg-eden-500" />
                                     )}
                                 </button>
                             ))}
@@ -136,21 +144,21 @@ export const SettingsMenu = ({ children }: SettingsMenuProps) => {
 
                     {/* ─── DevTools Section ─── */}
                     {(canShowDevTools || isMocking) && (
-                        <div className="space-y-4 pt-4 border-t border-gray-100">
+                        <div className="space-y-2 pt-2 border-t border-dashed border-gray-100">
                             <div className="flex items-center justify-between px-1">
-                                <div className="flex items-center gap-2 text-xs font-bold text-gray-400 uppercase tracking-widest">
-                                    <Bug size={13} strokeWidth={2.5} />
-                                    <span>Dev Tools</span>
+                                <div className="flex items-center gap-1.5 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                                    <Bug size={11} />
+                                    <span>Dev</span>
                                 </div>
                                 {isMocking && (
-                                    <span className="text-[10px] bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-bold shadow-sm">
-                                        MOCKING ACTIVE
+                                    <span className="text-[9px] bg-amber-100 text-amber-700 px-1.5 py-px rounded-full font-bold">
+                                        MOCK
                                     </span>
                                 )}
                             </div>
 
-                            <div className="bg-gray-50/50 rounded-2xl p-1 border border-gray-100">
-                                <div className="grid grid-cols-2 gap-1">
+                            <div className="bg-gray-50/50 rounded-xl p-1 border border-gray-100">
+                                <div className="grid grid-cols-3 gap-1">
                                     {Object.values(USER_ROLES).map((role) => {
                                         const meta = getRoleMetadata(role);
                                         const Icon = meta.icon;
@@ -160,14 +168,15 @@ export const SettingsMenu = ({ children }: SettingsMenuProps) => {
                                                 key={role}
                                                 onClick={() => handleSetRole(role as UserRole)}
                                                 className={cn(
-                                                    "flex items-center gap-2 px-3 py-2.5 rounded-xl text-xs font-medium transition-all duration-200",
+                                                    "flex items-center justify-center gap-1.5 px-2 py-2 rounded-lg transition-all duration-200",
                                                     isActive
                                                         ? "bg-white text-gray-900 shadow-sm ring-1 ring-black/5"
-                                                        : "text-gray-500 hover:bg-white/50 hover:text-gray-700"
+                                                        : "text-gray-400 hover:text-gray-600"
                                                 )}
+                                                title={meta.label}
                                             >
                                                 <Icon className={cn("w-3.5 h-3.5", isActive ? "text-eden-600" : "opacity-50")} />
-                                                <span>{meta.label}</span>
+                                                <span className="text-[10px] font-medium truncate max-w-[50px]">{meta.label.split(' ')[0]}</span>
                                             </button>
                                         );
                                     })}
@@ -177,11 +186,11 @@ export const SettingsMenu = ({ children }: SettingsMenuProps) => {
                                         <Button
                                             variant="outline"
                                             size="sm"
-                                            className="w-full text-xs h-8 border-red-100 text-red-600 hover:bg-red-50 hover:text-red-700 hover:border-red-200 bg-white"
+                                            className="w-full text-[10px] h-7 border-red-100 text-red-600 hover:bg-red-50 hover:border-red-200 bg-white"
                                             onClick={handleClearMock}
                                         >
-                                            <Power size={12} className="mr-2" />
-                                            Reset Identity
+                                            <Power size={10} className="mr-1.5" />
+                                            Reset
                                         </Button>
                                     </div>
                                 )}
