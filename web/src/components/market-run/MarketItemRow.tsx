@@ -50,34 +50,26 @@ export const MarketItemRow = memo(({
             <div className="flex items-start gap-3">
                 {/* Product Info */}
                 <div className="flex-1 min-w-0 pt-0.5" onClick={() => onToggleBreakdown(item.product_id)}>
-                    <div className="flex flex-col gap-0.5">
-                        <div className="flex items-center gap-2">
-                            <div className={cn(
-                                "font-bold text-[15px] leading-tight text-gray-900 truncate",
-                                item.status === 'bought' && "text-emerald-800 opacity-60 line-through"
-                            )}>
-                                {t(item.product_name)}
+                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                        <span className={cn(
+                            "font-bold text-[15px] leading-tight text-gray-900",
+                            item.status === 'bought' && "text-emerald-800 opacity-60 line-through"
+                        )}>
+                            {t(item.product_name)}
+                        </span>
+
+                        {/* Unit Info */}
+                        <span className="text-xs font-medium text-gray-500 whitespace-nowrap">
+                            {qtyNum} {t(item.unit)}
+                        </span>
+
+                        {/* Store Count Badge */}
+                        {item.breakdown.length > 0 && (
+                            <div className="flex items-center gap-0.5 text-[10px] font-bold text-eden-600 bg-eden-50 px-1.5 py-0.5 rounded-full border border-eden-100/50">
+                                {item.breakdown.length} {ui('stores')}
+                                {isExpanded ? <ChevronUp size={8} /> : <ChevronDown size={8} />}
                             </div>
-
-                            {/* Unit Info on same line */}
-                            <span className="text-xs font-medium text-gray-500 whitespace-nowrap">
-                                {qtyNum} {t(item.unit)}
-                            </span>
-                        </div>
-
-                        {/* Store Count (Sub-line or same line? "Move to same line" was request) 
-                            "List item layout optimization: The 'required weight unit' and 'store quantity' of each Item must be moved to the same line as the 'item name'"
-                            So: Potato 5kg 3 stores
-                        */}
-                        <div className="flex items-center gap-2">
-                            {/* Store Count Badge */}
-                            {item.breakdown.length > 0 && (
-                                <div className="flex items-center gap-1 text-[11px] font-medium text-eden-600 bg-eden-50 px-1.5 py-0.5 rounded">
-                                    {item.breakdown.length} {ui('stores')}
-                                    {isExpanded ? <ChevronUp size={10} /> : <ChevronDown size={10} />}
-                                </div>
-                            )}
-                        </div>
+                        )}
                     </div>
                 </div>
 

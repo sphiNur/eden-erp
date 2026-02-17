@@ -45,7 +45,7 @@ export const MarketShoppingList = ({
     return (
         <Tabs defaultValue={shoppingSectionKeys[0]} className="w-full bg-gray-50/50">
             {/* Category Bar - Sticky? Maybe not needed as it might block content */}
-            <div className="sticky top-[calc(var(--header-h)-1px)] z-30 bg-gray-50/95 backdrop-blur-sm border-b pb-1 pt-1 px-2 shadow-sm">
+            <div className="sticky top-[calc(var(--header-h)-1px)] z-10 bg-gray-50/95 backdrop-blur-sm border-b pb-1 pt-1 px-2 shadow-sm">
                 <TabsList className="w-full justify-start overflow-x-auto h-auto bg-transparent p-0 gap-2 scrollbar-hide">
                     {shoppingSectionKeys.map(key => (
                         <TabsTrigger

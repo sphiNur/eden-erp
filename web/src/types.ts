@@ -98,12 +98,15 @@ export interface BatchResponse {
     items: BatchItemResponse[];
 }
 
-export type UserRole = 'admin' | 'store_manager' | 'global_purchaser' | 'finance';
+export type UserRole = 'admin' | 'store_manager' | 'global_purchaser';
 
 export interface User {
     id: string;
     telegram_id: number;
     username?: string;
+    first_name?: string;
+    last_name?: string;
+    photo_url?: string;
     role: UserRole;
     allowed_store_ids?: string[];
     is_active?: boolean;

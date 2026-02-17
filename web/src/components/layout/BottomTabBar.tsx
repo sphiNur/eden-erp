@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Users, Package, Store, BarChart3 } from 'lucide-react';
+import { Users, Package, Store } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useUser } from '../../contexts/UserContext';
@@ -9,7 +9,7 @@ const ADMIN_TABS = [
     { key: 'inventory', icon: Package, path: '/admin/products' },
     { key: 'teamManagement', icon: Users, path: '/admin/users' },
     { key: 'stores', icon: Store, path: '/admin/stores' },
-    { key: 'analytics', icon: BarChart3, path: '/admin/analytics' },
+    { key: 'stores', icon: Store, path: '/admin/stores' },
 ] as const;
 
 export const BottomTabBar = () => {
@@ -22,7 +22,7 @@ export const BottomTabBar = () => {
     if (!location.pathname.startsWith('/admin')) return null;
 
     // Additional check for roles just in case
-    if (!user || !['admin', 'finance'].includes(user.role)) return null;
+    if (!user || !['admin'].includes(user.role)) return null;
 
     const handleNav = (path: string) => {
         if (location.pathname !== path) {

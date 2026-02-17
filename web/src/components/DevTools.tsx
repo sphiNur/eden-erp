@@ -84,10 +84,7 @@ export const DevTools = () => {
                         <Shield className="mr-2 h-4 w-4 text-purple-500" />
                         Admin
                     </Button>
-                    <Button variant="ghost" size="sm" className="justify-start" onClick={() => setRole('finance')}>
-                        <Briefcase className="mr-2 h-4 w-4 text-amber-500" />
-                        Finance
-                    </Button>
+
                     <div className="h-px bg-gray-100 my-1" />
                     <Button variant="ghost" size="sm" className="justify-start text-red-500 hover:text-red-600 hover:bg-red-50" onClick={clearMock}>
                         Reset / Real API

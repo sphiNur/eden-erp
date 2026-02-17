@@ -68,9 +68,9 @@ export const SettingsMenu = ({ children }: SettingsMenuProps) => {
 
             <SheetContent
                 side="top"
-                overlayClassName="top-[var(--header-h)] z-20 bg-black/20 backdrop-blur-[1px]"
+                overlayClassName="top-[var(--header-h)] z-35 bg-black/20 backdrop-blur-[1px]"
                 className={cn(
-                    "rounded-b-2xl border-b-0 shadow-xl bg-white/95 backdrop-blur-xl [&>button]:hidden z-20",
+                    "rounded-b-2xl border-b-0 shadow-xl bg-white/95 backdrop-blur-xl [&>button]:hidden z-35",
                     "p-0 gap-0 w-full max-h-[80vh] overflow-hidden flex flex-col"
                 )}
                 style={{
@@ -82,13 +82,20 @@ export const SettingsMenu = ({ children }: SettingsMenuProps) => {
                 <div className="px-4 py-3 flex items-center justify-between border-b border-gray-100/50">
                     <div className="flex items-center gap-3">
                         {user ? (
-                            <div className="flex items-center gap-2">
-                                <div className="h-8 w-8 rounded-full bg-eden-50 flex items-center justify-center text-eden-600 border border-eden-100">
-                                    <User size={14} strokeWidth={2.5} />
-                                </div>
+                            <div className="flex items-center gap-3">
+                                {user.photo_url ? (
+                                    <img src={user.photo_url} alt="Profile" className="h-10 w-10 rounded-full border border-gray-200" />
+                                ) : (
+                                    <div className="h-10 w-10 rounded-full bg-eden-50 flex items-center justify-center text-eden-600 border border-eden-100">
+                                        <User size={18} strokeWidth={2.5} />
+                                    </div>
+                                )}
                                 <div className="flex flex-col">
-                                    <span className="text-sm font-semibold text-gray-900 leading-none">{user.username}</span>
-                                    <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider mt-0.5">{user.role}</span>
+                                    <span className="text-base font-bold text-gray-900 leading-none">
+                                        {user.first_name} {user.last_name}
+                                    </span>
+                                    <span className="text-xs text-gray-500 font-medium">@{user.username || 'user'}</span>
+                                    <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider mt-0.5">{user.role.replace('_', ' ')}</span>
                                 </div>
                             </div>
                         ) : (
@@ -151,7 +158,7 @@ export const SettingsMenu = ({ children }: SettingsMenuProps) => {
 
                             <div className="bg-gray-50/50 rounded-xl p-1 border border-gray-100">
                                 <div className="grid grid-cols-3 gap-1">
-                                    {Object.values(USER_ROLES).map((role) => {
+                                    {Object.values(USER_ROLES).filter(r => r !== 'finance').map((role) => {
                                         const meta = getRoleMetadata(role);
                                         const Icon = meta.icon;
                                         const isActive = user?.role === role;

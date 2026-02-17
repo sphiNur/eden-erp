@@ -26,12 +26,21 @@ export function UserProvider({ children }: { children: ReactNode }) {
             if (WebApp.initData) {
                 const realUser = await usersApi.me();
 
+                // Enhance with Telegram UI data if available
+                const tgUser = WebApp.initDataUnsafe?.user;
+                if (tgUser) {
+                    realUser.first_name = tgUser.first_name;
+                    realUser.last_name = tgUser.last_name;
+                    realUser.photo_url = tgUser.photo_url;
+                    realUser.username = tgUser.username || realUser.username;
+                }
+
                 // Allow Admin to simulate other roles
                 const mock = localStorage.getItem('dev_mock_user');
                 if (mock && realUser.role === 'admin') {
                     const parsed = JSON.parse(mock);
                     console.log("Admin Simulating Role:", parsed.role);
-                    setUser(parsed);
+                    setUser({ ...realUser, ...parsed, role: parsed.role }); // Keep real details, override role
                 } else {
                     setUser(realUser);
                 }

@@ -5,7 +5,6 @@ import { MarketRun } from './components/MarketRun';
 import { StoreRequest } from './components/StoreRequest';
 import { InventoryMaster } from './components/admin/InventoryMaster';
 import { UserList } from './components/admin/UserList';
-import { AnalyticsDashboard } from './components/admin/AnalyticsDashboard';
 import { StoreList } from './components/admin/StoreList';
 import { AppLayout } from './components/layout/AppLayout';
 import { LanguageProvider, useLanguage } from './contexts/LanguageContext';
@@ -28,7 +27,7 @@ const AppDispatcher = () => {
                 navigate('/store', { replace: true });
             } else if (user.role === 'global_purchaser') {
                 navigate('/market', { replace: true });
-            } else if (user.role === 'admin' || user.role === 'finance') {
+            } else if (user.role === 'admin') {
                 navigate('/admin/products', { replace: true });
             }
         }
@@ -175,7 +174,7 @@ function App() {
                                     <Route
                                         path="/admin/products"
                                         element={
-                                            <ProtectedRoute allowedRoles={['admin', 'finance']}>
+                                            <ProtectedRoute allowedRoles={['admin']}>
                                                 <InventoryMaster />
                                             </ProtectedRoute>
                                         }
@@ -183,7 +182,7 @@ function App() {
                                     <Route
                                         path="/admin/products/:id"
                                         element={
-                                            <ProtectedRoute allowedRoles={['admin', 'finance']}>
+                                            <ProtectedRoute allowedRoles={['admin']}>
                                                 <ProductFormPage />
                                             </ProtectedRoute>
                                         }
@@ -206,14 +205,7 @@ function App() {
                                         }
                                     />
 
-                                    <Route
-                                        path="/admin/analytics"
-                                        element={
-                                            <ProtectedRoute allowedRoles={['admin', 'finance']}>
-                                                <AnalyticsDashboard />
-                                            </ProtectedRoute>
-                                        }
-                                    />
+                                    {/* Analytics Removed per request */}
                                     <Route
                                         path="/admin/stores"
                                         element={
