@@ -41,18 +41,21 @@ export const MarketShoppingList = ({
     }
 
     return (
-        <Tabs defaultValue={shoppingSectionKeys[0]} className="w-full">
-            <TabsList className="w-full justify-start overflow-x-auto mb-2 bg-gray-100 p-0.5 rounded-lg h-auto scrollbar-hide">
-                {shoppingSectionKeys.map(key => (
-                    <TabsTrigger
-                        key={key}
-                        value={key}
-                        className="flex-1 min-w-[80px] text-xs py-1.5 rounded-md data-[state=active]:bg-white data-[state=active]:shadow-sm transition-all"
-                    >
-                        {key} ({shoppingSections[key].length})
-                    </TabsTrigger>
-                ))}
-            </TabsList>
+        <Tabs defaultValue={shoppingSectionKeys[0]} className="w-full bg-gray-50/50">
+            {/* Category Bar - Sticky? Maybe not needed as it might block content */}
+            <div className="sticky top-[calc(var(--header-h)-1px)] z-30 bg-gray-50/95 backdrop-blur-sm border-b pb-1 pt-1 px-2 shadow-sm">
+                <TabsList className="w-full justify-start overflow-x-auto h-auto bg-transparent p-0 gap-2 scrollbar-hide">
+                    {shoppingSectionKeys.map(key => (
+                        <TabsTrigger
+                            key={key}
+                            value={key}
+                            className="shrink-0 flex-none h-9 px-4 rounded-full border border-transparent bg-white text-xs font-semibold text-gray-600 shadow-sm data-[state=active]:bg-eden-600 data-[state=active]:text-white data-[state=active]:border-eden-600 data-[state=active]:shadow-md transition-all active:scale-95"
+                        >
+                            {key} <span className="ml-1 opacity-70 text-[10px]">({shoppingSections[key].length})</span>
+                        </TabsTrigger>
+                    ))}
+                </TabsList>
+            </div>
 
             {shoppingSectionKeys.map(key => (
                 <TabsContent key={key} value={key} className="space-y-1">

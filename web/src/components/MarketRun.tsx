@@ -99,11 +99,11 @@ export const MarketRun = () => {
 
             {/* Sticky Footer - ONLY IN SHOPPING MODE */}
             {viewMode === 'shopping' && (
-                <div className="fixed bottom-0 left-0 right-0 p-3 bg-white/90 backdrop-blur-lg border-t z-drawer">
+                <div className="fixed bottom-0 left-0 right-0 p-3 pb-safe bg-white/90 backdrop-blur-lg border-t z-drawer">
                     <Button
                         size="lg"
                         onClick={handleFinalize}
-                        className="w-full text-base font-bold py-4 rounded-xl shadow-xl shadow-eden-500/20 active:scale-[0.98] transition-transform"
+                        className="w-full text-base font-bold py-4 rounded-xl shadow-xl shadow-eden-500/20 active:scale-[0.98] transition-transform mb-2"
                     >
                         {ui('finalizeBatch')}
                     </Button>

@@ -21,19 +21,16 @@ export const AppHeader = () => {
     const title = titleKey ? ui(titleKey as Parameters<typeof ui>[0]) : '';
 
     return (
-        <header className="fixed top-0 z-header w-full border-b bg-background/80 backdrop-blur-md pt-safe transition-all">
-            <div className="relative flex h-[var(--header-base)] w-full items-center justify-center px-4">
+        <header className="fixed top-0 z-header w-full border-b bg-white/95 backdrop-blur-md pt-safe transition-all">
+            <div className="relative flex h-[52px] w-full items-center justify-center px-4">
 
                 {/* Center Title & Settings Trigger Merged */}
-                {/* Since the title is now the button, we don't need absolute positioning for settings.
-                    The whole central element is clickable.
-                */}
                 <SettingsMenu>
-                    <button className="flex items-center justify-center gap-1.5 px-3 py-1 rounded-full hover:bg-gray-100/50 active:bg-gray-100 transition-colors max-w-[70%]">
-                        <h1 className="text-[17px] font-semibold text-foreground truncate">
+                    <button className="flex items-center justify-center gap-1 px-4 py-1.5 rounded-full hover:bg-gray-100 transition-colors active:bg-gray-200">
+                        <h1 className="text-[17px] font-semibold text-gray-900 leading-none tracking-tight truncate max-w-[200px]">
                             {title}
                         </h1>
-                        <SettingsMenuIcon className="w-3.5 h-3.5 text-gray-400 mt-0.5" />
+                        <SettingsMenuIcon className="w-4 h-4 text-gray-400 mt-[1px]" />
                     </button>
                 </SettingsMenu>
 
