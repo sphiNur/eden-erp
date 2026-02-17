@@ -1,11 +1,12 @@
 import { useState } from 'react';
 
-import { Settings, Check, Bug, Shield, User as UserIcon, ShoppingCart, Briefcase, Globe, Power } from 'lucide-react';
+import { Settings, Check, Bug, Globe, Power } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '../ui/sheet';
 import { useLanguage, SUPPORTED_LANGUAGES } from '../../contexts/LanguageContext';
 import { useUser } from '../../contexts/UserContext';
 import { UserRole } from '../../types';
+import { USER_ROLES, getRoleMetadata } from '../../constants/roles';
 
 interface SettingsMenuProps {
     children?: React.ReactNode;
@@ -114,13 +115,11 @@ export const SettingsMenu = ({ children }: SettingsMenuProps) => {
                                 <div className="text-[11px] font-medium text-gray-500 px-1">
                                     Simulate User Role:
                                 </div>
+
                                 <div className="grid grid-cols-2 gap-2">
-                                    {[
-                                        { role: 'admin', icon: Shield, label: 'Admin', color: 'text-purple-600', bg: 'bg-purple-50' },
-                                        { role: 'store_manager', icon: UserIcon, label: 'Manager', color: 'text-blue-600', bg: 'bg-blue-50' },
-                                        { role: 'global_purchaser', icon: ShoppingCart, label: 'Purchaser', color: 'text-green-600', bg: 'bg-green-50' },
-                                        { role: 'finance', icon: Briefcase, label: 'Finance', color: 'text-amber-600', bg: 'bg-amber-50' }
-                                    ].map(({ role, icon: Icon, label, color, bg }) => {
+                                    {Object.values(USER_ROLES).map((role) => {
+                                        const meta = getRoleMetadata(role);
+                                        const Icon = meta.icon;
                                         const isActive = user?.role === role;
                                         return (
                                             <button
@@ -132,10 +131,10 @@ export const SettingsMenu = ({ children }: SettingsMenuProps) => {
                                                         : 'bg-white border-transparent text-gray-600 hover:bg-white hover:shadow-sm'
                                                     }`}
                                             >
-                                                <div className={`p-1.5 rounded-md ${bg}`}>
-                                                    <Icon className={`w-3.5 h-3.5 ${color}`} />
+                                                <div className={`p-1.5 rounded-md ${meta.bg}`}>
+                                                    <Icon className={`w-3.5 h-3.5 ${meta.color}`} />
                                                 </div>
-                                                <span className="flex-1 text-left">{label}</span>
+                                                <span className="flex-1 text-left">{meta.label}</span>
                                             </button>
                                         );
                                     })}

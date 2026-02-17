@@ -1,14 +1,13 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Plus, Search, MapPin, Loader2 } from 'lucide-react';
+import { Plus, MapPin, Loader2 } from 'lucide-react';
 import { Button } from '../ui/button';
-import { Input } from '../ui/input';
 import { Store } from '../../types';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { storesApi } from '../../api/client';
 import WebApp from '@twa-dev/sdk';
-
 import { StoreForm } from './StoreForm';
 import { PageLayout } from '../layout/PageLayout';
+import { ListToolbar } from '../shared/ListToolbar';
 
 export const StoreList = () => {
     const { ui } = useLanguage();
@@ -39,28 +38,23 @@ export const StoreList = () => {
     ), [stores, search]);
 
     const toolbar = (
-        <div className="px-3 py-2 flex items-center gap-3">
-            <div className="relative flex-1">
-                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" size={15} />
-                <Input
-                    placeholder={ui('search')}
-                    className="w-full pl-8 pr-8 h-9 bg-gray-100 border-transparent focus:bg-white focus:border-eden-500 rounded-lg text-sm transition-all"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                />
-            </div>
-            <Button
-                size="sm"
-                className="h-9 w-9 p-0 rounded-full bg-eden-500 hover:bg-eden-600 text-white shadow-sm shrink-0"
-                onClick={() => {
-                    WebApp.HapticFeedback.impactOccurred('light');
-                    setEditingStore(null);
-                    setIsAddOpen(true);
-                }}
-            >
-                <Plus className="h-5 w-5" />
-            </Button>
-        </div>
+        <ListToolbar
+            search={search}
+            onSearchChange={setSearch}
+            actions={
+                <Button
+                    size="sm"
+                    className="h-9 w-9 p-0 rounded-full bg-eden-500 hover:bg-eden-600 text-white shadow-sm shrink-0"
+                    onClick={() => {
+                        WebApp.HapticFeedback.impactOccurred('light');
+                        setEditingStore(null);
+                        setIsAddOpen(true);
+                    }}
+                >
+                    <Plus className="h-5 w-5" />
+                </Button>
+            }
+        />
     );
 
     return (

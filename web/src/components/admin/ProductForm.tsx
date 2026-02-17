@@ -11,6 +11,8 @@ import { Category, Product } from '../../types';
 import { Loader2 } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { productsApi, categoriesApi } from '../../api/client';
+import { useToast } from '../../contexts/ToastContext';
+import { PRODUCT_UNITS } from '../../constants/units';
 
 const productSchema = z.object({
     name_cn: z.string().optional(),
@@ -31,10 +33,6 @@ interface ProductFormProps {
     onSuccess: () => void;
     productToEdit?: Product | null;
 }
-
-import { useToast } from '../../contexts/ToastContext';
-
-// ...
 
 export const ProductForm = ({ isOpen, onClose, onSuccess, productToEdit }: ProductFormProps) => {
     const { t, ui } = useLanguage();
@@ -91,7 +89,6 @@ export const ProductForm = ({ isOpen, onClose, onSuccess, productToEdit }: Produ
             setCategories(data);
         } catch (e) {
             console.error("Failed to fetch categories", e);
-            // Fallback to empty — user will see empty selector
         }
     };
 
@@ -168,16 +165,21 @@ export const ProductForm = ({ isOpen, onClose, onSuccess, productToEdit }: Produ
                             <div className="space-y-2">
                                 <Label>{ui('unit')} <span className="text-red-500">*</span></Label>
                                 <Select onValueChange={(val: string) => {
-                                    form.setValue('unit_cn', val === 'kg' ? '公斤' : val === 'pc' ? '个' : '包');
-                                    form.setValue('unit_ru', val === 'kg' ? 'кг' : val === 'pc' ? 'шт' : 'уп');
+                                    const unit = PRODUCT_UNITS.find(u => u.value === val);
+                                    if (unit) {
+                                        form.setValue('unit_cn', unit.label_cn);
+                                        form.setValue('unit_ru', unit.label_ru);
+                                    }
                                 }}>
                                     <SelectTrigger>
                                         <SelectValue placeholder={ui('select')} />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="kg">KG (公斤/кг)</SelectItem>
-                                        <SelectItem value="pc">Piece (个/шт)</SelectItem>
-                                        <SelectItem value="box">Package (包/уп)</SelectItem>
+                                        {PRODUCT_UNITS.map(u => (
+                                            <SelectItem key={u.value} value={u.value}>
+                                                {`${u.label_en} (${u.label_cn}/${u.label_ru})`}
+                                            </SelectItem>
+                                        ))}
                                     </SelectContent>
                                 </Select>
                                 <p className="text-[10px] text-muted-foreground">Base inventory tracking unit</p>

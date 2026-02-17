@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Loader2, User as UserIcon, Store as StoreIcon, Shield, ShoppingCart, Search, X } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { Button } from '../ui/button';
-import { Input } from '../ui/input';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter } from '../ui/sheet';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Label } from '../ui/label';
@@ -11,6 +10,9 @@ import { usersApi, storesApi } from '../../api/client';
 import WebApp from '@twa-dev/sdk';
 import { useToast } from '../../contexts/ToastContext';
 import { PageLayout } from '../layout/PageLayout';
+import { USER_ROLES, getRoleMetadata } from '../../constants/roles';
+import { ListToolbar } from '../shared/ListToolbar';
+import { RoleBadge } from '../shared/RoleBadge';
 
 interface StoreOption {
     id: string;
@@ -29,7 +31,7 @@ export const UserList = () => {
     const [search, setSearch] = useState('');
 
     // Form State
-    const [role, setRole] = useState<UserRole>('store_manager');
+    const [role, setRole] = useState<UserRole>(USER_ROLES.STORE_MANAGER);
     const [storeId, setStoreId] = useState<string>('');
 
     useEffect(() => {
@@ -65,7 +67,7 @@ export const UserList = () => {
         try {
             const payload = {
                 role,
-                allowed_store_ids: role === 'store_manager' && storeId ? [storeId] : []
+                allowed_store_ids: role === USER_ROLES.STORE_MANAGER && storeId ? [storeId] : []
             };
 
             await usersApi.update(selectedUser.id, payload);
@@ -80,15 +82,6 @@ export const UserList = () => {
         }
     };
 
-    const getRoleIcon = (role: UserRole) => {
-        switch (role) {
-            case 'admin': return <Shield className="h-4 w-4 text-purple-600" />;
-            case 'store_manager': return <StoreIcon className="h-4 w-4 text-eden-500" />;
-            case 'global_purchaser': return <ShoppingCart className="h-4 w-4 text-green-600" />;
-            default: return <UserIcon className="h-4 w-4 text-gray-500" />;
-        }
-    };
-
     const filteredUsers = useMemo(() => {
         const term = search.toLowerCase();
         return users.filter(u =>
@@ -97,27 +90,8 @@ export const UserList = () => {
         );
     }, [users, search]);
 
-    const toolbar = (
-        <div className="px-3 py-2 flex items-center gap-3">
-            <div className="relative flex-1">
-                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" size={15} />
-                <Input
-                    placeholder={ui('search')}
-                    className="w-full pl-8 pr-8 h-9 bg-gray-100 border-transparent focus:bg-white focus:border-eden-500 rounded-lg text-sm transition-all"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                />
-                {search && (
-                    <button onClick={() => setSearch('')} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
-                        <X size={14} />
-                    </button>
-                )}
-            </div>
-        </div>
-    );
-
     return (
-        <PageLayout toolbar={toolbar}>
+        <PageLayout toolbar={<ListToolbar search={search} onSearchChange={setSearch} />}>
             {loading ? (
                 <div className="flex justify-center p-8"><Loader2 className="animate-spin text-gray-400" /></div>
             ) : (
@@ -143,10 +117,7 @@ export const UserList = () => {
                                         <div className="font-semibold text-[13px] text-gray-900 leading-none mb-1">
                                             {user.username || `User ${user.telegram_id}`}
                                         </div>
-                                        <div className="flex items-center gap-1.5">
-                                            {getRoleIcon(user.role)}
-                                            <span className="text-[11px] text-gray-500 capitalize">{user.role.replace('_', ' ')}</span>
-                                        </div>
+                                        <RoleBadge role={user.role} />
                                     </div>
                                 </div>
                                 <div className="text-eden-500">
@@ -175,15 +146,16 @@ export const UserList = () => {
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent className="bg-white">
-                                    <SelectItem value="admin">Admin</SelectItem>
-                                    <SelectItem value="store_manager">Store Manager</SelectItem>
-                                    <SelectItem value="global_purchaser">Global Purchaser</SelectItem>
-                                    <SelectItem value="finance">Finance</SelectItem>
+                                    {Object.values(USER_ROLES).map((r) => (
+                                        <SelectItem key={r} value={r}>
+                                            {getRoleMetadata(r).label}
+                                        </SelectItem>
+                                    ))}
                                 </SelectContent>
                             </Select>
                         </div>
 
-                        {role === 'store_manager' && (
+                        {role === USER_ROLES.STORE_MANAGER && (
                             <div className="space-y-2">
                                 <Label>{ui('assignedStore')}</Label>
                                 <Select value={storeId} onValueChange={setStoreId}>
