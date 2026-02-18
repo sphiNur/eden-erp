@@ -6,6 +6,7 @@ import { useMarketRun } from '../hooks/useMarketRun';
 import { MarketShoppingList } from './market-run/MarketShoppingList';
 import { MarketDistributionList } from './market-run/MarketDistributionList';
 import { PageLayout } from './layout/PageLayout';
+import { PageHeader } from './layout/PageHeader';
 
 export const MarketRun = () => {
     const { ui } = useLanguage();
@@ -37,9 +38,13 @@ export const MarketRun = () => {
         );
     }
 
-    const toolbar = (
-        <div className="bg-white border-b px-3 pt-2 pb-2">
-            <div className="flex bg-gray-100/80 p-1 rounded-xl">
+    // ... inside component
+
+    const header = (
+        <PageHeader
+            title={ui('marketRun')}
+        >
+            <div className="flex bg-gray-100/80 p-1 rounded-xl mb-2">
                 <button
                     onClick={() => setViewMode('shopping')}
                     className={cn(
@@ -67,16 +72,16 @@ export const MarketRun = () => {
             </div>
 
             {viewMode === 'shopping' && (
-                <div className="mt-2 text-xs font-medium text-gray-500 flex justify-between px-1">
+                <div className="text-xs font-medium text-gray-500 flex justify-between px-1">
                     <span>{ui('progress')}: {items.filter(i => i.status === 'bought').length} / {items.length}</span>
                 </div>
             )}
-        </div>
+        </PageHeader>
     );
 
     return (
         <PageLayout
-            toolbar={toolbar}
+            header={header}
             className="bg-[var(--tg-theme-bg-color,#f3f4f6)]"
         >
             {viewMode === 'shopping' ? (

@@ -15,26 +15,30 @@ interface PageLayoutProps {
 
 export const PageLayout = ({
     children,
+    header,
+    // @deprecated use header instead
     toolbar,
     floatingAction,
     className,
     noPadding = false
-}: PageLayoutProps) => {
+}: PageLayoutProps & { header?: ReactNode }) => {
     return (
-        <div className={cn("flex flex-col min-h-[calc(100vh-var(--header-h))] bg-gray-50", className)}>
-            {/* Unified Sticky Toolbar */}
-            {toolbar && (
-                <div className="sticky top-header z-toolbar bg-white border-b shadow-sm w-full">
-                    {toolbar}
+        <div className={cn("flex flex-col h-full bg-gray-50", className)}>
+            {/* Unified Sticky Header */}
+            {(header || toolbar) && (
+                <div className="sticky top-0 z-toolbar bg-white border-b shadow-sm w-full shrink-0">
+                    {header || toolbar}
                 </div>
             )}
 
             {/* Main Content */}
             <main className={cn(
-                "flex-1",
+                "flex-1 overflow-y-auto overflow-x-hidden",
                 !noPadding && "p-3 pb-24" // Default padding + bottom space for FAB/Nav
             )}>
-                {children}
+                <div className="mx-auto w-full max-w-screen-xl">
+                    {children}
+                </div>
             </main>
 
             {/* Floating Action / Bottom Elements */}

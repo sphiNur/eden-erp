@@ -6,9 +6,10 @@ import { useLanguage } from '../../contexts/LanguageContext';
 import { productsApi } from '../../api/client';
 import WebApp from '@twa-dev/sdk';
 import { PageLayout } from '../layout/PageLayout';
-import { ListToolbar } from '../shared/ListToolbar';
+import { PageHeader } from '../layout/PageHeader';
 import { PageLoading } from '../shared/PageLoading';
 import { useNavigate } from 'react-router-dom';
+import { Input } from '../ui/input';
 
 export const InventoryMaster = () => {
     const { t, ui } = useLanguage();
@@ -48,12 +49,10 @@ export const InventoryMaster = () => {
         return groups;
     }, [filtered, t, ui]);
 
-    const toolbar = (
-        <ListToolbar
-            search={search}
-            onSearchChange={setSearch}
-            placeholder={ui('searchProducts')}
-            actions={
+    const header = (
+        <PageHeader
+            title={<span className="text-xl font-bold">{ui('inventory')}</span>}
+            endAction={
                 <Button
                     size="sm"
                     className="h-9 w-9 p-0 rounded-full bg-eden-500 hover:bg-eden-600 text-white shadow-sm shrink-0"
@@ -64,13 +63,22 @@ export const InventoryMaster = () => {
                     <Plus className="h-5 w-5" />
                 </Button>
             }
-        />
+        >
+            <div className="mt-1">
+                <Input
+                    placeholder={ui('searchProducts')}
+                    className="w-full bg-gray-100 border-none h-9 focus:ring-1 focus:ring-eden-500"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                />
+            </div>
+        </PageHeader>
     );
 
     if (loading) return <PageLoading />;
 
     return (
-        <PageLayout toolbar={toolbar}>
+        <PageLayout header={header}>
             {Object.keys(groupedProducts).length === 0 ? (
                 <div className="text-center py-10 text-gray-400 text-sm">{ui('noProductsFound')}</div>
             ) : (

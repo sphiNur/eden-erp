@@ -18,11 +18,12 @@ import { SuccessOverlay } from './shared/SuccessOverlay';
 import { BottomDrawer } from './shared/BottomDrawer';
 
 // Sub-components
-import { StoreRequestToolbar } from './store-request/StoreRequestToolbar';
 import { CategoryFilter } from './store-request/CategoryFilter';
 import { ProductListItem } from './store-request/ProductListItem';
 import { CartSheet } from './store-request/CartSheet';
 import { PageLayout } from './layout/PageLayout';
+import { PageHeader } from './layout/PageHeader';
+import { Store, CalendarDays, Search, X, Zap } from 'lucide-react';
 
 export const StoreRequest = () => {
     const { ui } = useLanguage();
@@ -141,29 +142,96 @@ export const StoreRequest = () => {
     const totalSelectedCount = totalCount;
     const categoryCounts: Record<string, number> = {};
 
-    const toolbar = (
-        <>
-            <StoreRequestToolbar
-                stores={stores}
-                selectedStoreId={selectedStore}
-                onStoreChange={setSelectedStore}
-                deliveryDate={deliveryDate}
-                onDateChange={setDeliveryDate}
-                searchTerm={searchTerm}
-                onSearchChange={setSearchTerm}
-                templates={templates}
-                onLoadTemplate={handleLoadTemplate}
-                onDeleteTemplate={handleDeleteTemplate}
-            />
-            <CategoryFilter
-                categories={categories}
-                activeCategory={activeCategory}
-                onSelectCategory={setActiveCategory}
-                categoryCounts={categoryCounts}
-                totalSelectedCount={totalSelectedCount}
-                allLabel={ui('all')}
-            />
-        </>
+    const header = (
+        <PageHeader
+            title={ui('storeRequest')}
+        >
+            <div className="space-y-3 pb-1">
+                {/* ─── Top Row: Store & Date ─── */}
+                <div className="flex items-center gap-2">
+                    {/* Store selector */}
+                    <div className="flex items-center gap-2 bg-gray-100 px-3 py-2 rounded-lg flex-1 min-w-0 transition-colors focus-within:bg-white focus-within:ring-2 focus-within:ring-eden-500/20">
+                        <Store size={18} className="text-gray-500 shrink-0" />
+                        <select
+                            className="bg-transparent font-medium text-sm w-full outline-none truncate appearance-none"
+                            value={selectedStore}
+                            onChange={(e) => setSelectedStore(e.target.value)}
+                        >
+                            {stores.length === 0 && <option value="">{ui('selectStore')}</option>}
+                            {stores.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+                        </select>
+                    </div>
+
+                    {/* Date picker */}
+                    <div className="flex items-center gap-2 bg-gray-100 px-3 py-2 rounded-lg shrink-0 transition-colors focus-within:bg-white focus-within:ring-2 focus-within:ring-eden-500/20">
+                        <CalendarDays size={18} className="text-gray-500" />
+                        <input
+                            type="date"
+                            className="bg-transparent text-sm font-medium outline-none w-[120px]"
+                            value={deliveryDate}
+                            min={new Date().toISOString().split('T')[0]}
+                            onChange={(e) => setDeliveryDate(e.target.value)}
+                        />
+                    </div>
+                </div>
+
+                {/* ─── Search ─── */}
+                <div className="relative">
+                    <Search className="absolute left-3 top-2.5 text-gray-400" size={16} />
+                    <input
+                        type="text"
+                        placeholder={ui('search')}
+                        className="w-full pl-9 pr-9 py-2 bg-gray-100 rounded-lg outline-none focus:bg-white focus:ring-2 focus:ring-eden-500 text-sm transition-all"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                    {searchTerm && (
+                        <button onClick={() => setSearchTerm('')} className="absolute right-2.5 top-2.5 text-gray-400 hover:text-gray-600">
+                            <X size={16} />
+                        </button>
+                    )}
+                </div>
+
+                {/* ─── Quick Order Templates ─── */}
+                {templates.length > 0 && (
+                    <div className="overflow-x-auto -mx-3 px-3 scrollbar-hide py-1">
+                        <div className="flex gap-2">
+                            <div className="text-[10px] uppercase font-bold text-gray-400 flex items-center shrink-0">
+                                <Zap size={12} className="mr-1" /> Quick:
+                            </div>
+                            {templates.map(tmpl => (
+                                <div
+                                    key={tmpl.id}
+                                    onClick={() => handleLoadTemplate(tmpl)}
+                                    className="bg-indigo-50 text-indigo-600 border border-indigo-100 px-2.5 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5 active:bg-indigo-100 active:scale-95 transition-all cursor-pointer select-none"
+                                >
+                                    {tmpl.name}
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleDeleteTemplate(tmpl.id);
+                                        }}
+                                        className="w-4 h-4 rounded-full bg-indigo-100 flex items-center justify-center hover:bg-indigo-200"
+                                    >
+                                        <X size={10} />
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+            </div>
+            <div className="pt-1">
+                <CategoryFilter
+                    categories={categories}
+                    activeCategory={activeCategory}
+                    onSelectCategory={setActiveCategory}
+                    categoryCounts={categoryCounts}
+                    totalSelectedCount={totalSelectedCount}
+                    allLabel={ui('all')}
+                />
+            </div>
+        </PageHeader>
     );
 
     const floatingAction = (
@@ -188,7 +256,7 @@ export const StoreRequest = () => {
     );
 
     return (
-        <PageLayout toolbar={toolbar} floatingAction={floatingAction} className="bg-gray-50">
+        <PageLayout header={header} floatingAction={floatingAction} className="bg-gray-50">
             <div className="space-y-3 pb-24">
                 {Object.keys(groupedProducts).length === 0 ? (
                     <EmptyState
