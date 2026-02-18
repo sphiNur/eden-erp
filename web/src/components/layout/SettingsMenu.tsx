@@ -68,9 +68,9 @@ export const SettingsMenu = ({ children }: SettingsMenuProps) => {
 
             <SheetContent
                 side="top"
-                overlayClassName="top-[var(--header-h)] z-35 bg-black/20 backdrop-blur-[1px]"
+                overlayClassName="top-[var(--header-h)] z-50 bg-black/20 backdrop-blur-[1px]"
                 className={cn(
-                    "rounded-b-2xl border-b-0 shadow-xl bg-white/95 backdrop-blur-xl [&>button]:hidden z-35",
+                    "rounded-b-2xl border-b-0 shadow-xl bg-white/95 backdrop-blur-xl [&>button]:hidden z-50",
                     "p-0 gap-0 w-full max-h-[80vh] overflow-hidden flex flex-col"
                 )}
                 style={{

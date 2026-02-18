@@ -41,9 +41,7 @@ export const MarketRun = () => {
     // ... inside component
 
     const header = (
-        <PageHeader
-            title={ui('marketRun')}
-        >
+        <PageHeader>
             <div className="flex bg-gray-100/80 p-1 rounded-xl mb-2">
                 <button
                     onClick={() => setViewMode('shopping')}

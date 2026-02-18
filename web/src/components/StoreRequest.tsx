@@ -143,9 +143,7 @@ export const StoreRequest = () => {
     const categoryCounts: Record<string, number> = {};
 
     const header = (
-        <PageHeader
-            title={ui('storeRequest')}
-        >
+        <PageHeader>
             <div className="space-y-3 pb-1">
                 {/* ─── Top Row: Store & Date ─── */}
                 <div className="flex items-center gap-2">

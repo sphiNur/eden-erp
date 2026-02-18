@@ -51,7 +51,6 @@ export const InventoryMaster = () => {
 
     const header = (
         <PageHeader
-            title={<span className="text-xl font-bold">{ui('inventory')}</span>}
             endAction={
                 <Button
                     size="sm"
