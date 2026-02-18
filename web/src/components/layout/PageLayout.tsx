@@ -26,7 +26,7 @@ export const PageLayout = ({
         <div className={cn("flex flex-col h-full bg-gray-50", className)}>
             {/* Unified Sticky Header */}
             {(header || toolbar) && (
-                <div className="sticky top-0 z-toolbar bg-white border-b shadow-sm w-full shrink-0">
+                <div className="bg-white border-b shadow-sm w-full shrink-0 z-toolbar relative">
                     {header || toolbar}
                 </div>
             )}
