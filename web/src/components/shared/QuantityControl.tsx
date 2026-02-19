@@ -56,10 +56,11 @@ export const QuantityControl = ({ value, onChange }: QuantityControlProps) => {
             <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 rounded-full bg-gray-100 hover:bg-eden-50 hover:text-eden-500 text-gray-400"
+                className="h-11 w-11 rounded-full bg-gray-100 hover:bg-eden-50 hover:text-eden-500 text-gray-500"
                 onClick={() => step(1)}
+                aria-label="Add item"
             >
-                <Plus size={18} />
+                <Plus size={20} />
             </Button>
         );
     }
@@ -69,30 +70,33 @@ export const QuantityControl = ({ value, onChange }: QuantityControlProps) => {
             <Button
                 variant="outline"
                 size="icon"
-                className="h-8 w-8 rounded-full border-gray-200 bg-white"
+                className="h-11 w-11 rounded-full border-gray-200 bg-white"
                 onClick={() => step(-1)}
+                aria-label="Decrease quantity"
             >
-                <Minus size={14} />
+                <Minus size={16} />
             </Button>
 
             <Input
                 type="number"
                 step="0.001"
                 min="0"
-                className="w-14 h-8 text-center p-0 text-sm font-bold mx-0.5 border-none shadow-none focus-visible:ring-0"
+                className="w-16 h-11 text-center p-0 text-base font-bold mx-0.5 border-none shadow-none focus-visible:ring-0"
                 value={localValue}
                 onChange={handleInputChange}
                 onBlur={handleBlur}
                 onFocus={(e) => e.target.select()}
+                aria-label="Quantity input"
             />
 
             <Button
                 variant="default"
                 size="icon"
-                className="h-8 w-8 rounded-full bg-eden-500 hover:bg-eden-600"
+                className="h-11 w-11 rounded-full bg-eden-500 hover:bg-eden-600"
                 onClick={() => step(1)}
+                aria-label="Increase quantity"
             >
-                <Plus size={14} />
+                <Plus size={16} />
             </Button>
         </div>
     );
