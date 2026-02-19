@@ -59,9 +59,10 @@ export const SettingsMenu = ({ children }: SettingsMenuProps) => {
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8 rounded-full text-gray-500 hover:text-gray-900"
+                        className="h-10 w-10 rounded-full text-gray-500 hover:text-gray-900"
+                        aria-label="Open Settings"
                     >
-                        <Settings className="h-4 w-4" />
+                        <Settings className="h-5 w-5" />
                     </Button>
                 )}
             </SheetTrigger>
@@ -106,10 +107,11 @@ export const SettingsMenu = ({ children }: SettingsMenuProps) => {
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="h-7 w-7 rounded-full bg-gray-100/50 text-gray-400 hover:text-gray-600"
+                        className="h-10 w-10 rounded-full bg-gray-100/50 text-gray-500 hover:text-gray-900 hover:bg-gray-200/50"
                         onClick={() => setOpen(false)}
+                        aria-label="Close Settings"
                     >
-                        <X size={14} />
+                        <X size={18} />
                     </Button>
                 </div>
 

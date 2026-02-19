@@ -51,6 +51,8 @@ export const MarketRun = () => {
                             ? "bg-white text-eden-600 shadow-sm"
                             : "bg-transparent text-gray-500 hover:bg-gray-200/50"
                     )}
+                    aria-label={ui('marketRun')} // "Market Run" or similar as proxy for "Shopping"
+                    aria-pressed={viewMode === 'shopping'}
                 >
                     <ShoppingCart size={14} className={viewMode === 'shopping' ? "text-eden-600" : "text-gray-400"} />
                     Shopping
@@ -63,6 +65,8 @@ export const MarketRun = () => {
                             ? "bg-white text-blue-600 shadow-sm"
                             : "bg-transparent text-gray-500 hover:bg-gray-200/50"
                     )}
+                    aria-label="Distribution View"
+                    aria-pressed={viewMode === 'distribution'}
                 >
                     <Store size={14} className={viewMode === 'distribution' ? "text-blue-600" : "text-gray-400"} />
                     Distribution
