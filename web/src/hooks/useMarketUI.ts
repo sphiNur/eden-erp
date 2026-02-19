@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { MarketItem } from './useMarketData';
 import { useLanguage } from '../contexts/LanguageContext';
 
@@ -40,9 +40,9 @@ export const useMarketUI = (items: MarketItem[]) => {
 
     const storeKeys = useMemo(() => Object.keys(distributionSections).sort(), [distributionSections]);
 
-    const toggleBreakdown = (id: string) => {
+    const toggleBreakdown = useCallback((id: string) => {
         setExpandedBreakdown(prev => ({ ...prev, [id]: !prev[id] }));
-    };
+    }, []);
 
     return {
         viewMode,
