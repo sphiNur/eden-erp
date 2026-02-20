@@ -9,7 +9,6 @@ const ADMIN_TABS = [
     { key: 'inventory', icon: Package, path: '/admin/products' },
     { key: 'teamManagement', icon: Users, path: '/admin/users' },
     { key: 'stores', icon: Store, path: '/admin/stores' },
-    { key: 'stores', icon: Store, path: '/admin/stores' },
 ] as const;
 
 export const BottomTabBar = () => {
