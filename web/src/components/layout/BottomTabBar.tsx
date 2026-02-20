@@ -12,11 +12,12 @@ interface TabItem {
     key: string;
     icon: LucideIcon;
     path: string;
+    shortLabel?: string;  // Override for bottom tab (shorter than i18n)
 }
 
 const ADMIN_TABS: TabItem[] = [
     { key: 'inventory', icon: Package, path: '/admin/products' },
-    { key: 'teamManagement', icon: Users, path: '/admin/users' },
+    { key: 'teamManagement', icon: Users, path: '/admin/users', shortLabel: 'Team' },
     { key: 'stores', icon: Store, path: '/admin/stores' },
 ];
 
@@ -98,7 +99,7 @@ export const BottomTabBar = () => {
                                 className={cn("transition-all", isActive && "scale-110")}
                             />
                             <span className="text-[10px] font-medium leading-tight text-center max-w-[60px] truncate">
-                                {ui(tab.key as Parameters<typeof ui>[0])}
+                                {tab.shortLabel || ui(tab.key as Parameters<typeof ui>[0])}
                             </span>
                         </button>
                     );

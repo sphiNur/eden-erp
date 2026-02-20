@@ -159,7 +159,7 @@ export const UserFormPage = () => {
                 </div>
             </div>
 
-            <div className="fixed bottom-6 right-6 z-fab sm:hidden">
+            <div className="fixed right-4 z-fab sm:hidden" style={{ bottom: 'calc(var(--nav-h) + 12px)' }}>
                 <Button
                     size="icon"
                     className="h-14 w-14 rounded-full shadow-lg bg-eden-500 hover:bg-eden-600"
