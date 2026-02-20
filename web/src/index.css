@@ -6,11 +6,15 @@
 
 @layer base {
     :root {
-        /* ─── TMA Safe Area (set dynamically by JS, fallbacks for local dev) ─── */
-        --tma-safe-top: 0px;
-        --tma-safe-bottom: 0px;
-        --tma-safe-left: 0px;
-        --tma-safe-right: 0px;
+        /* ─── TMA Safe Area ───
+           Set dynamically by JS (App.tsx syncSafeArea).
+           Fallback to env() for cases where SDK doesn't report values. */
+        --tma-safe-top: env(safe-area-inset-top, 0px);
+        --tma-safe-bottom: env(safe-area-inset-bottom, 0px);
+        --tma-safe-left: env(safe-area-inset-left, 0px);
+        --tma-safe-right: env(safe-area-inset-right, 0px);
+        /* Content safe area = Telegram UI chrome (Close bar, ~56px in fullscreen).
+           JS will override when SDK provides actual values. */
         --tma-content-top: 0px;
         --tma-content-bottom: 0px;
 

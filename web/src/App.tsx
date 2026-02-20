@@ -125,10 +125,14 @@ function syncSafeArea() {
         root.setProperty('--tma-safe-right', `${wa.safeAreaInset.right}px`);
     }
 
-    // Content safe area (Telegram UI chrome like back button)
+    // Content safe area (Telegram UI chrome like Close bar / back button)
     if (wa.contentSafeAreaInset) {
         root.setProperty('--tma-content-top', `${wa.contentSafeAreaInset.top}px`);
         root.setProperty('--tma-content-bottom', `${wa.contentSafeAreaInset.bottom}px`);
+    } else if (wa.isFullscreen) {
+        // SDK doesn't expose contentSafeAreaInset but we're in fullscreen —
+        // apply a safe minimum to clear the Telegram Close bar (~56px)
+        root.setProperty('--tma-content-top', '56px');
     }
 }
 

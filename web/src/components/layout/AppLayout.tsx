@@ -4,10 +4,13 @@ import { BottomTabBar } from './BottomTabBar';
 export const AppLayout = () => {
     return (
         <div className="flex h-[100dvh] w-full flex-col bg-background overflow-hidden relative">
-            {/* Main content — top padding from TMA safe area (no fixed header) */}
+            {/* Main content — top/bottom padding from TMA safe area (no fixed header) */}
             <main
                 className="flex-1 flex flex-col min-h-0 relative isolate"
-                style={{ paddingTop: 'calc(var(--tma-safe-top) + var(--tma-content-top))' }}
+                style={{
+                    paddingTop: 'calc(var(--tma-safe-top) + var(--tma-content-top))',
+                    paddingBottom: 'var(--nav-h)',
+                }}
             >
                 <div className="mx-auto w-full max-w-[1400px] flex-1 flex flex-col min-h-0 relative">
                     <Outlet />

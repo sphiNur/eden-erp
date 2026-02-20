@@ -32,7 +32,7 @@ const MarketRunContent = () => {
     }
 
     const bottomBar = viewMode === 'shopping' ? (
-        <div className="p-3 pb-safe bg-white border-t border-gray-100 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+        <div className="p-3 bg-white border-t border-gray-100 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
             <Button
                 size="lg"
                 onClick={handleFinalize}
