@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Plus } from 'lucide-react';
-import { Button } from '../ui/button';
 import { Product } from '../../types';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { productsApi } from '../../api/client';
@@ -50,19 +49,7 @@ export const InventoryMaster = () => {
     }, [filtered, t, ui]);
 
     const header = (
-        <PageHeader
-            endAction={
-                <Button
-                    size="sm"
-                    className="h-9 w-9 p-0 rounded-full bg-eden-500 hover:bg-eden-600 text-white shadow-sm shrink-0"
-                    onClick={() => {
-                        navigate('/admin/products/new');
-                    }}
-                >
-                    <Plus className="h-5 w-5" />
-                </Button>
-            }
-        >
+        <PageHeader>
             <div className="mt-1">
                 <Input
                     placeholder={ui('searchProducts')}
@@ -76,8 +63,20 @@ export const InventoryMaster = () => {
 
     if (loading) return <PageLoading />;
 
+    const floatingAction = (
+        <button
+            onClick={() => {
+                WebApp.HapticFeedback.impactOccurred('medium');
+                navigate('/admin/products/new');
+            }}
+            className="w-14 h-14 bg-eden-500 text-white rounded-full shadow-lg flex items-center justify-center hover:bg-eden-600 active:scale-95 transition-all"
+        >
+            <Plus size={24} />
+        </button>
+    );
+
     return (
-        <PageLayout header={header}>
+        <PageLayout header={header} floatingAction={floatingAction}>
             {Object.keys(groupedProducts).length === 0 ? (
                 <div className="text-center py-10 text-gray-400 text-sm">{ui('noProductsFound')}</div>
             ) : (

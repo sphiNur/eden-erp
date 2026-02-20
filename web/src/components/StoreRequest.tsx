@@ -53,13 +53,30 @@ const StoreRequestContent = () => {
     const header = (
         <PageHeader>
             <div className="space-y-3 pb-1">
-                {/* ─── Top Row: Store & Date ─── */}
-                <div className="flex items-center gap-2">
-                    {/* Store selector */}
-                    <div className="flex items-center gap-2 bg-gray-100 px-3 py-2 rounded-lg flex-1 min-w-0 transition-colors focus-within:bg-white focus-within:ring-2 focus-within:ring-eden-500/20">
-                        <Store size={18} className="text-gray-500 shrink-0" />
+                {/* ─── Compact Top Row: Search + Store + Date ─── */}
+                <div className="flex gap-2 items-center">
+                    {/* Search (Expands) */}
+                    <div className="relative flex-1">
+                        <Search className="absolute left-2.5 top-2 text-gray-400" size={14} />
+                        <input
+                            type="text"
+                            placeholder={ui('search')}
+                            className="w-full pl-8 pr-7 py-1.5 bg-gray-100 rounded-lg outline-none focus:bg-white focus:ring-2 focus:ring-eden-500 text-[13px] transition-all"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                        {searchTerm && (
+                            <button onClick={() => setSearchTerm('')} className="absolute right-2 top-2 text-gray-400 hover:text-gray-600">
+                                <X size={14} />
+                            </button>
+                        )}
+                    </div>
+
+                    {/* Store (Compact Icon Only or Small Select) */}
+                    <div className="flex items-center bg-gray-100 px-2 py-1.5 rounded-lg shrink-0 transition-colors focus-within:bg-white focus-within:ring-2 focus-within:ring-eden-500/20 w-[100px]">
+                        <Store size={14} className="text-gray-500 shrink-0 mr-1.5" />
                         <select
-                            className="bg-transparent font-medium text-sm w-full outline-none truncate appearance-none"
+                            className="bg-transparent font-medium text-[13px] w-full outline-none truncate appearance-none"
                             value={selectedStore}
                             onChange={(e) => setSelectedStore(e.target.value)}
                         >
@@ -68,34 +85,17 @@ const StoreRequestContent = () => {
                         </select>
                     </div>
 
-                    {/* Date picker */}
-                    <div className="flex items-center gap-2 bg-gray-100 px-3 py-2 rounded-lg shrink-0 transition-colors focus-within:bg-white focus-within:ring-2 focus-within:ring-eden-500/20">
-                        <CalendarDays size={18} className="text-gray-500" />
+                    {/* Date picker (Compact) */}
+                    <div className="flex items-center bg-gray-100 px-2 py-1.5 rounded-lg shrink-0 transition-colors focus-within:bg-white focus-within:ring-2 focus-within:ring-eden-500/20 w-[100px]">
+                        <CalendarDays size={14} className="text-gray-500 mr-1.5" />
                         <input
                             type="date"
-                            className="bg-transparent text-sm font-medium outline-none w-[120px]"
+                            className="bg-transparent text-[13px] font-medium outline-none w-full"
                             value={deliveryDate}
                             min={new Date().toISOString().split('T')[0]}
                             onChange={(e) => setDeliveryDate(e.target.value)}
                         />
                     </div>
-                </div>
-
-                {/* ─── Search ─── */}
-                <div className="relative">
-                    <Search className="absolute left-3 top-2.5 text-gray-400" size={16} />
-                    <input
-                        type="text"
-                        placeholder={ui('search')}
-                        className="w-full pl-9 pr-9 py-2 bg-gray-100 rounded-lg outline-none focus:bg-white focus:ring-2 focus:ring-eden-500 text-sm transition-all"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                    {searchTerm && (
-                        <button onClick={() => setSearchTerm('')} className="absolute right-2.5 top-2.5 text-gray-400 hover:text-gray-600">
-                            <X size={16} />
-                        </button>
-                    )}
                 </div>
 
                 {/* ─── Quick Order Templates ─── */}
