@@ -88,6 +88,9 @@ const translations = {
     basicInfo: { en: 'Basic Info', ru: 'Основная инфо', uz: 'Asosiy ma\'lumot', cn: '基本信息' },
     translations: { en: 'Translations', ru: 'Переводы', uz: 'Tarjimalar', cn: '多语言名称' },
     analytics: { en: 'Analytics', ru: 'Аналитика', uz: 'Tahlillar', cn: '数据分析' },
+    baseUnitDesc: { en: 'Base inventory tracking unit', ru: 'Базовая единица учета', uz: 'Asosiy hisob birligi', cn: '基本库存计量单位' },
+    required: { en: 'Required', ru: 'Обязательно', uz: 'Majburiy', cn: '必填' },
+    optional: { en: 'Optional', ru: 'Необязательно', uz: 'Ixtiyoriy', cn: '可选' },
 
     // --- Shared ---
     retry: { en: 'Retry', ru: 'Повторить', uz: 'Qayta urinish', cn: '重试' },

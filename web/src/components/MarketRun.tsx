@@ -2,33 +2,29 @@ import { ShoppingCart, Store, Loader2 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Button } from './ui/button';
-import { useMarketRun } from '../hooks/useMarketRun';
+import { MarketRunProvider, useMarketRunContext } from '../contexts/MarketRunContext';
 import { MarketShoppingList } from './market-run/MarketShoppingList';
 import { MarketDistributionList } from './market-run/MarketDistributionList';
 import { PageLayout } from './layout/PageLayout';
 import { PageHeader } from './layout/PageHeader';
 
 export const MarketRun = () => {
+    return (
+        <MarketRunProvider>
+            <MarketRunContent />
+        </MarketRunProvider>
+    );
+};
+
+const MarketRunContent = () => {
     const { ui } = useLanguage();
     const {
         items,
         loading,
-        priceInputs,
-        unitPriceInputs,
         viewMode,
-        expandedBreakdown,
-        shoppingSections,
-        shoppingSectionKeys,
-        distributionSections,
-        storeKeys,
         setViewMode,
-        handleTotalPriceChange,
-        handleUnitPriceChange,
-        updateStoreQuantity,
-        toggleBought,
-        toggleBreakdown,
         handleFinalize
-    } = useMarketRun();
+    } = useMarketRunContext();
 
     if (loading) {
         return (
@@ -37,8 +33,6 @@ export const MarketRun = () => {
             </div>
         );
     }
-
-    // ... inside component
 
     const header = (
         <PageHeader>
@@ -51,7 +45,7 @@ export const MarketRun = () => {
                             ? "bg-white text-eden-600 shadow-sm"
                             : "bg-transparent text-gray-500 hover:bg-gray-200/50"
                     )}
-                    aria-label={ui('marketRun')} // "Market Run" or similar as proxy for "Shopping"
+                    aria-label={ui('marketRun')}
                     aria-pressed={viewMode === 'shopping'}
                 >
                     <ShoppingCart size={14} className={viewMode === 'shopping' ? "text-eden-600" : "text-gray-400"} />
@@ -81,43 +75,31 @@ export const MarketRun = () => {
         </PageHeader>
     );
 
+    const bottomBar = viewMode === 'shopping' ? (
+        <div className="p-3 pb-safe">
+            <Button
+                size="lg"
+                onClick={handleFinalize}
+                className="w-full text-base font-bold py-6 rounded-xl shadow-xl shadow-eden-500/20 active:scale-[0.98] transition-transform"
+            >
+                {ui('finalizeBatch')}
+            </Button>
+        </div>
+    ) : undefined;
+
     return (
         <PageLayout
             header={header}
-            className="bg-[var(--tg-theme-bg-color,#f3f4f6)]"
+            bottomBar={bottomBar}
+            className="bg-[var(--tg-theme-bg-color,#f3f4f6)] min-h-[100dvh] flex flex-col"
         >
-            {viewMode === 'shopping' ? (
-                <MarketShoppingList
-                    shoppingSections={shoppingSections}
-                    shoppingSectionKeys={shoppingSectionKeys}
-                    priceInputs={priceInputs}
-                    unitPriceInputs={unitPriceInputs}
-                    expandedBreakdown={expandedBreakdown}
-                    onTotalPriceChange={handleTotalPriceChange}
-                    onUnitPriceChange={handleUnitPriceChange}
-                    onStoreQtyChange={updateStoreQuantity}
-                    onToggleBought={toggleBought}
-                    onToggleBreakdown={toggleBreakdown}
-                />
-            ) : (
-                <MarketDistributionList
-                    distributionSections={distributionSections}
-                    storeKeys={storeKeys}
-                />
-            )}
-
-            {/* Sticky Footer - ONLY IN SHOPPING MODE */}
-            {viewMode === 'shopping' && (
-                <div className="fixed bottom-0 left-0 right-0 p-3 pb-safe bg-white/90 backdrop-blur-lg border-t z-drawer">
-                    <Button
-                        size="lg"
-                        onClick={handleFinalize}
-                        className="w-full text-base font-bold py-4 rounded-xl shadow-xl shadow-eden-500/20 active:scale-[0.98] transition-transform mb-2"
-                    >
-                        {ui('finalizeBatch')}
-                    </Button>
-                </div>
-            )}
+            <div className="flex-1">
+                {viewMode === 'shopping' ? (
+                    <MarketShoppingList />
+                ) : (
+                    <MarketDistributionList />
+                )}
+            </div>
         </PageLayout>
     );
 };

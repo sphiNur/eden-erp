@@ -1,37 +1,15 @@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../ui/tabs';
 import { ShoppingBag } from 'lucide-react';
-import { AnimatePresence } from 'framer-motion';
 import { MarketItemRow } from './MarketItemRow';
-import { MarketItem } from '../../hooks/useMarketRun';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { useMarketRunContext } from '../../contexts/MarketRunContext';
 
-interface MarketShoppingListProps {
-    shoppingSections: Record<string, MarketItem[]>;
-    shoppingSectionKeys: string[];
-    priceInputs: Record<string, string>;
-    unitPriceInputs: Record<string, string>;
-    expandedBreakdown: Record<string, boolean>;
-
-    onTotalPriceChange: (id: string, val: string) => void;
-    onUnitPriceChange: (id: string, val: string) => void;
-    onStoreQtyChange: (id: string, storeName: string, val: string) => void;
-    onToggleBought: (id: string, checked: boolean) => void;
-    onToggleBreakdown: (id: string) => void;
-}
-
-export const MarketShoppingList = ({
-    shoppingSections,
-    shoppingSectionKeys,
-    priceInputs,
-    unitPriceInputs,
-    expandedBreakdown,
-    onTotalPriceChange,
-    onUnitPriceChange,
-    onStoreQtyChange,
-    onToggleBought,
-    onToggleBreakdown
-}: MarketShoppingListProps) => {
+export const MarketShoppingList = () => {
     const { ui } = useLanguage();
+    const {
+        shoppingSections,
+        shoppingSectionKeys
+    } = useMarketRunContext();
 
     if (shoppingSectionKeys.length === 0) {
         return (
@@ -44,7 +22,7 @@ export const MarketShoppingList = ({
 
     return (
         <Tabs defaultValue={shoppingSectionKeys[0]} className="w-full bg-gray-50/50">
-            {/* Category Bar - Sticky? Maybe not needed as it might block content */}
+            {/* Category Bar */}
             <div className="sticky top-[calc(var(--header-h)-1px)] z-10 bg-gray-50/95 backdrop-blur-sm border-b pb-1 pt-1 px-2 shadow-sm">
                 <TabsList className="w-full justify-start overflow-x-auto h-auto bg-transparent p-0 gap-2 scrollbar-hide">
                     {shoppingSectionKeys.map(key => (
@@ -62,22 +40,12 @@ export const MarketShoppingList = ({
             {shoppingSectionKeys.map(key => (
                 <TabsContent key={key} value={key} className="space-y-1">
                     <div className="bg-white rounded-lg shadow-sm border overflow-hidden divide-y divide-gray-100">
-                        <AnimatePresence>
-                            {shoppingSections[key].map(item => (
-                                <MarketItemRow
-                                    key={item.product_id}
-                                    item={item}
-                                    priceInputValue={priceInputs[item.product_id] ?? ''}
-                                    unitPriceInputValue={unitPriceInputs[item.product_id] ?? ''}
-                                    isExpanded={!!expandedBreakdown[item.product_id]}
-                                    onTotalPriceChange={onTotalPriceChange}
-                                    onUnitPriceChange={onUnitPriceChange}
-                                    onStoreQtyChange={onStoreQtyChange}
-                                    onToggleBought={onToggleBought}
-                                    onToggleBreakdown={onToggleBreakdown}
-                                />
-                            ))}
-                        </AnimatePresence>
+                        {shoppingSections[key].map(item => (
+                            <MarketItemRow
+                                key={item.product_id}
+                                item={item}
+                            />
+                        ))}
                     </div>
                 </TabsContent>
             ))}

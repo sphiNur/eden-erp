@@ -1,19 +1,15 @@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../ui/tabs';
 import { Store } from 'lucide-react';
 import { Badge } from '../ui/badge';
-import { MarketItem } from '../../hooks/useMarketRun';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { useMarketRunContext } from '../../contexts/MarketRunContext';
 
-interface MarketDistributionListProps {
-    distributionSections: Record<string, { item: MarketItem, qty: number }[]>;
-    storeKeys: string[];
-}
-
-export const MarketDistributionList = ({
-    distributionSections,
-    storeKeys
-}: MarketDistributionListProps) => {
+export const MarketDistributionList = () => {
     const { t } = useLanguage();
+    const {
+        distributionSections,
+        storeKeys
+    } = useMarketRunContext();
 
     if (storeKeys.length === 0) {
         return (

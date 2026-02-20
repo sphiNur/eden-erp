@@ -6,31 +6,35 @@ import { Input } from '../ui/input';
 import { cn } from '../../lib/utils';
 import { MarketItem } from '../../hooks/useMarketRun';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { useMarketRunContext } from '../../contexts/MarketRunContext';
 
 interface MarketItemRowProps {
     item: MarketItem;
-    priceInputValue: string;
-    unitPriceInputValue: string;
-    isExpanded: boolean;
-    onTotalPriceChange: (id: string, val: string) => void;
-    onUnitPriceChange: (id: string, val: string) => void;
-    onStoreQtyChange: (id: string, storeName: string, val: string) => void;
-    onToggleBought: (id: string, checked: boolean) => void;
-    onToggleBreakdown: (id: string) => void;
 }
 
-export const MarketItemRow = memo(({
-    item,
-    priceInputValue,
-    unitPriceInputValue,
-    isExpanded,
-    onTotalPriceChange,
-    onUnitPriceChange,
-    onStoreQtyChange,
-    onToggleBought,
-    onToggleBreakdown
-}: MarketItemRowProps) => {
+export const MarketItemRow = memo(({ item }: MarketItemRowProps) => {
     const { t, ui } = useLanguage();
+    const {
+        priceInputs,
+        unitPriceInputs,
+        expandedBreakdown,
+        handleTotalPriceChange,
+        handleUnitPriceChange,
+        updateStoreQuantity,
+        toggleBought,
+        toggleBreakdown
+    } = useMarketRunContext();
+
+    const priceInputValue = priceInputs[item.product_id] ?? '';
+    const unitPriceInputValue = unitPriceInputs[item.product_id] ?? '';
+    const isExpanded = !!expandedBreakdown[item.product_id];
+
+    // Handlers mapped to context functions
+    const onTotalPriceChange = handleTotalPriceChange;
+    const onUnitPriceChange = handleUnitPriceChange;
+    const onStoreQtyChange = updateStoreQuantity;
+    const onToggleBought = toggleBought;
+    const onToggleBreakdown = toggleBreakdown;
 
     // Derived values
     // Qty is now the 'purchase_quantity' from the item (sum of stores)
