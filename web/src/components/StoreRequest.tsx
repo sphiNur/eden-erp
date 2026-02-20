@@ -1,14 +1,8 @@
-import { useState, useCallback, useMemo } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ListFilter } from 'lucide-react';
 
 import { useLanguage } from '../contexts/LanguageContext';
-import { useStoreCatalog } from '../hooks/useStoreCatalog';
-import { useProductFilter } from '../hooks/useProductFilter';
-import { useCart } from '../hooks/useCart';
-import { OrderTemplate, OrderItemInput } from '../types';
-import { ordersApi, templatesApi } from '../api/client';
-import WebApp from '@twa-dev/sdk';
+import { StoreRequestProvider, useStoreRequestContext } from '../contexts/StoreRequestContext';
 
 // Shared components
 import { ProductListSkeleton } from './shared/Skeleton';
@@ -26,120 +20,34 @@ import { PageHeader } from './layout/PageHeader';
 import { Store, CalendarDays, Search, X, Zap } from 'lucide-react';
 
 export const StoreRequest = () => {
+    return (
+        <StoreRequestProvider>
+            <StoreRequestContent />
+        </StoreRequestProvider>
+    );
+};
+
+const StoreRequestContent = () => {
     const { ui } = useLanguage();
 
-    // --- Data Hooks ---
-    const { products, stores, templates, loading, error, refresh, setTemplates } = useStoreCatalog();
-    const { groupedProducts, searchTerm, setSearchTerm, activeCategory, setActiveCategory, categories } = useProductFilter(products);
-    const { quantities, setQty, cartItems, totalCount, estimatedTotal, reset: resetCart } = useCart(products);
-
-    // --- Local State ---
-    const [selectedStore, setSelectedStore] = useState('');
-    const [showCart, setShowCart] = useState(false);
-    const [submitting, setSubmitting] = useState(false);
-    const [showSuccess, setShowSuccess] = useState(false);
-
-    // Default to tomorrow
-    const defaultDate = useMemo(() => {
-        const d = new Date();
-        d.setDate(d.getDate() + 1);
-        return d.toISOString().split('T')[0];
-    }, []);
-    const [deliveryDate, setDeliveryDate] = useState(defaultDate);
-
-    // Initialize selected store when loaded
-    useMemo(() => {
-        if (stores.length > 0 && !selectedStore) {
-            setSelectedStore(stores[0].id);
-        }
-    }, [stores, selectedStore]);
-
-    // --- Template Handlers ---
-    const handleLoadTemplate = useCallback((template: OrderTemplate) => {
-        template.items.forEach(item => {
-            if (products.some(p => p.id === item.product_id)) {
-                setQty(item.product_id, (quantities[item.product_id] || 0) + item.quantity);
-            }
-        });
-        WebApp.HapticFeedback.notificationOccurred('success');
-    }, [products, quantities, setQty]);
-
-    const handleDeleteTemplate = useCallback(async (id: string) => {
-        if (!window.confirm("Delete this template?")) return;
-        try {
-            await templatesApi.delete(id);
-            setTemplates(prev => prev.filter(t => t.id !== id));
-        } catch (err) {
-            console.error(err);
-        }
-    }, [setTemplates]);
-
-    const handleSaveTemplate = async () => {
-        if (!selectedStore) return;
-        const name = window.prompt("Template Name (e.g., 'Daily Veggies')");
-        if (!name) return;
-
-        try {
-            WebApp.MainButton.showProgress(true);
-            const items = Object.entries(quantities)
-                .filter(([_, qty]) => qty > 0)
-                .map(([pid, qty]) => ({ product_id: pid, quantity: qty }));
-
-            const newTemplate = await templatesApi.create({
-                store_id: selectedStore,
-                name,
-                items
-            });
-            setTemplates(prev => [...prev, newTemplate]);
-            WebApp.HapticFeedback.notificationOccurred('success');
-        } catch (err) {
-            console.error(err);
-            WebApp.showAlert("Failed to save template");
-        } finally {
-            WebApp.MainButton.hideProgress();
-        }
-    };
-
-    // --- Order Submission ---
-    const handleSubmit = async () => {
-        if (totalCount === 0) { WebApp.showAlert(ui('cartIsEmpty')); return; }
-        if (!selectedStore) { WebApp.showAlert(ui('selectStore')); return; }
-        if (submitting) return;
-
-        setSubmitting(true);
-        const noteText = ui('dailyRequest');
-        const allNotes = { en: noteText, ru: noteText, uz: noteText, cn: noteText };
-
-        const items: OrderItemInput[] = Object.entries(quantities)
-            .filter(([_, qty]) => qty > 0)
-            .map(([pid, qty]) => ({
-                product_id: pid,
-                quantity_requested: qty,
-                notes: allNotes
-            }));
-
-        try {
-            WebApp.MainButton.showProgress(true);
-            await ordersApi.create({ store_id: selectedStore, delivery_date: deliveryDate, items });
-
-            setShowCart(false);
-            setShowSuccess(true);
-            setTimeout(() => { setShowSuccess(false); resetCart(); }, 2000);
-            WebApp.HapticFeedback.notificationOccurred('success');
-        } catch (err) {
-            console.error(err);
-            WebApp.showAlert(ui('orderFailed'));
-        } finally {
-            WebApp.MainButton.hideProgress();
-            setSubmitting(false);
-        }
-    };
+    const {
+        loading, error, refresh,
+        stores, templates, groupedProducts, categories,
+        searchTerm, setSearchTerm,
+        activeCategory, setActiveCategory,
+        selectedStore, setSelectedStore,
+        deliveryDate, setDeliveryDate,
+        quantities, setQty, cartItems, totalCount, estimatedTotal,
+        showCart, setShowCart,
+        submitting, showSuccess,
+        handleLoadTemplate, handleDeleteTemplate, handleSaveTemplate, handleSubmit,
+        showTemplatePrompt, setShowTemplatePrompt, templatePromptResolver
+    } = useStoreRequestContext();
 
     // --- Render ---
     if (loading) return <ProductListSkeleton />;
     if (error) return <ErrorRetry message={error} onRetry={refresh} />;
 
-    const totalSelectedCount = totalCount;
     const categoryCounts: Record<string, number> = {};
 
     const header = (
@@ -225,7 +133,7 @@ export const StoreRequest = () => {
                     activeCategory={activeCategory}
                     onSelectCategory={setActiveCategory}
                     categoryCounts={categoryCounts}
-                    totalSelectedCount={totalSelectedCount}
+                    totalSelectedCount={totalCount}
                     allLabel={ui('all')}
                 />
             </div>
@@ -259,7 +167,7 @@ export const StoreRequest = () => {
                 {Object.keys(groupedProducts).length === 0 ? (
                     <EmptyState
                         title={ui('noProductsFound')}
-                        description={searchTerm ? undefined : undefined}
+                        description={undefined}
                     />
                 ) : (
                     Object.entries(groupedProducts).map(([category, items]) => (
@@ -299,6 +207,67 @@ export const StoreRequest = () => {
                     onUpdateQty={setQty}
                 />
             </BottomDrawer>
+
+            {/* Template Name Prompt Overlay */}
+            <AnimatePresence>
+                {showTemplatePrompt && (
+                    <>
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 0.5 }}
+                            exit={{ opacity: 0 }}
+                            className="fixed inset-0 bg-black z-overlay"
+                        />
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                            className="fixed inset-0 z-overlay flex items-center justify-center p-4"
+                        >
+                            <div className="bg-white rounded-xl shadow-xl p-5 w-full max-w-sm">
+                                <h3 className="font-bold text-lg mb-2">Save Template</h3>
+                                <p className="text-gray-500 text-sm mb-4">Enter a name for this template (e.g., 'Daily Veggies')</p>
+                                <input
+                                    id="template-name-input"
+                                    type="text"
+                                    className="w-full bg-gray-100 rounded-lg px-4 py-3 mb-4 outline-none focus:ring-2 focus:ring-eden-500 font-medium"
+                                    placeholder="Template name"
+                                    autoFocus
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            const val = (e.target as HTMLInputElement).value.trim();
+                                            templatePromptResolver?.(val || null);
+                                            setShowTemplatePrompt(false);
+                                        }
+                                    }}
+                                />
+                                <div className="flex gap-3">
+                                    <button
+                                        className="flex-1 py-2.5 rounded-lg bg-gray-100 text-gray-700 font-semibold active:scale-95 transition-transform"
+                                        onClick={() => {
+                                            templatePromptResolver?.(null);
+                                            setShowTemplatePrompt(false);
+                                        }}
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        className="flex-1 py-2.5 rounded-lg bg-eden-500 text-white font-bold active:scale-95 transition-transform"
+                                        onClick={() => {
+                                            const val = (document.getElementById('template-name-input') as HTMLInputElement).value.trim();
+                                            templatePromptResolver?.(val || null);
+                                            setShowTemplatePrompt(false);
+                                        }}
+                                    >
+                                        Save
+                                    </button>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </>
+                )}
+            </AnimatePresence>
         </PageLayout>
     );
 };
+

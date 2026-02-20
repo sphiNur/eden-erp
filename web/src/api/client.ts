@@ -45,6 +45,12 @@ function getAuthHeaders(): Record<string, string> {
     return {};
 }
 
+let globalToast: ((msg: string, type?: 'success' | 'error' | 'info') => void) | null = null;
+
+export const setApiToast = (toastFn: typeof globalToast) => {
+    globalToast = toastFn;
+};
+
 async function request<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
     const { method = 'GET', body, headers = {} } = options;
 
@@ -70,6 +76,9 @@ async function request<T>(endpoint: string, options: RequestOptions = {}): Promi
             detail = err.detail || detail;
         } catch {
             // ignore parse errors
+        }
+        if (globalToast && res.status >= 400) {
+            globalToast(detail, 'error');
         }
         throw new ApiError(res.status, detail);
     }

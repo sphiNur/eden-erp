@@ -1,8 +1,9 @@
-import { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect, ReactNode } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { X, CheckCircle2, AlertCircle, Info } from 'lucide-react';
 import { cn } from '../lib/utils';
 import WebApp from '@twa-dev/sdk';
+import { setApiToast } from '../api/client';
 
 export type ToastType = 'success' | 'error' | 'info';
 
@@ -43,6 +44,12 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
     const success = (msg: string) => showToast(msg, 'success');
     const error = (msg: string) => showToast(msg, 'error');
     const info = (msg: string) => showToast(msg, 'info');
+
+    // Make the toast dispatcher available globally to api client
+    useEffect(() => {
+        setApiToast(showToast);
+        return () => setApiToast(null);
+    }, [showToast]);
 
     return (
         <ToastContext.Provider value={{ showToast, success, error, info }}>
