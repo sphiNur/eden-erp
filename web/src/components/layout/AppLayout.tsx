@@ -7,11 +7,11 @@ export const AppLayout = () => {
     const { user } = useUser();
 
     return (
-        <div className="flex h-[100dvh] w-full flex-col bg-background overflow-hidden">
+        <div className="flex h-[100dvh] w-full flex-col bg-background overflow-hidden relative">
             <AppHeader />
-            {/* Add padding-top to account for header + safe area */}
-            <main className="flex-1 flex flex-col pt-[calc(var(--header-h)+env(safe-area-inset-top))] min-h-0">
-                <div className="mx-auto w-full max-w-[1400px] flex-1 flex flex-col min-h-0">
+            {/* Use pt-header which already includes safe-area-inset-top */}
+            <main className="flex-1 flex flex-col pt-header min-h-0 relative isolate">
+                <div className="mx-auto w-full max-w-[1400px] flex-1 flex flex-col min-h-0 relative">
                     <Outlet />
                 </div>
             </main>

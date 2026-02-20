@@ -35,8 +35,9 @@ export const PageLayout = ({
 
             {/* Main Content */}
             <main className={cn(
-                "flex-1 overflow-y-auto overflow-x-hidden",
-                !noPadding && "p-3 pb-24" // Default padding + bottom space for FAB/Nav
+                "flex-1 overflow-y-auto overflow-x-hidden transition-all relative",
+                !noPadding && "p-3",
+                floatingAction ? (bottomBar ? "pb-24" : "pb-20 pb-safe") : (!noPadding && "pb-safe pb-4")
             )}>
                 <div className="mx-auto w-full max-w-screen-xl">
                     {children}
