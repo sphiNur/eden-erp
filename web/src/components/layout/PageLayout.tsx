@@ -5,6 +5,7 @@ interface PageLayoutProps {
     children: ReactNode;
     toolbar?: ReactNode;
     floatingAction?: ReactNode;
+    bottomBar?: ReactNode;
     className?: string;
     /**
      * If true, removes default padding from the main content area.
@@ -19,9 +20,10 @@ export const PageLayout = ({
     // @deprecated use header instead
     toolbar,
     floatingAction,
+    bottomBar,
     className,
     noPadding = false
-}: PageLayoutProps & { header?: ReactNode }) => {
+}: PageLayoutProps & { header?: ReactNode; bottomBar?: ReactNode }) => {
     return (
         <div className={cn("flex flex-col h-full bg-gray-50", className)}>
             {/* Unified Sticky Header */}
@@ -40,6 +42,13 @@ export const PageLayout = ({
                     {children}
                 </div>
             </main>
+
+            {/* Bottom Bar (Fixed/Sticky behavior handled by parent or just stacked) */}
+            {bottomBar && (
+                <div className="w-full shrink-0 z-drawer bg-white border-t">
+                    {bottomBar}
+                </div>
+            )}
 
             {/* Floating Action / Bottom Elements */}
             {floatingAction && (

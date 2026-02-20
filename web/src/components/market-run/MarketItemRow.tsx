@@ -1,52 +1,50 @@
 import { memo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { Checkbox } from '../ui/checkbox';
 import { Input } from '../ui/input';
 import { cn } from '../../lib/utils';
 import { MarketItem } from '../../hooks/useMarketRun';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { useMarketRunContext } from '../../contexts/MarketRunContext';
 
 interface MarketItemRowProps {
     item: MarketItem;
-    priceInputValue: string;
-    unitPriceInputValue: string;
-    isExpanded: boolean;
-    onTotalPriceChange: (id: string, val: string) => void;
-    onUnitPriceChange: (id: string, val: string) => void;
-    onStoreQtyChange: (id: string, storeName: string, val: string) => void;
-    onToggleBought: (id: string, checked: boolean) => void;
-    onToggleBreakdown: (id: string) => void;
 }
 
-export const MarketItemRow = memo(({
-    item,
-    priceInputValue,
-    unitPriceInputValue,
-    isExpanded,
-    onTotalPriceChange,
-    onUnitPriceChange,
-    onStoreQtyChange,
-    onToggleBought,
-    onToggleBreakdown
-}: MarketItemRowProps) => {
+export const MarketItemRow = memo(({ item }: MarketItemRowProps) => {
     const { t, ui } = useLanguage();
+    const {
+        priceInputs,
+        unitPriceInputs,
+        expandedBreakdown,
+        handleTotalPriceChange,
+        handleUnitPriceChange,
+        updateStoreQuantity,
+        toggleBought,
+        toggleBreakdown
+    } = useMarketRunContext();
+
+    const priceInputValue = priceInputs[item.product_id] ?? '';
+    const unitPriceInputValue = unitPriceInputs[item.product_id] ?? '';
+    const isExpanded = !!expandedBreakdown[item.product_id];
+
+    // Handlers mapped to context functions
+    const onTotalPriceChange = handleTotalPriceChange;
+    const onUnitPriceChange = handleUnitPriceChange;
+    const onStoreQtyChange = updateStoreQuantity;
+    const onToggleBought = toggleBought;
+    const onToggleBreakdown = toggleBreakdown;
 
     // Derived values
     // Qty is now the 'purchase_quantity' from the item (sum of stores)
     const qtyNum = item.purchase_quantity || 0;
 
     return (
-        <motion.div
-            layout
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0, height: 0 }}
-            className={cn(
-                "px-4 py-3 flex flex-col gap-3 transition-colors border-b last:border-0",
-                item.status === 'bought' ? "bg-emerald-50/30" : "bg-white"
-            )}
-        >
+        <div className={cn(
+            "px-4 py-3 flex flex-col gap-3 transition-colors border-b last:border-0",
+            item.status === 'bought' ? "bg-emerald-50/30" : "bg-white"
+        )}>
             <div className="flex items-start gap-3">
                 {/* Product Info - Made Accessible */}
                 <button
@@ -90,44 +88,42 @@ export const MarketItemRow = memo(({
             </div>
 
             {/* Detailed Breakdown (Editable) */}
-            <AnimatePresence>
-                {isExpanded && (
-                    <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        className="overflow-hidden"
-                    >
-                        <div className="bg-gray-50/80 rounded-lg p-2.5 space-y-2 mb-1 mt-1 border border-gray-100">
-                            {item.breakdown.map((b, idx) => (
-                                <div key={idx} className="flex justify-between items-center gap-2">
-                                    <span className="text-gray-700 font-medium text-xs flex-1 truncate">{b.store_name}</span>
-                                    {/* Editable Store Quantity */}
-                                    <div className="flex items-center gap-1">
-                                        <Input
-                                            type="number"
-                                            className="h-7 w-20 text-right text-xs font-mono font-bold bg-white border-gray-200 focus:border-eden-500 px-1"
-                                            value={b.quantity}
-                                            onChange={(e) => onStoreQtyChange(item.product_id, b.store_name, e.target.value)}
-                                        />
-                                        <span className="text-[10px] text-gray-400 font-medium w-6">{t(item.unit)}</span>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </motion.div>
+            <div
+                className={cn(
+                    "grid transition-[grid-template-rows] duration-300 ease-out",
+                    isExpanded ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
                 )}
-            </AnimatePresence>
+            >
+                <div className="overflow-hidden">
+                    <div className="bg-gray-50/80 rounded-lg p-2.5 space-y-2 mb-1 mt-1 border border-gray-100">
+                        {item.breakdown.map((b, idx) => (
+                            <div key={idx} className="flex justify-between items-center gap-2">
+                                <span className="text-gray-700 font-medium text-xs flex-1 truncate">{b.store_name}</span>
+                                {/* Editable Store Quantity */}
+                                <div className="flex items-center gap-1">
+                                    <Input
+                                        type="number"
+                                        className="h-7 w-20 text-right text-xs font-mono font-bold bg-white border-gray-200 focus:border-eden-500 px-1"
+                                        value={b.quantity}
+                                        onChange={(e) => onStoreQtyChange(item.product_id, b.store_name, e.target.value)}
+                                    />
+                                    <span className="text-[10px] text-gray-400 font-medium w-6">{t(item.unit)}</span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
 
             {/* Inputs Section: Unit Price & Total Price */}
-            <AnimatePresence>
-                {item.status !== 'bought' && (
-                    <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        className="grid grid-cols-2 gap-3 pt-1"
-                    >
+            <div
+                className={cn(
+                    "grid transition-[grid-template-rows] duration-300 ease-out",
+                    item.status !== 'bought' ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+                )}
+            >
+                <div className="overflow-hidden">
+                    <div className="grid grid-cols-2 gap-3 pt-1">
                         <div className="relative">
                             <label className="absolute left-3 top-2 text-[10px] font-bold text-gray-500 uppercase tracking-wider">{ui('unitPrice')}</label>
                             <Input
@@ -148,9 +144,9 @@ export const MarketItemRow = memo(({
                                 onChange={(e) => onTotalPriceChange(item.product_id, e.target.value)}
                             />
                         </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-        </motion.div>
+                    </div>
+                </div>
+            </div>
+        </div>
     );
 });

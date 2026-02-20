@@ -103,7 +103,7 @@ export const useMarketData = () => {
         WebApp.HapticFeedback.impactOccurred('light');
     }, []);
 
-    const handleFinalize = async () => {
+    const handleFinalize = useCallback(async () => {
         const boughtItems = items.filter(i => i.status === 'bought');
 
         if (boughtItems.length === 0) {
@@ -152,7 +152,7 @@ export const useMarketData = () => {
         } finally {
             WebApp.MainButton.hideProgress();
         }
-    };
+    }, [items, priceInputs, marketLocation, ui, t, fetchConsolidation]);
 
     return {
         items,

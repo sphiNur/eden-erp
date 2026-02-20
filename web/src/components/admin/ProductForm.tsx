@@ -182,7 +182,7 @@ export const ProductForm = ({ isOpen, onClose, onSuccess, productToEdit }: Produ
                                         ))}
                                     </SelectContent>
                                 </Select>
-                                <p className="text-[10px] text-muted-foreground">Base inventory tracking unit</p>
+                                <p className="text-[10px] text-muted-foreground">{ui('baseUnitDesc')}</p>
                             </div>
 
                             <div className="space-y-2">
@@ -202,25 +202,25 @@ export const ProductForm = ({ isOpen, onClose, onSuccess, productToEdit }: Produ
                             {/* Russian (Required) */}
                             <div className="space-y-1">
                                 <Label htmlFor="name_ru">🇷🇺 Русское <span className="text-red-500">*</span></Label>
-                                <Input id="name_ru" {...form.register('name_ru')} placeholder="e.g. Картофель (Required)" />
+                                <Input id="name_ru" {...form.register('name_ru')} placeholder={`e.g. Картофель (${ui('required')})`} />
                                 {form.formState.errors.name_ru && <p className="text-xs text-red-500">{form.formState.errors.name_ru.message}</p>}
                             </div>
 
                             {/* Chinese */}
                             <div className="space-y-1">
-                                <Label htmlFor="name_cn">🇨🇳 中文 (Optional)</Label>
+                                <Label htmlFor="name_cn">🇨🇳 中文 ({ui('optional')})</Label>
                                 <Input id="name_cn" {...form.register('name_cn')} placeholder="e.g. 土豆" />
                             </div>
 
                             {/* English */}
                             <div className="space-y-1">
-                                <Label htmlFor="name_en">🇬🇧 English (Optional)</Label>
+                                <Label htmlFor="name_en">🇬🇧 English ({ui('optional')})</Label>
                                 <Input id="name_en" {...form.register('name_en')} placeholder="e.g. Potato" />
                             </div>
 
                             {/* Uzbek */}
                             <div className="space-y-1">
-                                <Label htmlFor="name_uz">🇺🇿 O'zbekcha (Optional)</Label>
+                                <Label htmlFor="name_uz">🇺🇿 O'zbekcha ({ui('optional')})</Label>
                                 <Input id="name_uz" {...form.register('name_uz')} placeholder="e.g. Kartoshka" />
                             </div>
                         </div>
