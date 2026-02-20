@@ -21,36 +21,38 @@ export const MarketDistributionList = () => {
     }
 
     return (
-        <Tabs defaultValue={storeKeys[0]} className="w-full">
-            <TabsList className="w-full justify-start overflow-x-auto mb-2 bg-gray-100 p-0.5 rounded-lg h-auto scrollbar-hide">
-                {storeKeys.map(key => (
-                    <TabsTrigger
-                        key={key}
-                        value={key}
-                        className="flex-1 min-w-[80px] text-xs py-1.5 rounded-md data-[state=active]:bg-white data-[state=active]:shadow-sm transition-all text-blue-600"
-                    >
-                        {key} [{distributionSections[key].length}]
-                    </TabsTrigger>
-                ))}
-            </TabsList>
+        <div className="bg-gray-50 flex-1 p-3">
+            <Tabs defaultValue={storeKeys[0]} className="w-full">
+                <TabsList className="w-full justify-start overflow-x-auto mb-3 bg-white p-1 rounded-xl shadow-sm border border-gray-100 h-auto scrollbar-hide">
+                    {storeKeys.map(key => (
+                        <TabsTrigger
+                            key={key}
+                            value={key}
+                            className="flex-1 min-w-[80px] text-[13px] font-semibold py-2 px-3 rounded-lg data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 data-[state=active]:shadow-none transition-all text-gray-500 hover:text-gray-700"
+                        >
+                            {key} <span className="ml-1.5 opacity-60 text-[10px] bg-white/50 px-1.5 py-0.5 rounded-full">{distributionSections[key].length}</span>
+                        </TabsTrigger>
+                    ))}
+                </TabsList>
 
-            {storeKeys.map(key => (
-                <TabsContent key={key} value={key} className="space-y-1">
-                    <div className="bg-white rounded-lg shadow-sm border overflow-hidden divide-y divide-gray-100">
-                        {distributionSections[key].map((entry, idx) => (
-                            <div key={idx} className="px-3 py-3 flex items-center justify-between">
-                                <div>
-                                    <div className="font-semibold text-[13px] text-gray-900">{t(entry.item.product_name)}</div>
-                                    <div className="text-[10px] text-gray-500">{t(entry.item.category_name)}</div>
+                {storeKeys.map(key => (
+                    <TabsContent key={key} value={key} className="space-y-1.5 outline-none focus:outline-none focus-visible:outline-none">
+                        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden divide-y divide-gray-50">
+                            {distributionSections[key].map((entry, idx) => (
+                                <div key={idx} className="px-4 py-3.5 flex items-center justify-between hover:bg-gray-50/50 transition-colors">
+                                    <div className="flex flex-col gap-0.5">
+                                        <div className="font-bold text-[14px] text-gray-900">{t(entry.item.product_name)}</div>
+                                        <div className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">{t(entry.item.category_name)}</div>
+                                    </div>
+                                    <Badge variant="outline" className="font-mono text-[13px] px-2 py-0.5 bg-blue-50/80 text-blue-700 border-blue-200 shadow-sm rounded-md">
+                                        {entry.qty} {t(entry.item.unit)}
+                                    </Badge>
                                 </div>
-                                <Badge variant="outline" className="font-mono text-xs bg-blue-50 text-blue-700 border-blue-100">
-                                    {entry.qty} {t(entry.item.unit)}
-                                </Badge>
-                            </div>
-                        ))}
-                    </div>
-                </TabsContent>
-            ))}
-        </Tabs>
+                            ))}
+                        </div>
+                    </TabsContent>
+                ))}
+            </Tabs>
+        </div>
     );
 };

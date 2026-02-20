@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { purchasesApi } from '../api/client';
 import { ConsolidatedItem, BatchCreate, BatchItemInput } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -14,8 +14,10 @@ export const useMarketData = () => {
     const { t, ui } = useLanguage();
     const [items, setItems] = useState<MarketItem[]>([]);
     const [loading, setLoading] = useState(true);
-    const [priceInputs, setPriceInputs] = useState<Record<string, string>>({});
-    const [unitPriceInputs, setUnitPriceInputs] = useState<Record<string, string>>({});
+
+    // Use Refs for form inputs to prevent global re-renders on every keystroke
+    const priceInputsRef = useRef<Record<string, string>>({});
+    const unitPriceInputsRef = useRef<Record<string, string>>({});
     const [marketLocation] = useState('Chorsu');
 
     const fetchConsolidation = useCallback(async () => {
@@ -29,6 +31,8 @@ export const useMarketData = () => {
                 breakdown: i.breakdown.map(b => ({ ...b }))
             }));
             setItems(marketItems);
+            priceInputsRef.current = {};
+            unitPriceInputsRef.current = {};
         } catch (err) {
             console.error(err);
             WebApp.showAlert(ui('failedLoadItems'));
@@ -41,29 +45,17 @@ export const useMarketData = () => {
         fetchConsolidation();
     }, [fetchConsolidation]);
 
-    const handleUnitPriceChange = useCallback((id: string, val: string) => {
-        setUnitPriceInputs(prev => ({ ...prev, [id]: val }));
-        const item = items.find(i => i.product_id === id);
-        if (item && val) {
-            const unitPrice = parseFloat(val);
-            const qty = item.purchase_quantity || 0;
-            if (!isNaN(unitPrice) && qty > 0) {
-                setPriceInputs(prev => ({ ...prev, [id]: Math.round(unitPrice * qty).toString() }));
-            }
-        }
-    }, [items]);
+    // Context consumers will call these, but they won't trigger global re-renders
+    const getPriceInput = useCallback((id: string) => priceInputsRef.current[id] || '', []);
+    const getUnitPriceInput = useCallback((id: string) => unitPriceInputsRef.current[id] || '', []);
 
-    const handleTotalPriceChange = useCallback((id: string, val: string) => {
-        setPriceInputs(prev => ({ ...prev, [id]: val }));
-        const item = items.find(i => i.product_id === id);
-        if (item && val) {
-            const totalPrice = parseFloat(val);
-            const qty = item.purchase_quantity || 0;
-            if (!isNaN(totalPrice) && qty > 0) {
-                setUnitPriceInputs(prev => ({ ...prev, [id]: Math.round(totalPrice / qty).toString() }));
-            }
-        }
-    }, [items]);
+    const setPriceInput = useCallback((id: string, val: string) => {
+        priceInputsRef.current[id] = val;
+    }, []);
+
+    const setUnitPriceInput = useCallback((id: string, val: string) => {
+        unitPriceInputsRef.current[id] = val;
+    }, []);
 
     const updateStoreQuantity = useCallback((productId: string, storeName: string, newQtyVal: string) => {
         const newQty = parseFloat(newQtyVal);
@@ -81,10 +73,10 @@ export const useMarketData = () => {
 
             const newTotal = newBreakdown.reduce((sum, b) => sum + b.quantity, 0);
 
-            // Auto-update total price if unit price exists
-            const unitPrice = parseFloat(unitPriceInputs[productId] || '0');
+            // Auto-update total price in ref if unit price exists
+            const unitPrice = parseFloat(unitPriceInputsRef.current[productId] || '0');
             if (unitPrice > 0) {
-                setPriceInputs(p => ({ ...p, [productId]: Math.round(unitPrice * newTotal).toString() }));
+                priceInputsRef.current[productId] = Math.round(unitPrice * newTotal).toString();
             }
 
             return {
@@ -93,7 +85,7 @@ export const useMarketData = () => {
                 purchase_quantity: newTotal
             };
         }));
-    }, [unitPriceInputs]);
+    }, []);
 
     const toggleBought = useCallback((product_id: string, checked: boolean) => {
         setItems(prev => prev.map(i => {
@@ -113,7 +105,7 @@ export const useMarketData = () => {
 
         const validItems: BatchItemInput[] = [];
         for (const item of boughtItems) {
-            const priceVal = priceInputs[item.product_id] || (item.purchase_price ? item.purchase_price.toString() : '');
+            const priceVal = priceInputsRef.current[item.product_id] || '';
             const qtyVal = item.purchase_quantity || 0;
 
             const finalPrice = parseFloat(priceVal || '0');
@@ -143,8 +135,8 @@ export const useMarketData = () => {
             WebApp.MainButton.showProgress(true);
             await purchasesApi.submitBatch(payload);
             WebApp.showAlert(ui('batchFinalized'));
-            setPriceInputs({});
-            setUnitPriceInputs({});
+            priceInputsRef.current = {};
+            unitPriceInputsRef.current = {};
             await fetchConsolidation();
         } catch (err) {
             console.error(err);
@@ -152,16 +144,16 @@ export const useMarketData = () => {
         } finally {
             WebApp.MainButton.hideProgress();
         }
-    }, [items, priceInputs, marketLocation, ui, t, fetchConsolidation]);
+    }, [items, marketLocation, ui, t, fetchConsolidation]);
 
     return {
         items,
         loading,
-        priceInputs,
-        unitPriceInputs,
+        getPriceInput,
+        getUnitPriceInput,
+        setPriceInput,
+        setUnitPriceInput,
         marketLocation,
-        handleTotalPriceChange,
-        handleUnitPriceChange,
         updateStoreQuantity,
         toggleBought,
         handleFinalize,
