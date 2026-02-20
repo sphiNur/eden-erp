@@ -4,6 +4,7 @@ import { cn } from '../../lib/utils';
 interface PageLayoutProps {
     children: ReactNode;
     toolbar?: ReactNode;
+    header?: ReactNode;
     floatingAction?: ReactNode;
     bottomBar?: ReactNode;
     className?: string;
@@ -17,13 +18,12 @@ interface PageLayoutProps {
 export const PageLayout = ({
     children,
     header,
-    // @deprecated use header instead
     toolbar,
     floatingAction,
     bottomBar,
     className,
     noPadding = false
-}: PageLayoutProps & { header?: ReactNode; bottomBar?: ReactNode }) => {
+}: PageLayoutProps) => {
     return (
         <div className={cn("flex flex-col h-full bg-gray-50", className)}>
             {/* Unified Sticky Header */}
@@ -37,26 +37,30 @@ export const PageLayout = ({
             <main className={cn(
                 "flex-1 overflow-y-auto overflow-x-hidden transition-all relative",
                 !noPadding && "p-3",
-                floatingAction ? (bottomBar ? "pb-24" : "pb-20 pb-safe") : (!noPadding && "pb-safe pb-4")
+                !noPadding && "pb-4"
             )}>
                 <div className="mx-auto w-full max-w-screen-xl">
                     {children}
                 </div>
             </main>
 
-            {/* Bottom Bar (Fixed/Sticky behavior handled by parent or just stacked) */}
+            {/* Bottom Bar (e.g., Market Run finalize button) */}
             {bottomBar && (
                 <div className="w-full shrink-0 z-drawer bg-white border-t">
                     {bottomBar}
                 </div>
             )}
 
-            {/* Floating Action / Bottom Elements */}
+            {/* Floating Action — sits above the bottom tab bar */}
             {floatingAction && (
-                <div className="fixed bottom-20 right-4 z-fab">
+                <div
+                    className="fixed right-4 z-fab"
+                    style={{ bottom: 'calc(var(--nav-h) + 12px)' }}
+                >
                     {floatingAction}
                 </div>
             )}
         </div>
     );
 };
+

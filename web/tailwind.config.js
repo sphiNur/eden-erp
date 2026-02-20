@@ -65,7 +65,6 @@ export default {
                 danger: "hsl(var(--danger))",
             },
             spacing: {
-                'header': 'var(--header-h)',
                 'nav': 'var(--nav-h)',
             },
             zIndex: {

@@ -56,7 +56,7 @@ export const BottomDrawer = ({ open, onClose, title, badge, children, footer }: 
 
                     {/* Footer */}
                     {footer && (
-                        <div className="p-4 border-t bg-gray-50 pb-8 shrink-0">
+                        <div className="p-4 border-t bg-gray-50 shrink-0 pb-tma-safe">
                             {footer}
                         </div>
                     )}

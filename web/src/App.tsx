@@ -109,28 +109,67 @@ const ProtectedRoute = ({ children, allowedRoles }: { children: ReactNode, allow
     return <>{children}</>;
 };
 
+/**
+ * Sync TMA safe-area insets → CSS custom properties.
+ * These drive all layout spacing across the app.
+ */
+function syncSafeArea() {
+    const root = document.documentElement.style;
+    const wa = WebApp as any;
+
+    // Device safe area (notch, Dynamic Island, nav gestures)
+    if (wa.safeAreaInset) {
+        root.setProperty('--tma-safe-top', `${wa.safeAreaInset.top}px`);
+        root.setProperty('--tma-safe-bottom', `${wa.safeAreaInset.bottom}px`);
+        root.setProperty('--tma-safe-left', `${wa.safeAreaInset.left}px`);
+        root.setProperty('--tma-safe-right', `${wa.safeAreaInset.right}px`);
+    }
+
+    // Content safe area (Telegram UI chrome like back button)
+    if (wa.contentSafeAreaInset) {
+        root.setProperty('--tma-content-top', `${wa.contentSafeAreaInset.top}px`);
+        root.setProperty('--tma-content-bottom', `${wa.contentSafeAreaInset.bottom}px`);
+    }
+}
+
 function App() {
     useEffect(() => {
         if (WebApp.initDataUnsafe) {
             WebApp.ready();
 
-            // apply platform class
+            // Apply platform class
             const platform = WebApp.platform;
             document.body.classList.add(`os-${platform}`);
 
-            // Try to force full screen / expanded mode
+            // Expand + request fullscreen (Mini Apps 2.0, v8.0+)
             try {
                 WebApp.expand();
-
-                // Check for Mini Apps 2.0 FullScreen API (v8.0+)
-                // We use type assertion or checking existence to avoid TS errors on older SDK types
-                if (parseFloat(WebApp.version) >= 8.0 && (WebApp as any).requestFullscreen) {
-                    (WebApp as any).requestFullscreen();
+                const wa = WebApp as any;
+                if (parseFloat(WebApp.version) >= 8.0 && wa.requestFullscreen) {
+                    wa.requestFullscreen();
                 }
             } catch (e) {
-                console.error("Error setting full screen:", e);
+                console.error('Error setting full screen:', e);
+            }
+
+            // Sync safe-area CSS vars
+            syncSafeArea();
+
+            // Listen for safe-area changes (orientation change, keyboard, etc.)
+            const wa = WebApp as any;
+            if (wa.onEvent) {
+                wa.onEvent('safeAreaChanged', syncSafeArea);
+                wa.onEvent('contentSafeAreaChanged', syncSafeArea);
             }
         }
+
+        return () => {
+            const wa = WebApp as any;
+            if (wa.offEvent) {
+                wa.offEvent('safeAreaChanged', syncSafeArea);
+                wa.offEvent('contentSafeAreaChanged', syncSafeArea);
+            }
+        };
     }, []);
 
     return (
@@ -168,9 +207,6 @@ function App() {
                                     />
 
 
-                                    // ... (existing imports)
-
-                                    // ... inside Routes ...
                                     <Route
                                         path="/admin/products"
                                         element={

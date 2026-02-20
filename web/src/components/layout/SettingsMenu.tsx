@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Settings, Bug, Globe, Power, User, X } from 'lucide-react';
+import React, { useState } from 'react';
+import { Globe, Bug, Power, User, X } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '../ui/sheet';
 import { useLanguage, SUPPORTED_LANGUAGES } from '../../contexts/LanguageContext';
@@ -11,12 +11,25 @@ import { cn } from '../../lib/utils';
 
 interface SettingsMenuProps {
     children?: React.ReactNode;
+    open?: boolean;
+    onOpenChange?: (open: boolean) => void;
 }
 
-export const SettingsMenu = ({ children }: SettingsMenuProps) => {
+export const SettingsMenu = ({ children, open: controlledOpen, onOpenChange }: SettingsMenuProps) => {
     const { language, setLanguage } = useLanguage();
     const { user } = useUser();
-    const [open, setOpen] = useState(false);
+    const [internalOpen, setInternalOpen] = useState(false);
+
+    // Support both controlled (from BottomTabBar) and uncontrolled
+    const isControlled = controlledOpen !== undefined;
+    const open = isControlled ? controlledOpen : internalOpen;
+    const setOpen = (val: boolean) => {
+        if (isControlled) {
+            onOpenChange?.(val);
+        } else {
+            setInternalOpen(val);
+        }
+    };
 
     // DevTools Logic
     const isDev = import.meta.env.DEV;
@@ -51,33 +64,19 @@ export const SettingsMenu = ({ children }: SettingsMenuProps) => {
             if (val) WebApp.HapticFeedback.impactOccurred('light');
             setOpen(val);
         }}>
-            {/* Standard Sheet Trigger */}
-            <SheetTrigger asChild>
-                {children ? (
-                    children
-                ) : (
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-10 w-10 rounded-full text-gray-500 hover:text-gray-900"
-                        aria-label="Open Settings"
-                    >
-                        <Settings className="h-5 w-5" />
-                    </Button>
-                )}
-            </SheetTrigger>
+            {/* Trigger: provided by parent (BottomTabBar button) */}
+            {children && (
+                <SheetTrigger asChild>
+                    {children}
+                </SheetTrigger>
+            )}
 
             <SheetContent
-                side="top"
-                overlayClassName="top-[var(--header-h)] z-50 bg-black/20 backdrop-blur-[1px]"
+                side="bottom"
                 className={cn(
-                    "rounded-b-2xl border-b-0 shadow-xl bg-white/95 backdrop-blur-xl [&>button]:hidden z-50",
-                    "p-0 gap-0 w-full max-h-[80vh] overflow-hidden flex flex-col"
+                    "rounded-t-2xl border-t-0 shadow-xl bg-white/95 backdrop-blur-xl [&>button]:hidden",
+                    "p-0 gap-0 w-full max-h-[75vh] overflow-hidden flex flex-col"
                 )}
-                style={{
-                    top: 'var(--header-h)',
-                    marginTop: 0
-                }}
             >
                 {/* Header Section */}
                 <div className="px-4 py-3 flex items-center justify-between border-b border-gray-100/50">
@@ -115,7 +114,7 @@ export const SettingsMenu = ({ children }: SettingsMenuProps) => {
                     </Button>
                 </div>
 
-                <div className="p-4 space-y-5 overflow-y-auto">
+                <div className="p-4 space-y-5 overflow-y-auto pb-safe">
                     {/* ─── Compact Language Section ─── */}
                     <div className="space-y-2">
                         <div className="flex items-center gap-1.5 text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">
@@ -128,7 +127,7 @@ export const SettingsMenu = ({ children }: SettingsMenuProps) => {
                                     key={lang.code}
                                     onClick={() => handleLanguageChange(lang.code)}
                                     className={cn(
-                                        "flex flex-col items-center justify-center py-2 rounded-lg border transition-all duration-200",
+                                        "flex flex-col items-center justify-center py-2 rounded-lg border transition-all duration-200 relative",
                                         language === lang.code
                                             ? "bg-eden-50 border-eden-200 text-eden-700 shadow-sm"
                                             : "bg-white border-transparent text-gray-600 hover:bg-gray-50"

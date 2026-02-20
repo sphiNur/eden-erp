@@ -6,19 +6,21 @@
 
 @layer base {
     :root {
+        /* ─── TMA Safe Area (set dynamically by JS, fallbacks for local dev) ─── */
+        --tma-safe-top: 0px;
+        --tma-safe-bottom: 0px;
+        --tma-safe-left: 0px;
+        --tma-safe-right: 0px;
+        --tma-content-top: 0px;
+        --tma-content-bottom: 0px;
+
         /* ─── Layout ─── */
-        /* ─── Layout ─── */
-        /* ─── Layout ─── */
-        --header-base: 44px;
-        /* Standard Navigation Bar Height (Inline Title) */
-        --header-h: calc(var(--header-base) + env(safe-area-inset-top));
-        --nav-h: calc(4rem + env(safe-area-inset-bottom));
+        --nav-h: calc(3.5rem + var(--tma-safe-bottom));
 
         /* ─── Z-Index Scale ─── */
         --z-toolbar: 10;
         --z-fab: 20;
         --z-sticky: 30;
-        /* New intermediate layer for sticky headers */
         --z-header: 40;
         --z-nav: 40;
         --z-drawer: 50;
@@ -35,12 +37,9 @@
 
         /* ─── Surfaces (Light Mode: Slate 50 Background) ─── */
         --background: 210 40% 98%;
-        /* Slate 50 - Page BG */
         --foreground: 222.2 84% 4.9%;
-        /* Slate 900 - Main Text */
 
         --card: 0 0% 100%;
-        /* White - Cards */
         --card-foreground: 222.2 84% 4.9%;
 
         --popover: 0 0% 100%;
@@ -48,7 +47,6 @@
 
         /* ─── Primary: Deep Indigo ─── */
         --primary: 249 72% 51%;
-        /* Indigo 600 */
         --primary-foreground: 210 40% 98%;
 
         /* ─── Secondary: Slate 100 ─── */
@@ -58,7 +56,6 @@
         /* ─── Muted: Slate 100 ─── */
         --muted: 210 40% 96.1%;
         --muted-foreground: 215.4 16.3% 46.9%;
-        /* Slate 500 */
 
         --accent: 210 40% 96.1%;
         --accent-foreground: 222.2 47.4% 11.2%;
@@ -67,10 +64,8 @@
         --destructive-foreground: 210 40% 98%;
 
         --border: 214.3 31.8% 91.4%;
-        /* Slate 200 */
         --input: 214.3 31.8% 91.4%;
         --ring: 249 72% 51%;
-        /* Primary Ring */
 
         /* ─── Semantic Colors ─── */
         --success: 142 71% 45%;
@@ -85,25 +80,19 @@
     }
 
     .dark {
-        /* ─── Surfaces (Dark Mode: Slate 950 Background) ─── */
         --background: 222.2 84% 4.9%;
-        /* Slate 950 */
         --foreground: 210 40% 98%;
-        /* Slate 50 */
 
         --card: 222.2 84% 6.5%;
-        /* Slate 900 */
         --card-foreground: 210 40% 98%;
 
         --popover: 222.2 84% 6.5%;
         --popover-foreground: 210 40% 98%;
 
-        /* ─── Primary: Indigo 500 (Brighter for Dark Mode) ─── */
         --primary: 249 72% 60%;
         --primary-foreground: 210 40% 98%;
 
         --secondary: 217.2 32.6% 17.5%;
-        /* Slate 800 */
         --secondary-foreground: 210 40% 98%;
 
         --muted: 217.2 32.6% 17.5%;
@@ -136,16 +125,28 @@
         /* Full screen adaptation */
         min-height: 100dvh;
         overscroll-behavior-y: none;
-        /* Prevent pull-to-refresh effect if not needed */
     }
 
-    /* Safe Area padding utilities */
+    /* ─── TMA Safe Area Utilities ─── */
+    .pt-tma-safe {
+        padding-top: var(--tma-safe-top);
+    }
+
+    .pb-tma-safe {
+        padding-bottom: var(--tma-safe-bottom);
+    }
+
+    .pt-tma-content {
+        padding-top: calc(var(--tma-safe-top) + var(--tma-content-top));
+    }
+
+    /* Legacy compat — fallback to TMA vars */
     .pt-safe {
-        padding-top: env(safe-area-inset-top);
+        padding-top: var(--tma-safe-top);
     }
 
     .pb-safe {
-        padding-bottom: env(safe-area-inset-bottom);
+        padding-bottom: var(--tma-safe-bottom);
     }
 
     /* ─── Platform Adaptations ─── */

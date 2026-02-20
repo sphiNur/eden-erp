@@ -1,27 +1,58 @@
+import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Users, Package, Store } from 'lucide-react';
+import { Users, Package, Store, ShoppingCart, Settings } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useUser } from '../../contexts/UserContext';
+import { SettingsMenu } from './SettingsMenu';
 import WebApp from '@twa-dev/sdk';
+import type { LucideIcon } from 'lucide-react';
 
-const ADMIN_TABS = [
+interface TabItem {
+    key: string;
+    icon: LucideIcon;
+    path: string;
+}
+
+const ADMIN_TABS: TabItem[] = [
     { key: 'inventory', icon: Package, path: '/admin/products' },
     { key: 'teamManagement', icon: Users, path: '/admin/users' },
     { key: 'stores', icon: Store, path: '/admin/stores' },
-] as const;
+];
+
+const STORE_MANAGER_TABS: TabItem[] = [
+    { key: 'storeRequest', icon: ShoppingCart, path: '/store' },
+];
+
+const PURCHASER_TABS: TabItem[] = [
+    { key: 'marketRun', icon: ShoppingCart, path: '/market' },
+];
+
+function getTabsForRole(role?: string): TabItem[] {
+    switch (role) {
+        case 'admin':
+            return ADMIN_TABS;
+        case 'store_manager':
+            return STORE_MANAGER_TABS;
+        case 'global_purchaser':
+            return PURCHASER_TABS;
+        default:
+            return [];
+    }
+}
 
 export const BottomTabBar = () => {
     const { user } = useUser();
     const { ui } = useLanguage();
     const location = useLocation();
     const navigate = useNavigate();
+    const [settingsOpen, setSettingsOpen] = useState(false);
 
-    // Only show on Admin routes
-    if (!location.pathname.startsWith('/admin')) return null;
+    if (!user) return null;
 
-    // Additional check for roles just in case
-    if (!user || !['admin'].includes(user.role)) return null;
+    const tabs = getTabsForRole(user.role);
+    // Don't render if somehow no tabs and no settings
+    if (tabs.length === 0) return null;
 
     const handleNav = (path: string) => {
         if (location.pathname !== path) {
@@ -30,34 +61,75 @@ export const BottomTabBar = () => {
         }
     };
 
-    return (
-        <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-around items-center z-nav shadow-[0_-1px_3px_rgba(0,0,0,0.05)] h-[var(--nav-h)] pb-safe">
-            {ADMIN_TABS.map((tab) => {
-                const isActive = location.pathname === tab.path ||
-                    location.pathname.startsWith(tab.path);
+    const isSingleTab = tabs.length === 1;
 
-                return (
-                    <button
-                        key={tab.path}
-                        onClick={() => handleNav(tab.path)}
-                        className={cn(
-                            "flex flex-col items-center justify-center w-full h-full space-y-1 transition-colors",
-                            isActive
-                                ? "text-eden-500"
-                                : "text-gray-400 hover:text-gray-600 active:text-gray-500"
-                        )}
-                    >
-                        <tab.icon
-                            size={isActive ? 24 : 22}
-                            strokeWidth={isActive ? 2.5 : 2}
-                            className={cn("transition-all", isActive && "scale-110")}
-                        />
-                        <span className="text-[10px] font-medium leading-tight text-center max-w-[60px] truncate">
-                            {ui(tab.key as Parameters<typeof ui>[0])}
-                        </span>
-                    </button>
-                );
-            })}
+    return (
+        <nav
+            className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-gray-200 flex items-center z-nav shadow-[0_-1px_3px_rgba(0,0,0,0.05)]"
+            style={{
+                height: 'var(--nav-h)',
+                paddingBottom: 'var(--tma-safe-bottom)',
+            }}
+        >
+            {/* Navigation tabs */}
+            <div className={cn(
+                "flex flex-1",
+                isSingleTab ? "justify-start pl-4" : "justify-around"
+            )}>
+                {tabs.map((tab) => {
+                    const isActive = location.pathname === tab.path ||
+                        location.pathname.startsWith(tab.path);
+
+                    return (
+                        <button
+                            key={tab.path}
+                            onClick={() => handleNav(tab.path)}
+                            className={cn(
+                                "flex flex-col items-center justify-center space-y-0.5 transition-colors",
+                                isSingleTab ? "px-4" : "w-full h-full",
+                                isActive
+                                    ? "text-eden-500"
+                                    : "text-gray-400 hover:text-gray-600 active:text-gray-500"
+                            )}
+                        >
+                            <tab.icon
+                                size={isActive ? 22 : 20}
+                                strokeWidth={isActive ? 2.5 : 2}
+                                className={cn("transition-all", isActive && "scale-110")}
+                            />
+                            <span className="text-[10px] font-medium leading-tight text-center max-w-[60px] truncate">
+                                {ui(tab.key as Parameters<typeof ui>[0])}
+                            </span>
+                        </button>
+                    );
+                })}
+            </div>
+
+            {/* Settings tab — always present, triggers SettingsMenu */}
+            <SettingsMenu open={settingsOpen} onOpenChange={setSettingsOpen}>
+                <button
+                    onClick={() => {
+                        WebApp.HapticFeedback.selectionChanged();
+                        setSettingsOpen(true);
+                    }}
+                    className={cn(
+                        "flex flex-col items-center justify-center space-y-0.5 transition-colors",
+                        isSingleTab ? "px-6 pr-4" : "w-16 shrink-0",
+                        settingsOpen
+                            ? "text-eden-500"
+                            : "text-gray-400 hover:text-gray-600"
+                    )}
+                >
+                    <Settings
+                        size={settingsOpen ? 22 : 20}
+                        strokeWidth={settingsOpen ? 2.5 : 2}
+                        className="transition-all"
+                    />
+                    <span className="text-[10px] font-medium leading-tight">
+                        Settings
+                    </span>
+                </button>
+            </SettingsMenu>
         </nav>
     );
 };

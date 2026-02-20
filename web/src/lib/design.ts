@@ -4,8 +4,7 @@
  */
 
 export const LAYOUT = {
-    HEADER_HEIGHT: 56,  // --header-h = 3.5rem
-    NAV_HEIGHT: 64,     // --nav-h = 4rem
+    NAV_HEIGHT: 56,     // base nav height (bottom safe area added via CSS)
 } as const;
 
 export const SPRING = {
