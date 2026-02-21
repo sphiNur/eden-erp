@@ -1,30 +1,31 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App.tsx'
-import './index.css'
+import ReactDOM from 'react-dom/client';
+import React from 'react';
+import { Root } from './components/Root.tsx';
+import { init } from './init.ts';
+import './index.css';
 
-// Initialize official Telegram SDK if available (non-blocking)
-import('@telegram-apps/sdk-react').then(({ init, viewport }) => {
-    try {
-        init();
-        if (viewport.mount.isAvailable()) {
-            viewport.mount().then(() => {
-                if (viewport.bindCssVars.isAvailable()) {
-                    viewport.bindCssVars();
-                }
-            }).catch(err => {
-                console.warn('Failed to mount viewport:', err);
-            });
-        }
-    } catch (e) {
-        console.warn('Telegram SDK init failed:', e);
-    }
-}).catch(() => {
-    console.warn('Telegram SDK not available (not in TMA environment)');
+// Mock the environment in case we are outside Telegram.
+import './mockEnv.ts';
+
+const root = ReactDOM.createRoot(document.getElementById('root')!);
+
+// Configure all application dependencies.
+init({
+    debug: import.meta.env.DEV,
+    // eruda: import.meta.env.DEV && ['ios', 'android'].includes(platform),
+}).then(() => {
+    root.render(
+        <React.StrictMode>
+            <Root />
+        </React.StrictMode>
+    );
+}).catch(err => {
+    console.error('Failed to initialize app:', err);
+    // Simple fallback if init fails completely
+    root.render(
+        <div style={{ padding: 20, color: 'red' }}>
+            <h1>Initialization Failed</h1>
+            <pre>{String(err)}</pre>
+        </div>
+    );
 });
-
-ReactDOM.createRoot(document.getElementById('root')!).render(
-    <React.StrictMode>
-        <App />
-    </React.StrictMode>,
-)

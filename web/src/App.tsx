@@ -1,5 +1,5 @@
-import { useEffect, ReactNode, Component, type ErrorInfo } from 'react';
-import { ready, expand, getPlatform, getTelegramUserId } from './lib/telegram';
+import { useEffect, ReactNode } from 'react';
+import { retrieveLaunchParams } from '@telegram-apps/sdk-react';
 import { HashRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { MarketRun } from './components/MarketRun';
 import { StoreRequest } from './components/StoreRequest';
@@ -43,11 +43,17 @@ const AppDispatcher = () => {
     }
 
     if (!user) {
+        let displayId = 'unknown';
+        try {
+            const lp = retrieveLaunchParams() as any;
+            displayId = lp.initData?.user?.id?.toString() || 'unknown';
+        } catch (e) { }
+
         return (
             <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-6 text-center">
                 <h1 className="text-xl font-bold text-red-600 mb-2">{ui('accessDenied')}</h1>
                 <p className="text-gray-600">{ui('accessDeniedMsg')}</p>
-                <p className="text-xs text-gray-400 mt-4">Telegram ID: {getTelegramUserId()}</p>
+                <p className="text-xs text-gray-400 mt-4">Telegram ID: {displayId}</p>
             </div>
         );
     }
@@ -56,38 +62,6 @@ const AppDispatcher = () => {
     return <div className="min-h-screen bg-gray-50" />;
 };
 
-// --- Error Boundary ---
-interface ErrorBoundaryState { hasError: boolean; error: Error | null; }
-
-class ErrorBoundary extends Component<{ children: ReactNode }, ErrorBoundaryState> {
-    state: ErrorBoundaryState = { hasError: false, error: null };
-
-    static getDerivedStateFromError(error: Error) {
-        return { hasError: true, error };
-    }
-
-    componentDidCatch(error: Error, info: ErrorInfo) {
-        console.error('ErrorBoundary caught:', error, info.componentStack);
-    }
-
-    render() {
-        if (this.state.hasError) {
-            return (
-                <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-6 text-center">
-                    <h1 className="text-xl font-bold text-red-600 mb-2">Something went wrong</h1>
-                    <p className="text-sm text-gray-500 mb-4">{this.state.error?.message}</p>
-                    <button
-                        className="px-4 py-2 bg-eden-500 text-white rounded-lg"
-                        onClick={() => window.location.reload()}
-                    >
-                        Reload
-                    </button>
-                </div>
-            );
-        }
-        return this.props.children;
-    }
-}
 
 // Protected Route Wrapper
 const ProtectedRoute = ({ children, allowedRoles }: { children: ReactNode, allowedRoles: string[] }) => {
@@ -112,109 +86,100 @@ const ProtectedRoute = ({ children, allowedRoles }: { children: ReactNode, allow
 
 function App() {
     useEffect(() => {
-        ready();
-
-        // Apply platform class for legacy CSS
-        const platform = getPlatform();
-        document.body.classList.add(`os-${platform}`);
-
-        // Expand (Standard practice for TMAs)
-        expand();
+        try {
+            // Apply platform class for legacy CSS
+            const platform = retrieveLaunchParams().platform;
+            document.body.classList.add(`os-${platform}`);
+        } catch (e) {
+            console.warn('Failed to apply platform class:', e);
+        }
     }, []);
 
     return (
         <LanguageProvider>
             <UserProvider>
                 <ToastProvider>
-                    <ErrorBoundary>
-                        <HashRouter>
-                            <Routes>
-                                <Route path="/" element={<AppDispatcher />} />
+                    <HashRouter>
+                        <Routes>
+                            <Route path="/" element={<AppDispatcher />} />
 
-                                {/* All authenticated pages under AppLayout */}
-                                <Route element={<AppLayout />}>
-                                    <Route
-                                        path="/store"
-                                        element={
-                                            <ProtectedRoute allowedRoles={['store_manager', 'admin']}>
-                                                <StoreRequest />
-                                            </ProtectedRoute>
-                                        }
-                                    />
-                                    <Route
-                                        path="/market"
-                                        element={
-                                            <ProtectedRoute allowedRoles={['global_purchaser', 'admin']}>
-                                                <MarketRun />
-                                            </ProtectedRoute>
-                                        }
-                                    />
+                            {/* All authenticated pages under AppLayout */}
+                            <Route element={<AppLayout />}>
+                                <Route
+                                    path="/store"
+                                    element={
+                                        <ProtectedRoute allowedRoles={['store_manager', 'admin']}>
+                                            <StoreRequest />
+                                        </ProtectedRoute>
+                                    }
+                                />
+                                <Route
+                                    path="/market"
+                                    element={
+                                        <ProtectedRoute allowedRoles={['global_purchaser', 'admin']}>
+                                            <MarketRun />
+                                        </ProtectedRoute>
+                                    }
+                                />
 
-                                    {/* Admin routes */}
-                                    <Route
-                                        path="/admin"
-                                        element={<Navigate to="/admin/products" replace />}
-                                    />
+                                {/* Admin routes */}
+                                <Route
+                                    path="/admin"
+                                    element={<Navigate to="/admin/products" replace />}
+                                />
+                                <Route
+                                    path="/admin/products"
+                                    element={
+                                        <ProtectedRoute allowedRoles={['admin']}>
+                                            <InventoryMaster />
+                                        </ProtectedRoute>
+                                    }
+                                />
+                                <Route
+                                    path="/admin/products/:id"
+                                    element={
+                                        <ProtectedRoute allowedRoles={['admin']}>
+                                            <ProductFormPage />
+                                        </ProtectedRoute>
+                                    }
+                                />
+                                <Route
+                                    path="/admin/users"
+                                    element={
+                                        <ProtectedRoute allowedRoles={['admin']}>
+                                            <UserList />
+                                        </ProtectedRoute>
+                                    }
+                                />
+                                <Route
+                                    path="/admin/users/:id"
+                                    element={
+                                        <ProtectedRoute allowedRoles={['admin']}>
+                                            <UserFormPage />
+                                        </ProtectedRoute>
+                                    }
+                                />
+                                <Route
+                                    path="/admin/stores"
+                                    element={
+                                        <ProtectedRoute allowedRoles={['admin']}>
+                                            <StoreList />
+                                        </ProtectedRoute>
+                                    }
+                                />
+                                <Route
+                                    path="/admin/stores/:id"
+                                    element={
+                                        <ProtectedRoute allowedRoles={['admin']}>
+                                            <StoreFormPage />
+                                        </ProtectedRoute>
+                                    }
+                                />
+                            </Route>
 
-
-                                    <Route
-                                        path="/admin/products"
-                                        element={
-                                            <ProtectedRoute allowedRoles={['admin']}>
-                                                <InventoryMaster />
-                                            </ProtectedRoute>
-                                        }
-                                    />
-                                    <Route
-                                        path="/admin/products/:id"
-                                        element={
-                                            <ProtectedRoute allowedRoles={['admin']}>
-                                                <ProductFormPage />
-                                            </ProtectedRoute>
-                                        }
-                                    />
-
-                                    <Route
-                                        path="/admin/users"
-                                        element={
-                                            <ProtectedRoute allowedRoles={['admin']}>
-                                                <UserList />
-                                            </ProtectedRoute>
-                                        }
-                                    />
-                                    <Route
-                                        path="/admin/users/:id"
-                                        element={
-                                            <ProtectedRoute allowedRoles={['admin']}>
-                                                <UserFormPage />
-                                            </ProtectedRoute>
-                                        }
-                                    />
-
-                                    {/* Analytics Removed per request */}
-                                    <Route
-                                        path="/admin/stores"
-                                        element={
-                                            <ProtectedRoute allowedRoles={['admin']}>
-                                                <StoreList />
-                                            </ProtectedRoute>
-                                        }
-                                    />
-                                    <Route
-                                        path="/admin/stores/:id"
-                                        element={
-                                            <ProtectedRoute allowedRoles={['admin']}>
-                                                <StoreFormPage />
-                                            </ProtectedRoute>
-                                        }
-                                    />
-
-                                </Route>
-
-                                <Route path="*" element={<Navigate to="/" replace />} />
-                            </Routes>
-                        </HashRouter>
-                    </ErrorBoundary>
+                            <Route path="*" element={<Navigate to="/" replace />} />
+                        </Routes>
+                    </HashRouter>
                 </ToastProvider>
             </UserProvider>
         </LanguageProvider>

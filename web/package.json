@@ -35,6 +35,7 @@
     "@types/react-dom": "^18.2.7",
     "@vitejs/plugin-react": "^4.0.3",
     "autoprefixer": "^10.4.14",
+    "eruda": "^3.4.3",
     "postcss": "^8.4.27",
     "tailwindcss": "^3.3.3",
     "tailwindcss-animate": "^1.0.6",
