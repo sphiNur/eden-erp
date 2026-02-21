@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { Globe, Bug, Power, User, X } from 'lucide-react';
+import { Globe, Bug, Power, User, X, Maximize, Minimize } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '../ui/sheet';
 import { useLanguage, SUPPORTED_LANGUAGES } from '../../contexts/LanguageContext';
 import { useUser } from '../../contexts/UserContext';
 import { UserRole } from '../../types';
 import { USER_ROLES, getRoleMetadata } from '../../constants/roles';
-import { haptic } from '../../lib/telegram';
+import { haptic, isFullscreenSupported, requestFullscreen, exitFullscreen } from '../../lib/telegram';
 import { cn } from '../../lib/utils';
 
 interface SettingsMenuProps {
@@ -52,6 +52,18 @@ export const SettingsMenu = ({ children, open: controlledOpen, onOpenChange }: S
         haptic.impact('heavy');
         localStorage.removeItem('dev_mock_user');
         window.location.href = '/';
+    };
+
+    const [isFullscreen, setIsFullscreen] = useState(false);
+
+    const handleFullscreenToggle = () => {
+        haptic.impact('light');
+        if (isFullscreen) {
+            exitFullscreen();
+        } else {
+            requestFullscreen();
+        }
+        setIsFullscreen(!isFullscreen);
     };
 
     const handleLanguageChange = (code: typeof language) => {
@@ -117,9 +129,21 @@ export const SettingsMenu = ({ children, open: controlledOpen, onOpenChange }: S
                 <div className="p-4 space-y-5 overflow-y-auto pb-safe">
                     {/* ─── Compact Language Section ─── */}
                     <div className="space-y-2">
-                        <div className="flex items-center gap-1.5 text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">
-                            <Globe size={11} />
-                            <span>Language</span>
+                        <div className="flex items-center justify-between px-1">
+                            <div className="flex items-center gap-1.5 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                                <Globe size={11} />
+                                <span>Language</span>
+                            </div>
+
+                            {isFullscreenSupported() && (
+                                <button
+                                    onClick={handleFullscreenToggle}
+                                    className="flex items-center gap-1.5 text-[10px] font-bold text-eden-600 uppercase tracking-widest hover:text-eden-700 transition-colors"
+                                >
+                                    {isFullscreen ? <Minimize size={11} /> : <Maximize size={11} />}
+                                    <span>{isFullscreen ? 'Exit Full' : 'Fullscreen'}</span>
+                                </button>
+                            )}
                         </div>
                         <div className="grid grid-cols-4 gap-2">
                             {SUPPORTED_LANGUAGES.map((lang) => (

@@ -70,6 +70,7 @@ export async function init(options: {
         if (viewport.isMounted() && !viewport.isExpanded()) {
             viewport.expand();
         }
+        // Fullscreen support is handled via direct calls, but we ensure viewport is ready
     } catch (e) {
         console.warn('Viewport error:', e);
     }

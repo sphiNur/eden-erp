@@ -57,10 +57,20 @@ export function getPlatform(): Platform {
 export const isIOS = () => getPlatform() === 'ios';
 export const isAndroid = () => getPlatform() === 'android';
 
-// ─── Version ───
+// ─── Version and Capability ───
 
 export function getVersion(): string {
     return tg()?.version || '0.0';
+}
+
+/** Check if the current Telegram version supports Fullscreen (v8.0+) */
+export function isFullscreenSupported(): boolean {
+    try {
+        const v = parseFloat(getVersion());
+        return v >= 8.0;
+    } catch {
+        return false;
+    }
 }
 
 // ─── Lifecycle ───
@@ -76,8 +86,17 @@ export function expand() {
 export function requestFullscreen() {
     try {
         const wa = tg();
-        if (wa && parseFloat(wa.version) >= 8.0 && wa.requestFullscreen) {
+        if (wa && isFullscreenSupported() && wa.requestFullscreen) {
             wa.requestFullscreen();
+        }
+    } catch { /* noop */ }
+}
+
+export function exitFullscreen() {
+    try {
+        const wa = tg();
+        if (wa && isFullscreenSupported() && wa.exitFullscreen) {
+            wa.exitFullscreen();
         }
     } catch { /* noop */ }
 }
