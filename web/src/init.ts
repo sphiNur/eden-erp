@@ -24,7 +24,11 @@ export async function init(options: {
     }
 
     // Initialize special event handlers for Telegram Desktop, Windows 10+, etc.
-    initSDK();
+    try {
+        initSDK();
+    } catch (e) {
+        console.warn('Telegram SDK initialization failed (safely ignored):', e);
+    }
 
     // Check if we should use Eruda.
     if (eruda) {

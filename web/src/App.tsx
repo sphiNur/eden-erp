@@ -47,7 +47,9 @@ const AppDispatcher = () => {
         try {
             const lp = retrieveLaunchParams() as any;
             displayId = lp.initData?.user?.id?.toString() || 'unknown';
-        } catch (e) { }
+        } catch (e) {
+            console.warn('Failed to retrieve launch params in AppDispatcher:', e);
+        }
 
         return (
             <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-6 text-center">
@@ -88,10 +90,10 @@ function App() {
     useEffect(() => {
         try {
             // Apply platform class for legacy CSS
-            const platform = retrieveLaunchParams().platform;
+            const platform = (retrieveLaunchParams() as any).platform || 'unknown';
             document.body.classList.add(`os-${platform}`);
         } catch (e) {
-            console.warn('Failed to apply platform class:', e);
+            console.warn('Failed to apply platform class or retrieve parameters:', e);
         }
     }, []);
 
