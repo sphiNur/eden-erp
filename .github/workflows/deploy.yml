@@ -80,6 +80,8 @@ jobs:
           service: eden-erp-frontend
           region: ${{ env.REGION }}
           image: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/eden-repo/frontend:${{ github.sha }}
+          flags: '--port=8080'
+          env_vars: VITE_API_URL=${{ steps.deploy-backend.outputs.url }}
           
       - name: Output Frontend URL
         run: echo "Frontend URL - ${{ steps.deploy-frontend.outputs.url }}"
