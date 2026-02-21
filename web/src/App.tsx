@@ -109,82 +109,23 @@ const ProtectedRoute = ({ children, allowedRoles }: { children: ReactNode, allow
     return <>{children}</>;
 };
 
-/**
- * Sync TMA safe-area insets → CSS custom properties.
- * These drive all layout spacing across the app.
- */
-function syncSafeArea() {
-    const root = document.documentElement.style;
-    const wa = WebApp as any;
-
-    // Device safe area (notch, Dynamic Island, nav gestures)
-    if (wa.safeAreaInset) {
-        root.setProperty('--tma-safe-top', `${wa.safeAreaInset.top}px`);
-        root.setProperty('--tma-safe-bottom', `${wa.safeAreaInset.bottom}px`);
-        root.setProperty('--tma-safe-left', `${wa.safeAreaInset.left}px`);
-        root.setProperty('--tma-safe-right', `${wa.safeAreaInset.right}px`);
-    }
-
-    // Content safe area (Telegram UI chrome like Close bar / back button)
-    if (wa.contentSafeAreaInset) {
-        root.setProperty('--tma-content-top', `${wa.contentSafeAreaInset.top}px`);
-        root.setProperty('--tma-content-bottom', `${wa.contentSafeAreaInset.bottom}px`);
-    } else {
-        // Fallback for older SDKs or platforms where contentSafeAreaInset is missing.
-        // On mobile, Telegram chrome (like the Close button) usually takes ~40-56px.
-        const platform = WebApp.platform;
-        const isMobile = platform === 'ios' || platform === 'android';
-
-        if (isMobile) {
-            // Apply a safe minimum to clear the Telegram Close bar.
-            // Fullscreen usually needs more, but even in standard mode, 
-            // the Close button can overlap content if safe-top is 0.
-            const fallbackTop = wa.isFullscreen ? 56 : 48;
-            root.setProperty('--tma-content-top', `${fallbackTop}px`);
-        } else {
-            root.setProperty('--tma-content-top', '0px');
-        }
-    }
-}
 
 function App() {
     useEffect(() => {
         if (WebApp.initDataUnsafe) {
             WebApp.ready();
 
-            // Apply platform class
+            // Apply platform class for legacy CSS
             const platform = WebApp.platform;
             document.body.classList.add(`os-${platform}`);
 
-            // Expand + request fullscreen (Mini Apps 2.0, v8.0+)
+            // Expand (Standard practice for TMAs)
             try {
                 WebApp.expand();
-                const wa = WebApp as any;
-                if (parseFloat(WebApp.version) >= 8.0 && wa.requestFullscreen) {
-                    wa.requestFullscreen();
-                }
             } catch (e) {
-                console.error('Error setting full screen:', e);
-            }
-
-            // Sync safe-area CSS vars
-            syncSafeArea();
-
-            // Listen for safe-area changes (orientation change, keyboard, etc.)
-            const wa = WebApp as any;
-            if (wa.onEvent) {
-                wa.onEvent('safeAreaChanged', syncSafeArea);
-                wa.onEvent('contentSafeAreaChanged', syncSafeArea);
+                console.error('Error expanding WebApp:', e);
             }
         }
-
-        return () => {
-            const wa = WebApp as any;
-            if (wa.offEvent) {
-                wa.offEvent('safeAreaChanged', syncSafeArea);
-                wa.offEvent('contentSafeAreaChanged', syncSafeArea);
-            }
-        };
     }, []);
 
     return (

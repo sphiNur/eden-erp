@@ -7,16 +7,16 @@
 @layer base {
     :root {
         /* ─── TMA Safe Area ───
-           Set dynamically by JS (App.tsx syncSafeArea).
-           Fallback to env() for cases where SDK doesn't report values. */
-        --tma-safe-top: env(safe-area-inset-top, 0px);
-        --tma-safe-bottom: env(safe-area-inset-bottom, 0px);
-        --tma-safe-left: env(safe-area-inset-left, 0px);
-        --tma-safe-right: env(safe-area-inset-right, 0px);
-        /* Content safe area = Telegram UI chrome (Close bar, ~56px in fullscreen).
-           JS will override when SDK provides actual values. */
-        --tma-content-top: 0px;
-        --tma-content-bottom: 0px;
+           Official @telegram-apps/sdk variables.
+           See: https://docs.telegram-mini-apps.com/platform/viewport#css-variables */
+        --tma-safe-top: var(--tg-viewport-safe-area-inset-top, 0px);
+        --tma-safe-bottom: var(--tg-viewport-safe-area-inset-bottom, 0px);
+        --tma-safe-left: var(--tg-viewport-safe-area-inset-left, 0px);
+        --tma-safe-right: var(--tg-viewport-safe-area-inset-right, 0px);
+
+        /* Content safe area (covers Telegram UI buttons) */
+        --tma-content-top: var(--tg-viewport-content-safe-area-inset-top, var(--tma-safe-top));
+        --tma-content-bottom: var(--tg-viewport-content-safe-area-inset-bottom, var(--tma-safe-bottom));
 
         /* ─── Layout ─── */
         --nav-h: calc(3.5rem + var(--tma-safe-bottom));
@@ -141,7 +141,7 @@
     }
 
     .pt-tma-content {
-        padding-top: calc(var(--tma-safe-top) + var(--tma-content-top));
+        padding-top: var(--tma-content-top);
     }
 
     /* Legacy compat — fallback to TMA vars */
