@@ -129,10 +129,21 @@ function syncSafeArea() {
     if (wa.contentSafeAreaInset) {
         root.setProperty('--tma-content-top', `${wa.contentSafeAreaInset.top}px`);
         root.setProperty('--tma-content-bottom', `${wa.contentSafeAreaInset.bottom}px`);
-    } else if (wa.isFullscreen) {
-        // SDK doesn't expose contentSafeAreaInset but we're in fullscreen —
-        // apply a safe minimum to clear the Telegram Close bar (~56px)
-        root.setProperty('--tma-content-top', '56px');
+    } else {
+        // Fallback for older SDKs or platforms where contentSafeAreaInset is missing.
+        // On mobile, Telegram chrome (like the Close button) usually takes ~40-56px.
+        const platform = WebApp.platform;
+        const isMobile = platform === 'ios' || platform === 'android';
+
+        if (isMobile) {
+            // Apply a safe minimum to clear the Telegram Close bar.
+            // Fullscreen usually needs more, but even in standard mode, 
+            // the Close button can overlap content if safe-top is 0.
+            const fallbackTop = wa.isFullscreen ? 56 : 48;
+            root.setProperty('--tma-content-top', `${fallbackTop}px`);
+        } else {
+            root.setProperty('--tma-content-top', '0px');
+        }
     }
 }
 
