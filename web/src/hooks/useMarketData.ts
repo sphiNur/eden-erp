@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import { purchasesApi } from '../api/client';
 import { ConsolidatedItem, BatchCreate, BatchItemInput } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
-import WebApp from '@twa-dev/sdk';
+import { haptic, tgAlert, tgMainButton } from '../lib/telegram';
 
 export interface MarketItem extends ConsolidatedItem {
     status: 'pending' | 'bought';
@@ -35,7 +35,7 @@ export const useMarketData = () => {
             unitPriceInputsRef.current = {};
         } catch (err) {
             console.error(err);
-            WebApp.showAlert(ui('failedLoadItems'));
+            tgAlert(ui('failedLoadItems'));
         } finally {
             setLoading(false);
         }
@@ -92,14 +92,14 @@ export const useMarketData = () => {
             if (i.product_id !== product_id) return i;
             return { ...i, status: checked ? 'bought' : 'pending' };
         }));
-        WebApp.HapticFeedback.impactOccurred('light');
+        haptic.impact('light');
     }, []);
 
     const handleFinalize = useCallback(async () => {
         const boughtItems = items.filter(i => i.status === 'bought');
 
         if (boughtItems.length === 0) {
-            WebApp.showAlert(ui('noItemsBought'));
+            tgAlert(ui('noItemsBought'));
             return;
         }
 
@@ -111,11 +111,11 @@ export const useMarketData = () => {
             const finalPrice = parseFloat(priceVal || '0');
 
             if (finalPrice <= 0) {
-                WebApp.showAlert(`${ui('enterValidCost')} ${t(item.product_name)}`);
+                tgAlert(`${ui('enterValidCost')} ${t(item.product_name)}`);
                 return;
             }
             if (qtyVal <= 0) {
-                WebApp.showAlert(`${ui('enterValidQty')} ${t(item.product_name)}`);
+                tgAlert(`${ui('enterValidQty')} ${t(item.product_name)}`);
                 return;
             }
 
@@ -132,17 +132,17 @@ export const useMarketData = () => {
         };
 
         try {
-            WebApp.MainButton.showProgress(true);
+            tgMainButton.showProgress(true);
             await purchasesApi.submitBatch(payload);
-            WebApp.showAlert(ui('batchFinalized'));
+            tgAlert(ui('batchFinalized'));
             priceInputsRef.current = {};
             unitPriceInputsRef.current = {};
             await fetchConsolidation();
         } catch (err) {
             console.error(err);
-            WebApp.showAlert(ui('batchError'));
+            tgAlert(ui('batchError'));
         } finally {
-            WebApp.MainButton.hideProgress();
+            tgMainButton.hideProgress();
         }
     }, [items, marketLocation, ui, t, fetchConsolidation]);
 

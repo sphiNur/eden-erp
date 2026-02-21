@@ -1,13 +1,13 @@
 import { useState, useCallback, useMemo } from 'react';
 import { Product } from '../types';
-import WebApp from '@twa-dev/sdk';
+import { haptic } from '../lib/telegram';
 
 export const useCart = (products: Product[]) => {
     const [quantities, setQuantities] = useState<Record<string, number>>({});
 
     const setQty = useCallback((productId: string, val: number) => {
         setQuantities(prev => ({ ...prev, [productId]: val }));
-        if (val > 0) WebApp.HapticFeedback.impactOccurred('light');
+        if (val > 0) haptic.impact('light');
     }, []);
 
     const productMap = useMemo(() => new Map(products.map(p => [p.id, p])), [products]);

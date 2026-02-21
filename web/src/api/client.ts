@@ -2,7 +2,7 @@
  * Centralized API client for Eden Core ERP.
  * Single source of truth for all backend communication.
  */
-import WebApp from '@twa-dev/sdk';
+import { getInitData } from '../lib/telegram';
 import type { OrderResponse, BatchResponse } from '../types';
 
 // If VITE_API_URL isn't injected at build time (e.g., standard Docker build),
@@ -28,8 +28,7 @@ class ApiError extends Error {
 }
 
 function getAuthHeaders(): Record<string, string> {
-    // Production: send Telegram initData for HMAC validation
-    const initData = WebApp.initData;
+    const initData = getInitData();
     if (initData) {
         return { 'X-Telegram-Init-Data': initData };
     }

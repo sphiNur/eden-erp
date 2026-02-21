@@ -1,5 +1,5 @@
 import { useEffect, ReactNode, Component, type ErrorInfo } from 'react';
-import WebApp from '@twa-dev/sdk';
+import { ready, expand, getPlatform, getTelegramUserId } from './lib/telegram';
 import { HashRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { MarketRun } from './components/MarketRun';
 import { StoreRequest } from './components/StoreRequest';
@@ -47,7 +47,7 @@ const AppDispatcher = () => {
             <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-6 text-center">
                 <h1 className="text-xl font-bold text-red-600 mb-2">{ui('accessDenied')}</h1>
                 <p className="text-gray-600">{ui('accessDeniedMsg')}</p>
-                <p className="text-xs text-gray-400 mt-4">Telegram ID: {WebApp.initDataUnsafe?.user?.id}</p>
+                <p className="text-xs text-gray-400 mt-4">Telegram ID: {getTelegramUserId()}</p>
             </div>
         );
     }
@@ -112,20 +112,14 @@ const ProtectedRoute = ({ children, allowedRoles }: { children: ReactNode, allow
 
 function App() {
     useEffect(() => {
-        if (WebApp.initDataUnsafe) {
-            WebApp.ready();
+        ready();
 
-            // Apply platform class for legacy CSS
-            const platform = WebApp.platform;
-            document.body.classList.add(`os-${platform}`);
+        // Apply platform class for legacy CSS
+        const platform = getPlatform();
+        document.body.classList.add(`os-${platform}`);
 
-            // Expand (Standard practice for TMAs)
-            try {
-                WebApp.expand();
-            } catch (e) {
-                console.error('Error expanding WebApp:', e);
-            }
-        }
+        // Expand (Standard practice for TMAs)
+        expand();
     }, []);
 
     return (

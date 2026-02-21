@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { User, UserRole } from '../types';
 import { usersApi } from '../api/client';
-import WebApp from '@twa-dev/sdk';
+import { getInitData, getTelegramUser } from '../lib/telegram';
 
 interface UserContextType {
     user: User | null;
@@ -23,11 +23,11 @@ export function UserProvider({ children }: { children: ReactNode }) {
         setError(null);
         try {
             // 1. Priority: Production/Real Telegram User
-            if (WebApp.initData) {
+            if (getInitData()) {
                 const realUser = await usersApi.me();
 
                 // Enhance with Telegram UI data if available
-                const tgUser = WebApp.initDataUnsafe?.user;
+                const tgUser = getTelegramUser();
                 if (tgUser) {
                     realUser.first_name = tgUser.first_name;
                     realUser.last_name = tgUser.last_name;

@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { User } from '../../types';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { usersApi } from '../../api/client';
-import WebApp from '@twa-dev/sdk';
+import { haptic } from '../../lib/telegram';
 import { PageLayout } from '../layout/PageLayout';
 import { ListToolbar } from '../shared/ListToolbar';
 import { RoleBadge } from '../shared/RoleBadge';
@@ -52,7 +52,7 @@ export const UserList = () => {
                             key={user.id}
                             className="px-3 py-3 flex items-center justify-between cursor-pointer hover:bg-gray-50 active:bg-gray-100 transition-colors"
                             onClick={() => {
-                                WebApp.HapticFeedback.impactOccurred('light');
+                                haptic.impact('light');
                                 navigate(`/admin/users/${user.id}`);
                             }}
                         >

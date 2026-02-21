@@ -6,7 +6,7 @@ import { useLanguage, SUPPORTED_LANGUAGES } from '../../contexts/LanguageContext
 import { useUser } from '../../contexts/UserContext';
 import { UserRole } from '../../types';
 import { USER_ROLES, getRoleMetadata } from '../../constants/roles';
-import WebApp from '@twa-dev/sdk';
+import { haptic } from '../../lib/telegram';
 import { cn } from '../../lib/utils';
 
 interface SettingsMenuProps {
@@ -37,7 +37,7 @@ export const SettingsMenu = ({ children, open: controlledOpen, onOpenChange }: S
     const isMocking = !!localStorage.getItem('dev_mock_user');
 
     const handleSetRole = (role: UserRole) => {
-        WebApp.HapticFeedback.impactOccurred('medium');
+        haptic.impact('medium');
         const mockUser = {
             id: '00000000-0000-4000-a000-000000000001',
             telegram_id: 123456789,
@@ -49,19 +49,19 @@ export const SettingsMenu = ({ children, open: controlledOpen, onOpenChange }: S
     };
 
     const handleClearMock = () => {
-        WebApp.HapticFeedback.impactOccurred('heavy');
+        haptic.impact('heavy');
         localStorage.removeItem('dev_mock_user');
         window.location.href = '/';
     };
 
     const handleLanguageChange = (code: typeof language) => {
-        WebApp.HapticFeedback.selectionChanged();
+        haptic.selection();
         setLanguage(code);
     };
 
     return (
         <Sheet open={open} onOpenChange={(val) => {
-            if (val) WebApp.HapticFeedback.impactOccurred('light');
+            if (val) haptic.impact('light');
             setOpen(val);
         }}>
             {/* Trigger: provided by parent (BottomTabBar button) */}

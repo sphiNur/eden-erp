@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useCallback, useMemo, ReactNode } from 'react';
-import WebApp from '@twa-dev/sdk';
+import { haptic, tgAlert, tgConfirm, tgMainButton } from '../lib/telegram';
 import { useLanguage } from './LanguageContext';
 import { useStoreCatalog } from '../hooks/useStoreCatalog';
 import { useProductFilter } from '../hooks/useProductFilter';
@@ -89,18 +89,18 @@ export const StoreRequestProvider = ({ children }: { children: ReactNode }) => {
                 setQty(item.product_id, (quantities[item.product_id] || 0) + item.quantity);
             }
         });
-        WebApp.HapticFeedback.notificationOccurred('success');
+        haptic.notification('success');
     }, [products, quantities, setQty]);
 
     const handleDeleteTemplate = useCallback((id: string) => {
-        WebApp.showConfirm("Delete this template?", async (isConfirmed) => {
+        tgConfirm("Delete this template?", async (isConfirmed) => {
             if (!isConfirmed) return;
             try {
                 await templatesApi.delete(id);
                 setTemplates(prev => prev.filter(t => t.id !== id));
             } catch (err) {
                 console.error(err);
-                WebApp.showAlert("Failed to delete");
+                tgAlert("Failed to delete");
             }
         });
     }, [setTemplates]);
@@ -120,7 +120,7 @@ export const StoreRequestProvider = ({ children }: { children: ReactNode }) => {
         if (!name) return;
 
         try {
-            WebApp.MainButton.showProgress(true);
+            tgMainButton.showProgress(true);
             const items = Object.entries(quantities)
                 .filter(([_, qty]) => qty > 0)
                 .map(([pid, qty]) => ({ product_id: pid, quantity: qty }));
@@ -131,18 +131,18 @@ export const StoreRequestProvider = ({ children }: { children: ReactNode }) => {
                 items
             });
             setTemplates(prev => [...prev, newTemplate]);
-            WebApp.HapticFeedback.notificationOccurred('success');
+            haptic.notification('success');
         } catch (err) {
             console.error(err);
-            WebApp.showAlert("Failed to save template");
+            tgAlert("Failed to save template");
         } finally {
-            WebApp.MainButton.hideProgress();
+            tgMainButton.hideProgress();
         }
     };
 
     const handleSubmit = async () => {
-        if (totalCount === 0) { WebApp.showAlert(ui('cartIsEmpty')); return; }
-        if (!selectedStore) { WebApp.showAlert(ui('selectStore')); return; }
+        if (totalCount === 0) { tgAlert(ui('cartIsEmpty')); return; }
+        if (!selectedStore) { tgAlert(ui('selectStore')); return; }
         if (submitting) return;
 
         setSubmitting(true);
@@ -158,18 +158,18 @@ export const StoreRequestProvider = ({ children }: { children: ReactNode }) => {
             }));
 
         try {
-            WebApp.MainButton.showProgress(true);
+            tgMainButton.showProgress(true);
             await ordersApi.create({ store_id: selectedStore, delivery_date: deliveryDate, items });
 
             setShowCart(false);
             setShowSuccess(true);
             setTimeout(() => { setShowSuccess(false); resetCart(); }, 2000);
-            WebApp.HapticFeedback.notificationOccurred('success');
+            haptic.notification('success');
         } catch (err) {
             console.error(err);
-            WebApp.showAlert(ui('orderFailed'));
+            tgAlert(ui('orderFailed'));
         } finally {
-            WebApp.MainButton.hideProgress();
+            tgMainButton.hideProgress();
             setSubmitting(false);
         }
     };

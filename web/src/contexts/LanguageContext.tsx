@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import WebApp from '@twa-dev/sdk';
+import { getTelegramUser } from '../lib/telegram';
 import { I18nString } from '../types';
 import translations, { TranslationKey } from '../i18n/translations';
 
@@ -29,7 +29,8 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         // Initialize from Telegram if available
         try {
-            const tgLang = WebApp.initDataUnsafe?.user?.language_code;
+            const tgUser = getTelegramUser();
+            const tgLang = tgUser?.language_code;
             if (tgLang) {
                 if (tgLang === 'zh' || tgLang.startsWith('zh-')) setLanguage('cn');
                 else if (tgLang === 'uz') setLanguage('uz');

@@ -3,7 +3,7 @@ import { Plus } from 'lucide-react';
 import { Product } from '../../types';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { productsApi } from '../../api/client';
-import WebApp from '@twa-dev/sdk';
+import { haptic } from '../../lib/telegram';
 import { PageLayout } from '../layout/PageLayout';
 import { PageHeader } from '../layout/PageHeader';
 import { PageLoading } from '../shared/PageLoading';
@@ -66,7 +66,7 @@ export const InventoryMaster = () => {
     const floatingAction = (
         <button
             onClick={() => {
-                WebApp.HapticFeedback.impactOccurred('medium');
+                haptic.impact('medium');
                 navigate('/admin/products/new');
             }}
             className="w-14 h-14 bg-eden-500 text-white rounded-full shadow-lg flex items-center justify-center hover:bg-eden-600 active:scale-95 transition-all"
@@ -91,7 +91,7 @@ export const InventoryMaster = () => {
                                     key={product.id}
                                     className="px-3 py-2.5 flex items-center justify-between hover:bg-gray-50 cursor-pointer transition-colors active:bg-gray-100"
                                     onClick={() => {
-                                        WebApp.HapticFeedback.impactOccurred('light');
+                                        haptic.impact('light');
                                         navigate(`/admin/products/${product.id}`);
                                     }}
                                 >

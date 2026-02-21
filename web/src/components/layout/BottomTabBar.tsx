@@ -5,7 +5,7 @@ import { cn } from '../../lib/utils';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useUser } from '../../contexts/UserContext';
 import { SettingsMenu } from './SettingsMenu';
-import WebApp from '@twa-dev/sdk';
+import { haptic } from '../../lib/telegram';
 import type { LucideIcon } from 'lucide-react';
 
 interface TabItem {
@@ -57,7 +57,7 @@ export const BottomTabBar = () => {
 
     const handleNav = (path: string) => {
         if (location.pathname !== path) {
-            WebApp.HapticFeedback.selectionChanged();
+            haptic.selection();
             navigate(path);
         }
     };
@@ -110,7 +110,7 @@ export const BottomTabBar = () => {
             <SettingsMenu open={settingsOpen} onOpenChange={setSettingsOpen}>
                 <button
                     onClick={() => {
-                        WebApp.HapticFeedback.selectionChanged();
+                        haptic.selection();
                         setSettingsOpen(true);
                     }}
                     className={cn(

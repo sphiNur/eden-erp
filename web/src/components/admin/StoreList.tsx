@@ -4,7 +4,7 @@ import { Button } from '../ui/button';
 import { Store } from '../../types';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { storesApi } from '../../api/client';
-import WebApp from '@twa-dev/sdk';
+import { haptic } from '../../lib/telegram';
 import { PageLayout } from '../layout/PageLayout';
 import { ListToolbar } from '../shared/ListToolbar';
 import { PageLoading } from '../shared/PageLoading';
@@ -49,7 +49,7 @@ export const StoreList = () => {
                     size="sm"
                     className="h-9 w-9 p-0 rounded-full bg-eden-500 hover:bg-eden-600 text-white shadow-sm shrink-0"
                     onClick={() => {
-                        WebApp.HapticFeedback.impactOccurred('light');
+                        haptic.impact('light');
                         navigate('/admin/stores/new');
                     }}
                 >
@@ -72,7 +72,7 @@ export const StoreList = () => {
                             key={store.id}
                             className="px-3 py-3 flex items-center justify-between cursor-pointer hover:bg-gray-50 active:bg-gray-100 transition-colors"
                             onClick={() => {
-                                WebApp.HapticFeedback.impactOccurred('light');
+                                haptic.impact('light');
                                 navigate(`/admin/stores/${store.id}`);
                             }}
                         >

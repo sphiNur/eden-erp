@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useCallback, useEffect, ReactNode 
 import { AnimatePresence, motion } from 'framer-motion';
 import { X, CheckCircle2, AlertCircle, Info } from 'lucide-react';
 import { cn } from '../lib/utils';
-import WebApp from '@twa-dev/sdk';
+import { haptic } from '../lib/telegram';
 import { setApiToast } from '../api/client';
 
 export type ToastType = 'success' | 'error' | 'info';
@@ -34,9 +34,9 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
         setToasts(prev => [...prev, { id, message, type }]);
 
         // Haptic feedback based on type
-        if (type === 'success') WebApp.HapticFeedback.notificationOccurred('success');
-        if (type === 'error') WebApp.HapticFeedback.notificationOccurred('error');
-        if (type === 'info') WebApp.HapticFeedback.impactOccurred('light');
+        if (type === 'success') haptic.notification('success');
+        if (type === 'error') haptic.notification('error');
+        if (type === 'info') haptic.impact('light');
 
         setTimeout(() => removeToast(id), 3000);
     }, [removeToast]);
