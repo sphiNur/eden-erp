@@ -1,0 +1,21 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: eden-erp-backend
+spec:
+  template:
+    spec:
+      containers:
+      - image: us-west1-docker.pkg.dev/eden-erp/eden-repo/backend:latest
+        ports:
+        - name: http1
+          containerPort: 8000
+        env:
+        - name: DATABASE_URL
+          value: "postgresql+asyncpg://neondb_owner:npg_Xi9HgNRlc7VB@ep-cool-dawn-aghakm98-pooler.c-2.eu-central-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+        - name: DATABASE_ECHO
+          value: "0"
+        - name: APP_ENV
+          value: "production"
+        - name: CORS_ORIGINS
+          value: "*"

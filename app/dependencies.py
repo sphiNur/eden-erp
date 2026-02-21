@@ -125,26 +125,26 @@ async def get_current_user(request: Request, db: AsyncSession = Depends(get_db))
             logger.info("AUTO-REGISTERED user: tg_id=%s, username=%s, role=%s", telegram_id, user.username, user.role.value)
         return user
 
-    # --- Development fallback ---
-    if APP_ENV == "development":
-        # Check dev header override
-        dev_tid = request.headers.get("X-Dev-Telegram-Id", "")
-        if dev_tid:
-            result = await db.execute(
-                select(User).where(User.telegram_id == int(dev_tid))
-            )
-            user = result.scalars().first()
-            if user:
-                return user
-
-        # Fallback: first user in DB
-        result = await db.execute(select(User))
+    # --- Development fallback (or no BOT_TOKEN specified) ---
+    # Check dev header override
+    dev_tid = request.headers.get("X-Dev-Telegram-Id", "")
+    if dev_tid:
+        result = await db.execute(
+            select(User).where(User.telegram_id == int(dev_tid))
+        )
         user = result.scalars().first()
         if user:
-            logger.warning("DEV AUTH: falling back to first user (id=%s, role=%s)", user.id, user.role.value)
             return user
 
-    raise HTTPException(status_code=401, detail="Not authenticated")
+    # Fallback: first user in DB
+    result = await db.execute(select(User))
+    user = result.scalars().first()
+    if user:
+        logger.warning("AUTH: falling back to first user (id=%s, role=%s)", user.id, user.role.value)
+        return user
+
+    # If database is completely empty and no auth provided
+    raise HTTPException(status_code=401, detail="Not authenticated. Please access via Telegram Mini App to register the first admin.")
 
 
 def require_role(allowed_roles: List[str]):

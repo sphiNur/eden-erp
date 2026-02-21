@@ -5,7 +5,10 @@
 import WebApp from '@twa-dev/sdk';
 import type { OrderResponse, BatchResponse } from '../types';
 
-const API_URL = import.meta.env.VITE_API_URL || '/api';
+// If VITE_API_URL isn't injected at build time (e.g., standard Docker build),
+// use a placeholder that will be replaced by docker-entrypoint.sh at container startup.
+// In local dev, it falls back to '/api' which Vite proxies.
+const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '__RUNTIME_VITE_API_URL__' : '/api');
 
 type RequestOptions = {
     method?: string;

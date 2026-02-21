@@ -1,0 +1,85 @@
+name: Build and Deploy to Cloud Run
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  PROJECT_ID: eden-erp
+  REGION: us-west1
+  WORKLOAD_IDENTITY_PROVIDER: 'projects/616082600442/locations/global/workloadIdentityPools/github-actions-pool/providers/github-provider'
+  SERVICE_ACCOUNT: 'github-actions-deployer@eden-erp.iam.gserviceaccount.com'
+
+jobs:
+  deploy:
+    name: Deploy to Cloud Run
+    runs-on: ubuntu-latest
+    
+    # Add "id-token" with the intended permissions for Workload Identity Federation
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # Log into Google Cloud via Workload Identity (No JSON Keys needed!)
+      - id: 'auth'
+        name: 'Authenticate to Google Cloud'
+        uses: 'google-github-actions/auth@v2'
+        with:
+          project_id: '${{ env.PROJECT_ID }}'
+          workload_identity_provider: '${{ env.WORKLOAD_IDENTITY_PROVIDER }}'
+          service_account: '${{ env.SERVICE_ACCOUNT }}'
+
+      # Configure Docker to use the gcloud command-line tool as a credential helper
+      - name: 'Setup Docker for Artifact Registry'
+        run: |-
+          gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
+
+      # --- BACKEND Build & Deploy ---
+      - name: Build Backend Docker Image
+        run: |-
+          docker build -t ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/eden-repo/backend:${{ github.sha }} -f Dockerfile.backend .
+          # Tag as latest for cache/convenience
+          docker tag ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/eden-repo/backend:${{ github.sha }} ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/eden-repo/backend:latest
+
+      - name: Push Backend Docker Image
+        run: |-
+          docker push ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/eden-repo/backend:${{ github.sha }}
+          docker push ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/eden-repo/backend:latest
+
+      - name: Deploy Backend to Cloud Run
+        id: deploy-backend
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: eden-erp-backend
+          region: ${{ env.REGION }}
+          image: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/eden-repo/backend:${{ github.sha }}
+
+      - name: Output Backend URL
+        run: echo "Backend URL - ${{ steps.deploy-backend.outputs.url }}"
+
+      # --- FRONTEND Build & Deploy ---
+      - name: Build Frontend Docker Image
+        run: |-
+          docker build -t ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/eden-repo/frontend:${{ github.sha }} -f Dockerfile.frontend .
+          docker tag ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/eden-repo/frontend:${{ github.sha }} ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/eden-repo/frontend:latest
+
+      - name: Push Frontend Docker Image
+        run: |-
+          docker push ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/eden-repo/frontend:${{ github.sha }}
+          docker push ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/eden-repo/frontend:latest
+
+      - name: Deploy Frontend to Cloud Run
+        id: deploy-frontend
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: eden-erp-frontend
+          region: ${{ env.REGION }}
+          image: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/eden-repo/frontend:${{ github.sha }}
+          
+      - name: Output Frontend URL
+        run: echo "Frontend URL - ${{ steps.deploy-frontend.outputs.url }}"
