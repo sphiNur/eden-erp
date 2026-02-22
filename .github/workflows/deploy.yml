@@ -39,6 +39,21 @@ jobs:
         run: |-
           gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
 
+      # --- DATABASE MIGRATION ---
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Migration Dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run Database Migration
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          PYTHONPATH: .
+        run: python scripts/migrate_v2.py
+
       # --- BACKEND Build & Deploy ---
       - name: Build Backend Docker Image
         run: |-
