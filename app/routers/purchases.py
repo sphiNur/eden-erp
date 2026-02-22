@@ -1,11 +1,12 @@
 from decimal import Decimal
+from datetime import date
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.orm import selectinload
 from sqlalchemy import func
-from typing import List
+from typing import List, Optional
 
 from app import models, schemas
 from app.dependencies import get_db, get_current_user, require_role
@@ -201,3 +202,111 @@ async def get_consolidated_requirements(db: AsyncSession = Depends(get_db)):
             })
 
     return list(grouped.values())
+
+
+@router.get(
+    "/by-stall",
+    response_model=List[schemas.StallConsolidation],
+    dependencies=[Depends(require_role(["global_purchaser", "admin"]))],
+)
+async def get_consolidation_by_stall(
+    target_date: Optional[date] = None,
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    Consolidate requirements grouped by Stall (档口).
+    Each product has a default_stall_id; items are grouped by that stall.
+    Products without a stall assignment go to an "Unassigned" group.
+    """
+    from datetime import date as date_type
+
+    stmt = (
+        select(
+            models.Product,
+            models.Stall,
+            models.OrderItem.quantity_approved,
+            models.Store.name.label("store_name"),
+        )
+        .join(models.OrderItem, models.Product.id == models.OrderItem.product_id)
+        .join(models.PurchaseOrder, models.OrderItem.purchase_order_id == models.PurchaseOrder.id)
+        .join(models.Store, models.PurchaseOrder.store_id == models.Store.id)
+        .outerjoin(models.Stall, models.Product.default_stall_id == models.Stall.id)
+        .where(
+            models.OrderItem.quantity_approved > 0,
+            models.OrderItem.allocated_cost_uzs == None,
+            models.PurchaseOrder.status.in_([
+                models.OrderStatus.APPROVED,
+                models.OrderStatus.PENDING,
+                models.OrderStatus.PURCHASING,
+            ]),
+        )
+    )
+
+    # Optional date filter
+    if target_date:
+        stmt = stmt.where(models.PurchaseOrder.delivery_date == target_date)
+
+    stmt = stmt.order_by(models.Product.name_i18n)
+    results = await db.execute(stmt)
+
+    # Group by stall
+    stall_groups: dict = {}  # stall_id -> { stall, items: { product_id -> product_data } }
+
+    for product, stall, qty, store_name in results:
+        stall_key = str(stall.id) if stall else "__unassigned__"
+        stall_name = stall.name if stall else "Unassigned"
+
+        if stall_key not in stall_groups:
+            stall_groups[stall_key] = {
+                "stall": stall,
+                "stall_name": stall_name,
+                "items": {},
+            }
+
+        pid = str(product.id)
+        if pid not in stall_groups[stall_key]["items"]:
+            stall_groups[stall_key]["items"][pid] = {
+                "product_id": product.id,
+                "product_name": product.name_i18n,
+                "unit": product.unit_i18n,
+                "price_reference": product.price_reference,
+                "total_quantity": Decimal("0"),
+                "breakdown": [],
+            }
+
+        item_data = stall_groups[stall_key]["items"][pid]
+        item_data["total_quantity"] += qty
+
+        # Merge by store name
+        existing_store = next(
+            (b for b in item_data["breakdown"] if b["store_name"] == store_name),
+            None,
+        )
+        if existing_store:
+            existing_store["quantity"] += qty
+        else:
+            item_data["breakdown"].append({
+                "store_name": store_name,
+                "quantity": qty,
+            })
+
+    # Build response
+    result_list = []
+    for group in stall_groups.values():
+        stall_resp = None
+        if group["stall"]:
+            stall_resp = schemas.StallResponse.model_validate(group["stall"])
+
+        result_list.append(schemas.StallConsolidation(
+            stall=stall_resp,
+            stall_name=group["stall_name"],
+            items=[
+                schemas.StallConsolidatedProduct(**item_data)
+                for item_data in group["items"].values()
+            ],
+        ))
+
+    # Sort: stalls with sort_order first, unassigned last
+    result_list.sort(key=lambda x: (x.stall is None, x.stall.sort_order if x.stall else 999))
+
+    return result_list

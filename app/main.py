@@ -8,7 +8,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 
 from app.database import engine, Base
-from app.routers import orders, purchases, products, users, stores, categories
+from app.routers import orders, purchases, products, users, stores, categories, stalls, expenses, bills
 
 
 @asynccontextmanager
@@ -38,6 +38,9 @@ app.include_router(products.router, prefix="/api")
 app.include_router(users.router, prefix="/api")
 app.include_router(stores.router, prefix="/api")
 app.include_router(categories.router, prefix="/api")
+app.include_router(stalls.router, prefix="/api")
+app.include_router(expenses.router, prefix="/api")
+app.include_router(bills.router, prefix="/api")
 from app.routers import templates
 app.include_router(templates.router, prefix="/api")
 

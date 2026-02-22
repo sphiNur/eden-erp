@@ -5,7 +5,7 @@ from typing import List, Optional, Dict
 from uuid import UUID, uuid4
 
 from sqlalchemy import (
-    BigInteger, Boolean, Date, DateTime, ForeignKey, String,
+    BigInteger, Boolean, Date, DateTime, ForeignKey, String, Text,
     Enum, Numeric, ARRAY, UniqueConstraint,
 )
 from sqlalchemy.dialects.postgresql import JSONB, UUID as PG_UUID
@@ -38,6 +38,14 @@ class BatchStatus(str, enum.Enum):
     DRAFT = "draft"
     FINALIZED = "finalized"
 
+class SplitMethod(str, enum.Enum):
+    EQUAL = "equal"              # 平均均摊
+    PROPORTIONAL = "proportional"  # 按比例均摊
+
+class BillStatus(str, enum.Enum):
+    DRAFT = "draft"
+    CONFIRMED = "confirmed"
+
 # --- Models ---
 
 class User(Base):
@@ -69,6 +77,22 @@ class Store(Base):
     updated_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), onupdate=_utcnow, nullable=True)
 
     orders: Mapped[List["PurchaseOrder"]] = relationship("PurchaseOrder", back_populates="store")
+    bills: Mapped[List["DailyBill"]] = relationship("DailyBill", back_populates="store")
+
+
+class Stall(Base):
+    """档口 — 市场中不同的购买点 (e.g. 蔬菜档, 肉类档)"""
+    __tablename__ = "stalls"
+
+    id: Mapped[UUID] = mapped_column(PG_UUID(as_uuid=True), primary_key=True, default=uuid4)
+    name: Mapped[str] = mapped_column(String, unique=True)
+    location: Mapped[Optional[str]] = mapped_column(String, nullable=True)
+    sort_order: Mapped[int] = mapped_column(default=0)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
+    updated_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), onupdate=_utcnow, nullable=True)
+
+    products: Mapped[List["Product"]] = relationship("Product", back_populates="default_stall")
 
 
 class Category(Base):
@@ -89,6 +113,7 @@ class Product(Base):
 
     id: Mapped[UUID] = mapped_column(PG_UUID(as_uuid=True), primary_key=True, default=uuid4)
     category_id: Mapped[UUID] = mapped_column(ForeignKey("categories.id"))
+    default_stall_id: Mapped[Optional[UUID]] = mapped_column(ForeignKey("stalls.id"), nullable=True)
     name_i18n: Mapped[Dict[str, str]] = mapped_column(JSONB)
     unit_i18n: Mapped[Dict[str, str]] = mapped_column(JSONB)
     price_reference: Mapped[Optional[Decimal]] = mapped_column(Numeric(12, 2), nullable=True)
@@ -97,6 +122,7 @@ class Product(Base):
     updated_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), onupdate=_utcnow, nullable=True)
 
     category: Mapped["Category"] = relationship("Category", back_populates="products")
+    default_stall: Mapped[Optional["Stall"]] = relationship("Stall", back_populates="products")
 
 
 class PurchaseOrder(Base):
@@ -177,3 +203,40 @@ class OrderTemplate(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
 
     store: Mapped["Store"] = relationship("Store")
+
+
+class SharedExpense(Base):
+    """共享费用 — 车费/人工/冰块等需要各店铺均摊的费用"""
+    __tablename__ = "shared_expenses"
+
+    id: Mapped[UUID] = mapped_column(PG_UUID(as_uuid=True), primary_key=True, default=uuid4)
+    expense_date: Mapped[date] = mapped_column(Date, index=True)
+    expense_type: Mapped[str] = mapped_column(String)  # "transport", "labor", "ice", "other"
+    description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    amount: Mapped[Decimal] = mapped_column(Numeric(12, 2))
+    split_method: Mapped[SplitMethod] = mapped_column(Enum(SplitMethod), default=SplitMethod.EQUAL)
+    created_by: Mapped[UUID] = mapped_column(ForeignKey("users.id"))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
+
+    creator: Mapped["User"] = relationship("User")
+
+
+class DailyBill(Base):
+    """每日账单 — 每店每天一份"""
+    __tablename__ = "daily_bills"
+    __table_args__ = (
+        UniqueConstraint("store_id", "bill_date", name="uq_daily_bill_store_date"),
+    )
+
+    id: Mapped[UUID] = mapped_column(PG_UUID(as_uuid=True), primary_key=True, default=uuid4)
+    store_id: Mapped[UUID] = mapped_column(ForeignKey("stores.id"), index=True)
+    bill_date: Mapped[date] = mapped_column(Date, index=True)
+    items_total: Mapped[Decimal] = mapped_column(Numeric(14, 2), default=Decimal("0"))
+    shared_total: Mapped[Decimal] = mapped_column(Numeric(14, 2), default=Decimal("0"))
+    grand_total: Mapped[Decimal] = mapped_column(Numeric(14, 2), default=Decimal("0"))
+    status: Mapped[BillStatus] = mapped_column(Enum(BillStatus), default=BillStatus.DRAFT)
+    detail: Mapped[Optional[Dict]] = mapped_column(JSONB, nullable=True)  # Breakdown snapshot
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
+    updated_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), onupdate=_utcnow, nullable=True)
+
+    store: Mapped["Store"] = relationship("Store", back_populates="bills")

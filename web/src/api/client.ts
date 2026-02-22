@@ -127,6 +127,10 @@ export const ordersApi = {
 export const purchasesApi = {
     getConsolidation: () =>
         request<import('../types').ConsolidatedItem[]>('/purchases/consolidation'),
+    getConsolidationByStall: (targetDate?: string) => {
+        const qs = targetDate ? `?target_date=${targetDate}` : '';
+        return request<import('../types').StallConsolidation[]>(`/purchases/by-stall${qs}`);
+    },
     submitBatch: (data: import('../types').BatchCreate) =>
         request<BatchResponse>('/purchases/', { method: 'POST', body: data }),
 };
@@ -160,5 +164,43 @@ export const templatesApi = {
     delete: (id: string) => request<void>(`/templates/${id}`, { method: 'DELETE' }),
 };
 
+// --- Stalls ---
+
+export const stallsApi = {
+    list: () => request<import('../types').Stall[]>('/stalls/'),
+    create: (data: import('../types').StallCreate) =>
+        request<import('../types').Stall>('/stalls/', { method: 'POST', body: data }),
+    update: (id: string, data: Partial<import('../types').StallCreate & { is_active?: boolean }>) =>
+        request<import('../types').Stall>(`/stalls/${id}`, { method: 'PUT', body: data }),
+    delete: (id: string) => request<{ ok: boolean }>(`/stalls/${id}`, { method: 'DELETE' }),
+};
+
+// --- Shared Expenses ---
+
+export const expensesApi = {
+    list: (date?: string) => {
+        const qs = date ? `?expense_date=${date}` : '';
+        return request<import('../types').SharedExpenseResponse[]>(`/expenses/${qs}`);
+    },
+    create: (data: import('../types').SharedExpenseCreate) =>
+        request<import('../types').SharedExpenseResponse>('/expenses/', { method: 'POST', body: data }),
+    delete: (id: string) => request<{ ok: boolean }>(`/expenses/${id}`, { method: 'DELETE' }),
+};
+
+// --- Daily Bills ---
+
+export const billsApi = {
+    generate: (date: string) =>
+        request<import('../types').DailyBillSummary>(`/bills/generate?bill_date=${date}`, { method: 'POST' }),
+    list: (params?: { bill_date?: string; store_id?: string }) => {
+        const searchParams = new URLSearchParams();
+        if (params?.bill_date) searchParams.set('bill_date', params.bill_date);
+        if (params?.store_id) searchParams.set('store_id', params.store_id);
+        const qs = searchParams.toString();
+        return request<import('../types').DailyBillResponse[]>(`/bills/${qs ? '?' + qs : ''}`);
+    },
+    get: (id: string) => request<import('../types').DailyBillResponse>(`/bills/${id}`),
+};
+
 export { ApiError };
-export default { productsApi, ordersApi, purchasesApi, usersApi, storesApi, categoriesApi, templatesApi };
+export default { productsApi, ordersApi, purchasesApi, usersApi, storesApi, categoriesApi, templatesApi, stallsApi, expensesApi, billsApi };

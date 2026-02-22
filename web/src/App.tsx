@@ -3,9 +3,11 @@ import { retrieveLaunchParams } from '@telegram-apps/sdk-react';
 import { HashRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { MarketRun } from './components/MarketRun';
 import { StoreRequest } from './components/StoreRequest';
+import { StoreBill } from './components/store-request/StoreBill';
 import { InventoryMaster } from './components/admin/InventoryMaster';
 import { UserList } from './components/admin/UserList';
 import { StoreList } from './components/admin/StoreList';
+import { StallManager } from './components/admin/StallManager';
 import { AppLayout } from './components/layout/AppLayout';
 import { LanguageProvider, useLanguage } from './contexts/LanguageContext';
 import { UserProvider, useUser } from './contexts/UserContext';
@@ -124,6 +126,16 @@ function App() {
                                     }
                                 />
 
+                                {/* Store Bills */}
+                                <Route
+                                    path="/store/bills"
+                                    element={
+                                        <ProtectedRoute allowedRoles={['store_manager', 'admin', 'global_purchaser']}>
+                                            <StoreBill />
+                                        </ProtectedRoute>
+                                    }
+                                />
+
                                 {/* Admin routes */}
                                 <Route
                                     path="/admin"
@@ -174,6 +186,14 @@ function App() {
                                     element={
                                         <ProtectedRoute allowedRoles={['admin']}>
                                             <StoreFormPage />
+                                        </ProtectedRoute>
+                                    }
+                                />
+                                <Route
+                                    path="/admin/stalls"
+                                    element={
+                                        <ProtectedRoute allowedRoles={['admin']}>
+                                            <StallManager />
                                         </ProtectedRoute>
                                     }
                                 />

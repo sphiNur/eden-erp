@@ -7,9 +7,24 @@ export interface Category {
     sort_order: number;
 }
 
+export interface Stall {
+    id: string;
+    name: string;
+    location?: string;
+    sort_order: number;
+    is_active: boolean;
+}
+
+export interface StallCreate {
+    name: string;
+    location?: string;
+    sort_order?: number;
+}
+
 export interface Product {
     id: string;
     category_id: string;
+    default_stall_id?: string;
     category?: Category;
     name_i18n: Record<string, string>;
     unit_i18n: Record<string, string>;
@@ -19,6 +34,7 @@ export interface Product {
 
 export interface ProductCreate {
     category_id: string;
+    default_stall_id?: string;
     name_i18n: Record<string, string>;
     unit_i18n: Record<string, string>;
     price_reference?: number;
@@ -69,6 +85,23 @@ export interface ConsolidatedItem {
     price_reference?: number;
     total_quantity_needed: number;
     breakdown: Array<{ store_name: string; quantity: number }>;
+}
+
+// --- Stall-based Consolidation ---
+
+export interface StallConsolidatedProduct {
+    product_id: string;
+    product_name: I18nString;
+    unit: I18nString;
+    price_reference?: number;
+    total_quantity: number;
+    breakdown: Array<{ store_name: string; quantity: number }>;
+}
+
+export interface StallConsolidation {
+    stall: Stall | null;
+    stall_name: string;
+    items: StallConsolidatedProduct[];
 }
 
 export interface BatchItemInput {
@@ -131,4 +164,71 @@ export interface TemplateCreate {
     name: string;
     items: TemplateItem[];
 }
+
+// --- Shared Expenses ---
+
+export type SplitMethod = 'equal' | 'proportional';
+
+export interface SharedExpenseCreate {
+    expense_date: string;
+    expense_type: string;
+    description?: string;
+    amount: number;
+    split_method: SplitMethod;
+}
+
+export interface SharedExpenseResponse {
+    id: string;
+    expense_date: string;
+    expense_type: string;
+    description?: string;
+    amount: number;
+    split_method: SplitMethod;
+    created_by: string;
+    created_at: string;
+}
+
+// --- Daily Bills ---
+
+export interface BillItemDetail {
+    product_name: I18nString;
+    unit: I18nString;
+    quantity: number;
+    unit_price: number;
+    subtotal: number;
+}
+
+export interface BillExpenseDetail {
+    expense_type: string;
+    description?: string;
+    total_amount: number;
+    split_method: string;
+    store_share: number;
+}
+
+export interface DailyBillResponse {
+    id: string;
+    store_id: string;
+    store_name?: string;
+    bill_date: string;
+    items_total: number;
+    shared_total: number;
+    grand_total: number;
+    status: string;
+    detail?: {
+        items: BillItemDetail[];
+        expenses: BillExpenseDetail[];
+    };
+    created_at: string;
+}
+
+export interface DailyBillSummary {
+    bill_date: string;
+    total_stores: number;
+    total_items_amount: number;
+    total_shared_amount: number;
+    grand_total: number;
+    bills: DailyBillResponse[];
+}
+
 
