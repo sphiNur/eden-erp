@@ -43,6 +43,16 @@ if _needs_ssl:
 
 # echo=False for production; set DATABASE_ECHO=1 env var to enable SQL logging
 _echo = os.getenv("DATABASE_ECHO", "").lower() in ("1", "true", "yes")
+
+# --- Safety Check: Ensure URL is not empty ---
+if not _clean_url or _clean_url.strip() in ("", "postgresql+asyncpg://user:password@localhost/dbname"):
+    # In CI or local dev without ENV, we don't want the app to crash on import
+    # But we want to log that the database is not configured.
+    import logging
+    logging.warning("DATABASE_URL is not configured. Database operations will fail.")
+    # Use a dummy URL to prevent create_async_engine from throwing ArgumentError immediately
+    _clean_url = "postgresql+asyncpg://no_user:no_password@no_host/no_db"
+
 engine = create_async_engine(_clean_url, echo=_echo, connect_args=connect_args)
 
 AsyncSessionLocal = async_sessionmaker(

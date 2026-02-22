@@ -5,6 +5,13 @@ from sqlalchemy import text
 from app.database import Base, engine
 
 async def migrate():
+    # --- Check if database URL is configured ---
+    db_url = os.getenv("DATABASE_URL", "")
+    if not db_url or "user:password" in db_url:
+        print("SKIPPING MIGRATION: DATABASE_URL is not configured or is using the default placeholder.")
+        print("Please set the DATABASE_URL secret in your environment/GitHub.")
+        return
+
     print("Starting migration...")
     
     # First, make sure all new tables are created
