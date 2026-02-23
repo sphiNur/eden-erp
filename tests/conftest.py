@@ -65,8 +65,11 @@ async def override_get_current_user():
 
 
 @pytest.fixture(autouse=True)
-async def seed_test_user():
-    """Seed a test admin user into the database before each test."""
+async def seed_test_data(setup_database):
+    """Seed a test admin user and store into the database.
+
+    Depends on setup_database to ensure tables exist first.
+    """
     global _test_user
     async with TestSessionLocal() as session:
         user = User(
@@ -75,23 +78,16 @@ async def seed_test_user():
             username="test_admin",
             role=UserRole.ADMIN,
         )
-        session.add(user)
-        await session.commit()
-        await session.refresh(user)
-        _test_user = user
-
-
-@pytest.fixture(autouse=True)
-async def seed_test_store():
-    """Seed a test store into the database."""
-    async with TestSessionLocal() as session:
         store = Store(
             id=uuid4(),
             name="Test Store",
             address="123 Test St",
         )
+        session.add(user)
         session.add(store)
         await session.commit()
+        await session.refresh(user)
+        _test_user = user
 
 
 @pytest.fixture
