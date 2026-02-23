@@ -67,10 +67,20 @@ export async function init(options: {
         if (viewport.bindCssVars.isAvailable()) viewport.bindCssVars();
 
         // Add the viewport expansion if it's not already expanded.
-        if (viewport.isMounted() && !viewport.isExpanded()) {
-            viewport.expand();
+        if (viewport.isMounted()) {
+            if (!viewport.isExpanded()) {
+                viewport.expand();
+            }
+            // Request true fullscreen for immersive experience on iPhone 12/13/Pixel 7, if available
+            try {
+                // @ts-ignore - The method exists in newer SDKs but type might not reflect it locally
+                if (typeof viewport.requestFullscreen === 'function') {
+                    viewport.requestFullscreen();
+                }
+            } catch (e) {
+                console.warn('Request fullscreen failed:', e);
+            }
         }
-        // Fullscreen support is handled via direct calls, but we ensure viewport is ready
     } catch (e) {
         console.warn('Viewport error:', e);
     }

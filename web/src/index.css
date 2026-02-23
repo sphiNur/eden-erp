@@ -126,6 +126,10 @@
         -moz-osx-font-smoothing: grayscale;
         -webkit-tap-highlight-color: transparent;
 
+        /* Override with Telegram Dynamic Themes if available */
+        background-color: var(--tg-theme-bg-color, hsl(var(--background)));
+        color: var(--tg-theme-text-color, hsl(var(--foreground)));
+
         /* Full screen adaptation */
         min-height: 100dvh;
         overscroll-behavior-y: none;
