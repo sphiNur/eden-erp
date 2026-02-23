@@ -7,15 +7,16 @@
 @layer base {
     :root {
         /* ─── TMA Safe Area ───
-           Official Telegram variables combined with SDK bindings and Browser fallbacks. */
-        --tma-safe-top: var(--tg-safe-area-inset-top, var(--tg-viewport-safe-area-inset-top, env(safe-area-inset-top, 0px)));
-        --tma-safe-bottom: var(--tg-safe-area-inset-bottom, var(--tg-viewport-safe-area-inset-bottom, env(safe-area-inset-bottom, 0px)));
-        --tma-safe-left: var(--tg-safe-area-inset-left, var(--tg-viewport-safe-area-inset-left, env(safe-area-inset-left, 0px)));
-        --tma-safe-right: var(--tg-safe-area-inset-right, var(--tg-viewport-safe-area-inset-right, env(safe-area-inset-right, 0px)));
+           Phase 7: We rely on JS computed `--dynamic-safe-*` variables first to prevent Parse Race-conditions.
+           Then Native TMA -> SDK Built-ins -> Browser ENV -> 0px */
+        --tma-safe-top: var(--dynamic-safe-top, var(--tg-safe-area-inset-top, var(--tg-viewport-safe-area-inset-top, env(safe-area-inset-top, 0px))));
+        --tma-safe-bottom: var(--dynamic-safe-bottom, var(--tg-safe-area-inset-bottom, var(--tg-viewport-safe-area-inset-bottom, env(safe-area-inset-bottom, 0px))));
+        --tma-safe-left: var(--dynamic-safe-left, var(--tg-safe-area-inset-left, var(--tg-viewport-safe-area-inset-left, env(safe-area-inset-left, 0px))));
+        --tma-safe-right: var(--dynamic-safe-right, var(--tg-safe-area-inset-right, var(--tg-viewport-safe-area-inset-right, env(safe-area-inset-right, 0px))));
 
         /* Content safe area (covers Telegram UI buttons) */
-        --tma-content-top: var(--tg-content-safe-area-inset-top, var(--tg-viewport-content-safe-area-inset-top, var(--tma-safe-top)));
-        --tma-content-bottom: var(--tg-content-safe-area-inset-bottom, var(--tg-viewport-content-safe-area-inset-bottom, var(--tma-safe-bottom)));
+        --tma-content-top: var(--dynamic-safe-content-top, var(--tg-content-safe-area-inset-top, var(--tg-viewport-content-safe-area-inset-top, var(--tma-safe-top))));
+        --tma-content-bottom: var(--dynamic-safe-content-bottom, var(--tg-content-safe-area-inset-bottom, var(--tg-viewport-content-safe-area-inset-bottom, var(--tma-safe-bottom))));
 
         /* ─── Layout ─── */
         --nav-h: calc(3.5rem + var(--tma-safe-bottom));
