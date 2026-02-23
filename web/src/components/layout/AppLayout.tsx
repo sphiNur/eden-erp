@@ -10,6 +10,8 @@ export const AppLayout = () => {
                 style={{
                     paddingTop: 'var(--tma-content-top)',
                     paddingBottom: 'var(--nav-h)',
+                    paddingLeft: 'var(--tma-safe-left)',
+                    paddingRight: 'var(--tma-safe-right)'
                 }}
             >
                 <div className="mx-auto w-full max-w-[1400px] flex-1 flex flex-col min-h-0 relative">

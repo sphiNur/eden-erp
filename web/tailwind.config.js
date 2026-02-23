@@ -20,38 +20,38 @@ export default {
                 sans: ['var(--font-sans)'],
             },
             colors: {
-                border: "hsl(var(--border))",
-                input: "hsl(var(--input))",
-                ring: "hsl(var(--ring))",
-                background: "hsl(var(--background))",
-                foreground: "hsl(var(--foreground))",
+                border: "var(--tg-theme-section-separator-color, hsl(var(--border)))",
+                input: "var(--tg-theme-section-separator-color, hsl(var(--input)))",
+                ring: "var(--tg-theme-button-color, hsl(var(--ring)))",
+                background: "var(--tg-theme-bg-color, hsl(var(--background)))",
+                foreground: "var(--tg-theme-text-color, hsl(var(--foreground)))",
                 primary: {
-                    DEFAULT: "hsl(var(--primary))",
-                    foreground: "hsl(var(--primary-foreground))",
+                    DEFAULT: "var(--tg-theme-button-color, hsl(var(--primary)))",
+                    foreground: "var(--tg-theme-button-text-color, hsl(var(--primary-foreground)))",
                 },
                 secondary: {
-                    DEFAULT: "hsl(var(--secondary))",
-                    foreground: "hsl(var(--secondary-foreground))",
+                    DEFAULT: "var(--tg-theme-secondary-bg-color, hsl(var(--secondary)))",
+                    foreground: "var(--tg-theme-text-color, hsl(var(--secondary-foreground)))",
                 },
                 destructive: {
-                    DEFAULT: "hsl(var(--destructive))",
+                    DEFAULT: "var(--tg-theme-destructive-text-color, hsl(var(--destructive)))",
                     foreground: "hsl(var(--destructive-foreground))",
                 },
                 muted: {
-                    DEFAULT: "hsl(var(--muted))",
-                    foreground: "hsl(var(--muted-foreground))",
+                    DEFAULT: "var(--tg-theme-hint-color, hsl(var(--muted)))",
+                    foreground: "var(--tg-theme-subtitle-text-color, hsl(var(--muted-foreground)))",
                 },
                 accent: {
-                    DEFAULT: "hsl(var(--accent))",
-                    foreground: "hsl(var(--accent-foreground))",
+                    DEFAULT: "var(--tg-theme-secondary-bg-color, hsl(var(--accent)))",
+                    foreground: "var(--tg-theme-accent-text-color, hsl(var(--accent-foreground)))",
                 },
                 popover: {
-                    DEFAULT: "hsl(var(--popover))",
-                    foreground: "hsl(var(--popover-foreground))",
+                    DEFAULT: "var(--tg-theme-bg-color, hsl(var(--popover)))",
+                    foreground: "var(--tg-theme-text-color, hsl(var(--popover-foreground)))",
                 },
                 card: {
-                    DEFAULT: "hsl(var(--card))",
-                    foreground: "hsl(var(--card-foreground))",
+                    DEFAULT: "var(--tg-theme-section-bg-color, hsl(var(--card)))",
+                    foreground: "var(--tg-theme-text-color, hsl(var(--card-foreground)))",
                 },
                 // ─── Eden Brand ───
                 eden: {

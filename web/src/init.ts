@@ -102,4 +102,12 @@ export async function init(options: {
     if (mockForMacOS) {
         await import('./mockEnv.ts');
     }
+
+    try {
+        if (miniApp.isMounted()) {
+            miniApp.ready();
+        }
+    } catch (e) {
+        console.warn('MiniApp ready failed:', e);
+    }
 }

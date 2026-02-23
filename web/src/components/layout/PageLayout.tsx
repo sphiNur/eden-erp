@@ -25,10 +25,10 @@ export const PageLayout = ({
     noPadding = false
 }: PageLayoutProps) => {
     return (
-        <div className={cn("flex flex-col h-full bg-gray-50", className)}>
+        <div className={cn("flex flex-col h-full bg-secondary", className)}>
             {/* Unified Sticky Header */}
             {(header || toolbar) && (
-                <div className="bg-white border-b shadow-sm w-full shrink-0 z-toolbar relative">
+                <div className="bg-card border-b border-border shadow-sm w-full shrink-0 z-toolbar relative pt-tma-safe">
                     {header || toolbar}
                 </div>
             )}
@@ -39,14 +39,14 @@ export const PageLayout = ({
                 !noPadding && "p-3",
                 !noPadding && "pb-4"
             )}>
-                <div className="mx-auto w-full max-w-screen-xl">
+                <div className="mx-auto w-full max-w-screen-xl relative">
                     {children}
                 </div>
             </main>
 
             {/* Bottom Bar (e.g., Market Run finalize button) */}
             {bottomBar && (
-                <div className="w-full shrink-0 z-drawer bg-white border-t">
+                <div className="w-full shrink-0 z-drawer bg-card border-t border-border pb-tma-safe">
                     {bottomBar}
                 </div>
             )}
