@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { ListFilter } from 'lucide-react';
+import { useState } from 'react';
 
 import { useLanguage } from '../contexts/LanguageContext';
 import { StoreRequestProvider, useStoreRequestContext } from '../contexts/StoreRequestContext';
@@ -15,9 +16,10 @@ import { BottomDrawer } from './shared/BottomDrawer';
 import { CategoryFilter } from './store-request/CategoryFilter';
 import { ProductListItem } from './store-request/ProductListItem';
 import { CartSheet } from './store-request/CartSheet';
+import { AIPasteModal } from './store-request/AIPasteModal';
 import { PageLayout } from './layout/PageLayout';
 import { PageHeader } from './layout/PageHeader';
-import { Store, CalendarDays, Search, X, Zap } from 'lucide-react';
+import { Store, CalendarDays, Search, X, Zap, Sparkles } from 'lucide-react';
 
 export const StoreRequest = () => {
     return (
@@ -43,6 +45,8 @@ const StoreRequestContent = () => {
         handleLoadTemplate, handleDeleteTemplate, handleSaveTemplate, handleSubmit,
         showTemplatePrompt, setShowTemplatePrompt, templatePromptResolver
     } = useStoreRequestContext();
+
+    const [showAIModal, setShowAIModal] = useState(false);
 
     // --- Render ---
     const categoryCounts: Record<string, number> = {};
@@ -124,15 +128,26 @@ const StoreRequestContent = () => {
                     </div>
                 )}
             </div>
-            <div className="pt-1">
-                <CategoryFilter
-                    categories={categories}
-                    activeCategory={activeCategory}
-                    onSelectCategory={setActiveCategory}
-                    categoryCounts={categoryCounts}
-                    totalSelectedCount={totalCount}
-                    allLabel={ui('all')}
-                />
+            <div className="pt-1 flex items-center justify-between">
+                <div className="flex-1 overflow-x-auto scrollbar-hide">
+                    <CategoryFilter
+                        categories={categories}
+                        activeCategory={activeCategory}
+                        onSelectCategory={setActiveCategory}
+                        categoryCounts={categoryCounts}
+                        totalSelectedCount={totalCount}
+                        allLabel={ui('all')}
+                    />
+                </div>
+
+                {/* AI Paste Button */}
+                <button
+                    onClick={() => setShowAIModal(true)}
+                    className="ml-2 shrink-0 bg-primary/10 text-primary border border-primary/20 pl-2 pr-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-1.5 active:bg-primary/20 transition-all shadow-sm h-[28px]"
+                >
+                    <Sparkles size={14} className="animate-pulse" />
+                    AI Auto-Fill
+                </button>
             </div>
         </PageHeader>
     );
@@ -268,6 +283,11 @@ const StoreRequestContent = () => {
                     </>
                 )}
             </AnimatePresence>
+
+            <AIPasteModal
+                open={showAIModal}
+                onClose={() => setShowAIModal(false)}
+            />
         </PageLayout>
     );
 };

@@ -7,7 +7,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 
 from app.config import get_settings
-from app.routers import orders, purchases, products, users, stores, categories, stalls, expenses, bills, templates
+from app.routers import orders, purchases, products, users, stores, categories, stalls, expenses, bills, templates, ai
 
 settings = get_settings()
 
@@ -44,6 +44,7 @@ app.include_router(stalls.router, prefix="/api")
 app.include_router(expenses.router, prefix="/api")
 app.include_router(bills.router, prefix="/api")
 app.include_router(templates.router, prefix="/api")
+app.include_router(ai.router, prefix="/api")
 
 # --- Static Files & SPA Catch-All (Production) ---
 # When deployed to Koyeb, FastAPI serves the React build.

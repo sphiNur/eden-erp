@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { purchasesApi } from '../api/client';
+import { purchasesApi, billsApi } from '../api/client';
 import { ConsolidatedItem, BatchCreate, BatchItemInput } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
 import { haptic, tgAlert, tgMainButton } from '../lib/telegram';
@@ -14,6 +14,7 @@ export const useMarketData = () => {
     const { t, ui } = useLanguage();
     const [items, setItems] = useState<MarketItem[]>([]);
     const [loading, setLoading] = useState(true);
+    const [estimatedTotal, setEstimatedTotal] = useState(0);
 
     // Use Refs for form inputs to prevent global re-renders on every keystroke
     const priceInputsRef = useRef<Record<string, string>>({});
@@ -24,13 +25,23 @@ export const useMarketData = () => {
         try {
             setLoading(true);
             const data = await purchasesApi.getConsolidation();
-            const marketItems: MarketItem[] = data.map(i => ({
-                ...i,
-                status: 'pending',
-                purchase_quantity: i.total_quantity_needed,
-                breakdown: i.breakdown.map(b => ({ ...b }))
-            }));
+
+            let calcTotal = 0;
+            const marketItems: MarketItem[] = data.map(i => {
+                if (i.price_reference) {
+                    calcTotal += (i.price_reference * i.total_quantity_needed);
+                }
+
+                return {
+                    ...i,
+                    status: 'pending',
+                    purchase_quantity: i.total_quantity_needed,
+                    breakdown: i.breakdown.map(b => ({ ...b }))
+                };
+            });
+
             setItems(marketItems);
+            setEstimatedTotal(calcTotal);
             priceInputsRef.current = {};
             unitPriceInputsRef.current = {};
         } catch (err) {
@@ -134,6 +145,17 @@ export const useMarketData = () => {
         try {
             tgMainButton.showProgress(true);
             await purchasesApi.submitBatch(payload);
+
+            // Automatically split costs proportionally into DailyBill
+            try {
+                const todayStr = new Date().toISOString().split('T')[0];
+                await billsApi.generate(todayStr);
+            } catch (billErr) {
+                console.error("Auto-bill generation error:", billErr);
+                // Non-fatal, batch is still saved
+            }
+
+            // Also reload the page data
             tgAlert(ui('batchFinalized'));
             priceInputsRef.current = {};
             unitPriceInputsRef.current = {};
@@ -149,6 +171,7 @@ export const useMarketData = () => {
     return {
         items,
         loading,
+        estimatedTotal,
         getPriceInput,
         getUnitPriceInput,
         setPriceInput,

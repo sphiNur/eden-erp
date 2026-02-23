@@ -23,6 +23,7 @@ import type {
     SharedExpenseCreate,
     DailyBillSummary,
     DailyBillResponse,
+    ParsedOrderResponse,
 } from '../types';
 
 // If VITE_API_URL isn't injected at build time (e.g., standard Docker build),
@@ -220,5 +221,12 @@ export const billsApi = {
     get: (id: string) => request<DailyBillResponse>(`/bills/${id}`),
 };
 
+// --- AI Tools ---
+
+export const aiApi = {
+    parseOrder: (raw_text: string) =>
+        request<ParsedOrderResponse>('/ai/parse-order', { method: 'POST', body: { raw_text } }),
+};
+
 export { ApiError };
-export default { productsApi, ordersApi, purchasesApi, usersApi, storesApi, categoriesApi, templatesApi, stallsApi, expensesApi, billsApi };
+export default { productsApi, ordersApi, purchasesApi, usersApi, storesApi, categoriesApi, templatesApi, stallsApi, expensesApi, billsApi, aiApi };

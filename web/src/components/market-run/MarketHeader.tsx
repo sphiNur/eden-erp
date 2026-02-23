@@ -6,23 +6,23 @@ import { PageHeader } from '../layout/PageHeader';
 
 export const MarketHeader = () => {
     const { ui } = useLanguage();
-    const { items, viewMode, setViewMode } = useMarketRunContext();
+    const { items, viewMode, setViewMode, estimatedTotal } = useMarketRunContext();
 
     return (
         <PageHeader>
-            <div className="flex bg-gray-100/80 p-1 rounded-xl mb-2">
+            <div className="flex bg-accent/50 p-1 rounded-xl mb-2">
                 <button
                     onClick={() => setViewMode('shopping')}
                     className={cn(
                         "flex-1 flex items-center justify-center gap-2 py-1.5 rounded-lg text-xs font-semibold transition-all",
                         viewMode === 'shopping'
-                            ? "bg-white text-eden-600 shadow-sm"
-                            : "bg-transparent text-gray-500 hover:bg-gray-200/50"
+                            ? "bg-card text-primary shadow-sm ring-1 ring-border"
+                            : "bg-transparent text-muted-foreground hover:bg-accent"
                     )}
                     aria-label={ui('marketRun')}
                     aria-pressed={viewMode === 'shopping'}
                 >
-                    <ShoppingCart size={14} className={viewMode === 'shopping' ? "text-eden-600" : "text-gray-400"} />
+                    <ShoppingCart size={14} className={viewMode === 'shopping' ? "text-primary" : "text-muted-foreground"} />
                     Shopping
                 </button>
                 <button
@@ -30,20 +30,28 @@ export const MarketHeader = () => {
                     className={cn(
                         "flex-1 flex items-center justify-center gap-2 py-1.5 rounded-lg text-xs font-semibold transition-all",
                         viewMode === 'distribution'
-                            ? "bg-white text-blue-600 shadow-sm"
-                            : "bg-transparent text-gray-500 hover:bg-gray-200/50"
+                            ? "bg-card text-blue-500 shadow-sm ring-1 ring-border"
+                            : "bg-transparent text-muted-foreground hover:bg-accent"
                     )}
                     aria-label="Distribution View"
                     aria-pressed={viewMode === 'distribution'}
                 >
-                    <Store size={14} className={viewMode === 'distribution' ? "text-blue-600" : "text-gray-400"} />
+                    <Store size={14} className={viewMode === 'distribution' ? "text-blue-500" : "text-muted-foreground"} />
                     Distribution
                 </button>
             </div>
 
             {viewMode === 'shopping' && (
-                <div className="text-xs font-medium text-gray-500 flex justify-between px-1">
-                    <span>{ui('progress')}: {items.filter(i => i.status === 'bought').length} / {items.length}</span>
+                <div className="flex justify-between items-end px-1 mt-3">
+                    <div className="flex flex-col">
+                        <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">Estimated Budget</span>
+                        <span className="text-lg font-black text-foreground">
+                            {estimatedTotal > 0 ? `${estimatedTotal.toLocaleString('en-US')} UZS` : '---'}
+                        </span>
+                    </div>
+                    <span className="text-xs font-medium text-muted-foreground mb-1">
+                        {ui('progress')}: <span className="text-foreground">{items.filter(i => i.status === 'bought').length}</span> / {items.length}
+                    </span>
                 </div>
             )}
         </PageHeader>

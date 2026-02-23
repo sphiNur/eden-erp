@@ -231,4 +231,17 @@ export interface DailyBillSummary {
     bills: DailyBillResponse[];
 }
 
+// --- AI Procurement ---
+export interface ParsedItem {
+    product_id: string | null;
+    original_text: string;
+    predicted_item_name: string;
+    quantity: number;
+    unit: string;
+}
+
+export interface ParsedOrderResponse {
+    items: ParsedItem[];
+}
+
 
