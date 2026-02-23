@@ -1,4 +1,5 @@
 import enum
+import json
 from datetime import date, datetime, timezone
 from decimal import Decimal
 from typing import List, Optional, Dict
@@ -6,12 +7,42 @@ from uuid import UUID, uuid4
 
 from sqlalchemy import (
     BigInteger, Boolean, Date, DateTime, ForeignKey, String, Text,
-    Enum, Numeric, ARRAY, UniqueConstraint,
+    Enum, Numeric, ARRAY, UniqueConstraint, JSON, TypeDecorator,
 )
 from sqlalchemy.dialects.postgresql import JSONB, UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
+
+
+class PortableArray(TypeDecorator):
+    """ARRAY on PostgreSQL, JSON on other dialects (e.g. SQLite for tests)."""
+    impl = JSON
+    cache_ok = True
+
+    def __init__(self, item_type=None):
+        super().__init__()
+        self._pg_array = ARRAY(item_type) if item_type else None
+
+    def load_dialect_impl(self, dialect):
+        if dialect.name == "postgresql" and self._pg_array is not None:
+            return dialect.type_descriptor(self._pg_array)
+        return dialect.type_descriptor(JSON())
+
+    def process_bind_param(self, value, dialect):
+        if value is None:
+            return value
+        if dialect.name != "postgresql":
+            # Serialize UUIDs to strings for JSON storage
+            return [str(v) for v in value]
+        return value
+
+    def process_result_value(self, value, dialect):
+        if value is None:
+            return value
+        if dialect.name != "postgresql":
+            return [UUID(v) if isinstance(v, str) else v for v in value]
+        return value
 
 
 def _utcnow() -> datetime:
@@ -55,7 +86,7 @@ class User(Base):
     telegram_id: Mapped[int] = mapped_column(BigInteger, unique=True, index=True)
     username: Mapped[Optional[str]] = mapped_column(String, nullable=True)
     role: Mapped[UserRole] = mapped_column(Enum(UserRole), default=UserRole.STORE_MANAGER)
-    allowed_store_ids: Mapped[Optional[List[UUID]]] = mapped_column(ARRAY(PG_UUID(as_uuid=True)), nullable=True)
+    allowed_store_ids: Mapped[Optional[List[UUID]]] = mapped_column(PortableArray(PG_UUID(as_uuid=True)), nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
     updated_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), onupdate=_utcnow, nullable=True)
