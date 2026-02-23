@@ -8,16 +8,16 @@ interface SkeletonProps {
  * Base shimmer skeleton block.
  */
 export const Skeleton = ({ className }: SkeletonProps) => (
-    <div className={cn("animate-pulse bg-gray-200 rounded", className)} />
+    <div className={cn("animate-pulse bg-muted rounded", className)} />
 );
 
 /**
  * Skeleton preset for a product list page (toolbar + 8 rows).
  */
 export const ProductListSkeleton = () => (
-    <div className="bg-gray-50">
+    <div className="bg-background">
         {/* Toolbar skeleton */}
-        <div className="bg-white border-b p-4 space-y-3">
+        <div className="bg-card border-b border-border p-4 space-y-3">
             <Skeleton className="h-10 w-full rounded-lg" />
             <Skeleton className="h-9 w-full rounded-lg" />
             <div className="flex gap-2">
@@ -33,7 +33,7 @@ export const ProductListSkeleton = () => (
             {/* Category label */}
             <Skeleton className="h-3 w-20" />
 
-            <div className="bg-white rounded-lg border overflow-hidden divide-y divide-gray-100">
+            <div className="bg-card rounded-lg border border-border overflow-hidden divide-y divide-border">
                 {Array.from({ length: 8 }).map((_, i) => (
                     <div key={i} className="p-3 flex items-center justify-between">
                         <div className="flex-1 flex items-center gap-3">

@@ -20,7 +20,7 @@ export const PageHeader = ({
     const showTopRow = title || startAction || endAction;
 
     return (
-        <div className={cn("bg-white w-full", className)}>
+        <div className={cn("bg-card w-full", className)}>
             {showTopRow && (
                 <div className="flex items-center justify-between px-3 py-2 min-h-[50px]">
                     <div className="flex items-center gap-3">

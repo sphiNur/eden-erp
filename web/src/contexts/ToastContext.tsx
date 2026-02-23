@@ -63,17 +63,17 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
                             className={cn(
-                                "pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg border backdrop-blur-md min-w-[280px] max-w-[90vw]",
-                                toast.type === 'success' && "bg-white/95 border-emerald-100 text-emerald-800",
-                                toast.type === 'error' && "bg-white/95 border-red-100 text-red-800",
-                                toast.type === 'info' && "bg-white/95 border-blue-100 text-blue-800"
+                                "pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-xl shadow-lg border border-border backdrop-blur-md min-w-[280px] max-w-[90vw] bg-card/95 text-card-foreground",
+                                toast.type === 'success' && "border-success/30 text-foreground",
+                                toast.type === 'error' && "border-destructive/30 text-foreground",
+                                toast.type === 'info' && "border-primary/30 text-foreground"
                             )}
                         >
                             <div className={cn(
                                 "p-1 rounded-full shrink-0",
-                                toast.type === 'success' && "bg-emerald-100 text-emerald-600",
-                                toast.type === 'error' && "bg-red-100 text-red-600",
-                                toast.type === 'info' && "bg-blue-100 text-blue-600"
+                                toast.type === 'success' && "bg-success/20 text-success",
+                                toast.type === 'error' && "bg-destructive/20 text-destructive",
+                                toast.type === 'info' && "bg-primary/20 text-primary"
                             )}>
                                 {toast.type === 'success' && <CheckCircle2 size={16} />}
                                 {toast.type === 'error' && <AlertCircle size={16} />}

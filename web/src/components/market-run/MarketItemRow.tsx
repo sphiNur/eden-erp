@@ -100,7 +100,7 @@ export const MarketItemRow = memo(({ item }: MarketItemRowProps) => {
                     <Checkbox
                         checked={item.status === 'bought'}
                         onCheckedChange={(c) => toggleBought(item.product_id, c as boolean)}
-                        className="h-6 w-6 rounded-full border-2 border-gray-300 data-[state=checked]:bg-emerald-500 data-[state=checked]:border-emerald-500 transition-all"
+                        className="h-6 w-6 rounded-full border-2 border-border data-[state=checked]:bg-success data-[state=checked]:border-success transition-all"
                         aria-label={t(item.product_name)}
                     />
                 </div>

@@ -12,8 +12,8 @@ interface ErrorRetryProps {
  */
 export const ErrorRetry = ({ message, onRetry, retrying }: ErrorRetryProps) => (
     <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
-        <AlertTriangle size={48} className="text-red-300 mb-4" strokeWidth={1.5} />
-        <h3 className="text-base font-semibold text-gray-700 mb-1">{message}</h3>
+        <AlertTriangle size={48} className="text-destructive/70 mb-4" strokeWidth={1.5} />
+        <h3 className="text-base font-semibold text-foreground mb-1">{message}</h3>
         <Button
             variant="outline"
             size="sm"

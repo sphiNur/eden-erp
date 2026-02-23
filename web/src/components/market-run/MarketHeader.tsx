@@ -30,13 +30,13 @@ export const MarketHeader = () => {
                     className={cn(
                         "flex-1 flex items-center justify-center gap-2 py-1.5 rounded-lg text-xs font-semibold transition-all",
                         viewMode === 'distribution'
-                            ? "bg-card text-blue-500 shadow-sm ring-1 ring-border"
+                            ? "bg-card text-primary shadow-sm ring-1 ring-border"
                             : "bg-transparent text-muted-foreground hover:bg-accent"
                     )}
                     aria-label="Distribution View"
                     aria-pressed={viewMode === 'distribution'}
                 >
-                    <Store size={14} className={viewMode === 'distribution' ? "text-blue-500" : "text-muted-foreground"} />
+                    <Store size={14} className={viewMode === 'distribution' ? "text-primary" : "text-muted-foreground"} />
                     Distribution
                 </button>
             </div>

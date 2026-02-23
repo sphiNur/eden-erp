@@ -79,7 +79,7 @@ const StoreRequestContent = () => {
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
                         {searchTerm && (
-                            <button onClick={() => setSearchTerm('')} className="absolute right-2 top-2 text-gray-400 hover:text-gray-600">
+                            <button type="button" onClick={() => setSearchTerm('')} className="absolute right-2 top-2 text-muted-foreground hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring rounded" aria-label="Clear search">
                                 <X size={14} />
                             </button>
                         )}
@@ -115,7 +115,7 @@ const StoreRequestContent = () => {
                 {templates.length > 0 && (
                     <div className="overflow-x-auto -mx-3 px-3 scrollbar-hide py-1">
                         <div className="flex gap-2">
-                            <div className="text-[10px] uppercase font-bold text-gray-400 flex items-center shrink-0">
+                            <div className="text-[10px] uppercase font-bold text-muted-foreground flex items-center shrink-0">
                                 <Zap size={12} className="mr-1" /> Quick:
                             </div>
                             {templates.map(tmpl => (
@@ -177,7 +177,7 @@ const StoreRequestContent = () => {
                     className="w-14 h-14 bg-primary text-primary-foreground rounded-full shadow-lg flex items-center justify-center"
                 >
                     <ListFilter size={22} />
-                    <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-white">
+                    <span className="absolute -top-1.5 -right-1.5 bg-destructive text-destructive-foreground text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-primary">
                         {totalCount}
                     </span>
                 </motion.button>

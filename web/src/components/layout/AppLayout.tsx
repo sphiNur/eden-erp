@@ -6,6 +6,7 @@ export const AppLayout = () => {
         <div className="flex h-[100dvh] w-full flex-col bg-background overflow-hidden relative">
             {/* Main content — top/bottom padding from TMA safe area (no fixed header) */}
             <main
+                role="main"
                 className="flex-1 flex flex-col min-h-0 relative isolate"
                 style={{
                     paddingTop: 'var(--tma-content-top)',

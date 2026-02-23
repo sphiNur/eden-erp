@@ -42,6 +42,12 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
         }
     }, []);
 
+    // Sync <html lang=""> for accessibility and i18n
+    useEffect(() => {
+        const langMap: Record<LanguageCode, string> = { en: 'en', ru: 'ru', uz: 'uz', cn: 'zh-CN' };
+        document.documentElement.lang = langMap[language];
+    }, [language]);
+
     const t = (data: I18nString): string => {
         if (!data) return '';
         if (data[language]) return data[language];

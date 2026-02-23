@@ -86,39 +86,39 @@ export const SettingsMenu = ({ children, open: controlledOpen, onOpenChange }: S
             <SheetContent
                 side="bottom"
                 className={cn(
-                    "rounded-t-2xl border-t-0 shadow-xl bg-white/95 backdrop-blur-xl [&>button]:hidden",
+                    "rounded-t-2xl border-t-0 border-border shadow-xl bg-card/95 backdrop-blur-xl [&>button]:hidden",
                     "p-0 gap-0 w-full max-h-[75vh] overflow-hidden flex flex-col"
                 )}
             >
                 {/* Header Section */}
-                <div className="px-4 py-3 flex items-center justify-between border-b border-gray-100/50">
+                <div className="px-4 py-3 flex items-center justify-between border-b border-border">
                     <div className="flex items-center gap-3">
                         {user ? (
                             <div className="flex items-center gap-3">
                                 {user.photo_url ? (
-                                    <img src={user.photo_url} alt="Profile" className="h-10 w-10 rounded-full border border-gray-200" />
+                                    <img src={user.photo_url} alt="" className="h-10 w-10 rounded-full border border-border" />
                                 ) : (
                                     <div className="h-10 w-10 rounded-full bg-eden-50 flex items-center justify-center text-eden-600 border border-eden-100">
                                         <User size={18} strokeWidth={2.5} />
                                     </div>
                                 )}
                                 <div className="flex flex-col">
-                                    <span className="text-base font-bold text-gray-900 leading-none">
+                                    <span className="text-base font-bold text-foreground leading-none">
                                         {user.first_name} {user.last_name}
                                     </span>
-                                    <span className="text-xs text-gray-500 font-medium">@{user.username || 'user'}</span>
-                                    <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider mt-0.5">{user.role.replace('_', ' ')}</span>
+                                    <span className="text-xs text-muted-foreground font-medium">@{user.username || 'user'}</span>
+                                    <span className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider mt-0.5">{user.role.replace('_', ' ')}</span>
                                 </div>
                             </div>
                         ) : (
-                            <SheetTitle className="text-base font-bold text-gray-900">Settings</SheetTitle>
+                            <SheetTitle className="text-base font-bold text-foreground">Settings</SheetTitle>
                         )}
                     </div>
 
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="h-10 w-10 rounded-full bg-gray-100/50 text-gray-500 hover:text-gray-900 hover:bg-gray-200/50"
+                        className="h-10 w-10 rounded-full bg-muted/50 text-muted-foreground hover:text-foreground hover:bg-muted"
                         onClick={() => setOpen(false)}
                         aria-label="Close Settings"
                     >
@@ -130,15 +130,16 @@ export const SettingsMenu = ({ children, open: controlledOpen, onOpenChange }: S
                     {/* ─── Compact Language Section ─── */}
                     <div className="space-y-2">
                         <div className="flex items-center justify-between px-1">
-                            <div className="flex items-center gap-1.5 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                            <div className="flex items-center gap-1.5 text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
                                 <Globe size={11} />
                                 <span>Language</span>
                             </div>
 
                             {isFullscreenSupported() && (
                                 <button
+                                    type="button"
                                     onClick={handleFullscreenToggle}
-                                    className="flex items-center gap-1.5 text-[10px] font-bold text-eden-600 uppercase tracking-widest hover:text-eden-700 transition-colors"
+                                    className="flex items-center gap-1.5 text-[10px] font-bold text-eden-600 uppercase tracking-widest hover:text-eden-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
                                 >
                                     {isFullscreen ? <Minimize size={11} /> : <Maximize size={11} />}
                                     <span>{isFullscreen ? 'Exit Full' : 'Fullscreen'}</span>
@@ -149,12 +150,13 @@ export const SettingsMenu = ({ children, open: controlledOpen, onOpenChange }: S
                             {SUPPORTED_LANGUAGES.map((lang) => (
                                 <button
                                     key={lang.code}
+                                    type="button"
                                     onClick={() => handleLanguageChange(lang.code)}
                                     className={cn(
-                                        "flex flex-col items-center justify-center py-2 rounded-lg border transition-all duration-200 relative",
+                                        "flex flex-col items-center justify-center py-2 rounded-lg border border-border transition-all duration-200 relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                                         language === lang.code
                                             ? "bg-eden-50 border-eden-200 text-eden-700 shadow-sm"
-                                            : "bg-white border-transparent text-gray-600 hover:bg-gray-50"
+                                            : "bg-transparent text-foreground hover:bg-muted"
                                     )}
                                 >
                                     <span className="text-xs font-bold">{lang.code.toUpperCase()}</span>
@@ -168,20 +170,20 @@ export const SettingsMenu = ({ children, open: controlledOpen, onOpenChange }: S
 
                     {/* ─── DevTools Section ─── */}
                     {(canShowDevTools || isMocking) && (
-                        <div className="space-y-2 pt-2 border-t border-dashed border-gray-100">
+                        <div className="space-y-2 pt-2 border-t border-dashed border-border">
                             <div className="flex items-center justify-between px-1">
-                                <div className="flex items-center gap-1.5 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                                <div className="flex items-center gap-1.5 text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
                                     <Bug size={11} />
                                     <span>Dev</span>
                                 </div>
                                 {isMocking && (
-                                    <span className="text-[9px] bg-amber-100 text-amber-700 px-1.5 py-px rounded-full font-bold">
+                                    <span className="text-[9px] bg-warning/20 text-warning px-1.5 py-px rounded-full font-bold">
                                         MOCK
                                     </span>
                                 )}
                             </div>
 
-                            <div className="bg-gray-50/50 rounded-xl p-1 border border-gray-100">
+                            <div className="bg-muted/50 rounded-xl p-1 border border-border">
                                 <div className="grid grid-cols-3 gap-1">
                                     {Object.values(USER_ROLES).filter(r => r !== 'finance').map((role) => {
                                         const meta = getRoleMetadata(role);
@@ -190,12 +192,13 @@ export const SettingsMenu = ({ children, open: controlledOpen, onOpenChange }: S
                                         return (
                                             <button
                                                 key={role}
+                                                type="button"
                                                 onClick={() => handleSetRole(role as UserRole)}
                                                 className={cn(
-                                                    "flex items-center justify-center gap-1.5 px-2 py-2 rounded-lg transition-all duration-200",
+                                                    "flex items-center justify-center gap-1.5 px-2 py-2 rounded-lg transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                                                     isActive
-                                                        ? "bg-white text-gray-900 shadow-sm ring-1 ring-black/5"
-                                                        : "text-gray-400 hover:text-gray-600"
+                                                        ? "bg-card text-foreground shadow-sm ring-1 ring-border"
+                                                        : "text-muted-foreground hover:text-foreground"
                                                 )}
                                                 title={meta.label}
                                             >
@@ -210,7 +213,7 @@ export const SettingsMenu = ({ children, open: controlledOpen, onOpenChange }: S
                                         <Button
                                             variant="outline"
                                             size="sm"
-                                            className="w-full text-[10px] h-7 border-red-100 text-red-600 hover:bg-red-50 hover:border-red-200 bg-white"
+                                            className="w-full text-[10px] h-7 border-destructive/30 text-destructive hover:bg-destructive/10 hover:border-destructive bg-card"
                                             onClick={handleClearMock}
                                         >
                                             <Power size={10} className="mr-1.5" />
