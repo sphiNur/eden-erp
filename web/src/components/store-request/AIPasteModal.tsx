@@ -80,6 +80,7 @@ export const AIPasteModal = ({ open, onClose }: AIPasteModalProps) => {
                         exit={{ opacity: 0, y: '100%' }}
                         transition={{ type: "spring", damping: 25, stiffness: 300 }}
                         className="fixed bottom-0 left-0 right-0 z-alert bg-card rounded-t-2xl shadow-xl flex flex-col max-h-[90dvh]"
+                        onClick={(e) => e.stopPropagation()}
                     >
                         {/* Header */}
                         <div className="flex items-center justify-between p-4 border-b border-border shrink-0">
