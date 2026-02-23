@@ -6,6 +6,7 @@ pydantic>=2.5.0,<3.0.0
 pydantic-settings>=2.1.0,<3.0.0
 python-multipart>=0.0.6,<1.0.0
 alembic>=1.13.0,<2.0.0
+openai>=1.10.0
 
 # Test dependencies
 pytest>=8.0.0,<9.0.0
