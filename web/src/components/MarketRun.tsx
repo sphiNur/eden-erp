@@ -32,11 +32,11 @@ const MarketRunContent = () => {
     }
 
     const bottomBar = viewMode === 'shopping' ? (
-        <div className="p-3 bg-white border-t border-gray-100 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+        <div className="p-3 bg-card border-t border-border shadow-md">
             <Button
                 size="lg"
                 onClick={handleFinalize}
-                className="w-full text-base font-bold py-6 rounded-xl shadow-xl shadow-eden-500/20 active:scale-[0.98] transition-transform"
+                className="w-full text-base font-bold py-6 rounded-xl shadow-lg active:scale-95 transition-transform"
             >
                 {ui('finalizeBatch')}
             </Button>
@@ -47,10 +47,10 @@ const MarketRunContent = () => {
         <PageLayout
             header={<MarketHeader />}
             bottomBar={bottomBar}
-            className="bg-gray-50 min-h-[100dvh] flex flex-col"
+            className="bg-secondary h-full flex flex-col"
             noPadding
         >
-            <div className="flex-1 w-full h-full">
+            <div className="flex-1 w-full relative">
                 {viewMode === 'shopping' ? (
                     <MarketShoppingList />
                 ) : (

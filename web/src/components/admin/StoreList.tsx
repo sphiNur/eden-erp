@@ -7,8 +7,8 @@ import { storesApi } from '../../api/client';
 import { haptic } from '../../lib/telegram';
 import { PageLayout } from '../layout/PageLayout';
 import { ListToolbar } from '../shared/ListToolbar';
-import { PageLoading } from '../shared/PageLoading';
 import { useNavigate } from 'react-router-dom';
+import { Loader2 } from 'lucide-react';
 
 export const StoreList = () => {
     const { ui } = useLanguage();
@@ -47,7 +47,7 @@ export const StoreList = () => {
             actions={
                 <Button
                     size="sm"
-                    className="h-9 w-9 p-0 rounded-full bg-eden-500 hover:bg-eden-600 text-white shadow-sm shrink-0"
+                    className="h-9 w-9 p-0 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm shrink-0"
                     onClick={() => {
                         haptic.impact('light');
                         navigate('/admin/stores/new');
@@ -59,31 +59,33 @@ export const StoreList = () => {
         />
     );
 
-    if (loading) return <PageLoading />;
-
     return (
         <PageLayout toolbar={toolbar}>
-            {filteredStores.length === 0 ? (
-                <div className="text-center py-10 text-gray-400 text-sm">{ui('noResults')}</div>
+            {loading ? (
+                <div className="flex justify-center items-center py-12">
+                    <Loader2 className="animate-spin text-primary" size={32} />
+                </div>
+            ) : filteredStores.length === 0 ? (
+                <div className="text-center py-10 text-muted-foreground text-sm">{ui('noResults')}</div>
             ) : (
-                <div className="bg-white rounded-lg shadow-sm border overflow-hidden divide-y divide-gray-100">
+                <div className="bg-card rounded-lg shadow-sm border border-border overflow-hidden divide-y divide-border">
                     {filteredStores.map(store => (
                         <div
                             key={store.id}
-                            className="px-3 py-3 flex items-center justify-between cursor-pointer hover:bg-gray-50 active:bg-gray-100 transition-colors"
+                            className="px-3 py-3 flex items-center justify-between cursor-pointer hover:bg-accent active:bg-accent/80 transition-colors"
                             onClick={() => {
                                 haptic.impact('light');
                                 navigate(`/admin/stores/${store.id}`);
                             }}
                         >
                             <div>
-                                <div className="font-semibold text-gray-900 text-[13px]">{store.name}</div>
+                                <div className="font-semibold text-foreground text-[13px]">{store.name}</div>
                                 {store.address && (
-                                    <div className="text-xs text-gray-500 mt-0.5">{store.address}</div>
+                                    <div className="text-xs text-muted-foreground mt-0.5">{store.address}</div>
                                 )}
                             </div>
-                            <div className="text-eden-500">
-                                <span className="text-xs font-medium px-2 py-1 bg-eden-50 rounded-full">{ui('edit')}</span>
+                            <div className="text-primary">
+                                <span className="text-xs font-medium px-2 py-1 bg-primary/10 rounded-full">{ui('edit')}</span>
                             </div>
                         </div>
                     ))}

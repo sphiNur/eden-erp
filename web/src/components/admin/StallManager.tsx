@@ -66,7 +66,7 @@ export const StallManager = () => {
     if (loading) {
         return (
             <div className="flex justify-center items-center py-12">
-                <Loader2 className="animate-spin text-eden-500" size={32} />
+                <Loader2 className="animate-spin text-primary" size={32} />
             </div>
         );
     }
@@ -74,7 +74,7 @@ export const StallManager = () => {
     return (
         <div className="space-y-4">
             <div className="flex items-center justify-between">
-                <h2 className="text-lg font-bold">档口管理</h2>
+                <h2 className="text-lg font-bold text-foreground">档口管理</h2>
                 <Button
                     size="sm"
                     onClick={() => { setShowForm(true); setEditingId(null); setFormData({ name: '', location: '', sort_order: 0 }); }}
@@ -85,29 +85,29 @@ export const StallManager = () => {
 
             {/* Stall Form */}
             {showForm && (
-                <div className="bg-white rounded-xl border p-4 space-y-3 shadow-sm">
+                <div className="bg-card rounded-xl border border-border p-4 space-y-3 shadow-sm">
                     <div className="flex justify-between items-center mb-2">
-                        <h3 className="font-semibold">{editingId ? '编辑档口' : '新增档口'}</h3>
-                        <button onClick={() => setShowForm(false)}><X size={18} className="text-gray-400" /></button>
+                        <h3 className="font-semibold text-foreground">{editingId ? '编辑档口' : '新增档口'}</h3>
+                        <button onClick={() => setShowForm(false)}><X size={18} className="text-muted-foreground" /></button>
                     </div>
                     <input
                         type="text"
                         placeholder="档口名称 (e.g. 蔬菜档)"
-                        className="w-full px-3 py-2 bg-gray-100 rounded-lg outline-none focus:ring-2 focus:ring-eden-500 text-sm"
+                        className="w-full px-3 py-2 bg-accent rounded-lg outline-none focus:ring-2 focus:ring-primary text-sm text-foreground placeholder:text-muted-foreground"
                         value={formData.name}
                         onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                     />
                     <input
                         type="text"
                         placeholder="位置描述 (可选)"
-                        className="w-full px-3 py-2 bg-gray-100 rounded-lg outline-none focus:ring-2 focus:ring-eden-500 text-sm"
+                        className="w-full px-3 py-2 bg-accent rounded-lg outline-none focus:ring-2 focus:ring-primary text-sm text-foreground placeholder:text-muted-foreground"
                         value={formData.location || ''}
                         onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
                     />
                     <input
                         type="number"
                         placeholder="排序"
-                        className="w-full px-3 py-2 bg-gray-100 rounded-lg outline-none focus:ring-2 focus:ring-eden-500 text-sm"
+                        className="w-full px-3 py-2 bg-accent rounded-lg outline-none focus:ring-2 focus:ring-primary text-sm text-foreground placeholder:text-muted-foreground"
                         value={formData.sort_order || 0}
                         onChange={(e) => setFormData(prev => ({ ...prev, sort_order: parseInt(e.target.value) || 0 }))}
                     />
@@ -121,7 +121,7 @@ export const StallManager = () => {
             {/* Stall List */}
             <div className="space-y-2">
                 {stalls.length === 0 ? (
-                    <div className="text-center py-8 text-gray-400">
+                    <div className="text-center py-8 text-muted-foreground">
                         <MapPin size={32} className="mx-auto mb-2 opacity-50" />
                         <p className="text-sm">暂无档口，请添加</p>
                     </div>
@@ -129,27 +129,27 @@ export const StallManager = () => {
                     stalls.map(stall => (
                         <div
                             key={stall.id}
-                            className="bg-white rounded-lg border p-3 flex items-center justify-between group hover:shadow-sm transition-shadow"
+                            className="bg-card rounded-lg border border-border p-3 flex items-center justify-between group hover:shadow-sm transition-shadow"
                         >
                             <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-lg bg-eden-100 text-eden-600 flex items-center justify-center font-bold text-sm">
+                                <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center font-bold text-sm">
                                     {stall.sort_order}
                                 </div>
                                 <div>
-                                    <p className="font-semibold text-sm">{stall.name}</p>
-                                    {stall.location && <p className="text-xs text-gray-400">{stall.location}</p>}
+                                    <p className="font-semibold text-sm text-foreground">{stall.name}</p>
+                                    {stall.location && <p className="text-xs text-muted-foreground">{stall.location}</p>}
                                 </div>
                             </div>
                             <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                 <button
                                     onClick={() => startEdit(stall)}
-                                    className="p-1.5 text-gray-400 hover:text-eden-500 rounded-lg hover:bg-eden-50"
+                                    className="p-1.5 text-muted-foreground hover:text-primary rounded-lg hover:bg-primary/5"
                                 >
                                     Edit
                                 </button>
                                 <button
                                     onClick={() => handleDelete(stall.id)}
-                                    className="p-1.5 text-gray-400 hover:text-red-500 rounded-lg hover:bg-red-50"
+                                    className="p-1.5 text-muted-foreground hover:text-destructive rounded-lg hover:bg-destructive/10"
                                 >
                                     <Trash2 size={14} />
                                 </button>

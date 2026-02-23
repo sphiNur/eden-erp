@@ -6,8 +6,8 @@ import { haptic } from '../../lib/telegram';
 import { PageLayout } from '../layout/PageLayout';
 import { ListToolbar } from '../shared/ListToolbar';
 import { RoleBadge } from '../shared/RoleBadge';
-import { PageLoading } from '../shared/PageLoading';
 import { useNavigate } from 'react-router-dom';
+import { Loader2 } from 'lucide-react';
 
 export const UserList = () => {
     const { ui } = useLanguage();
@@ -39,36 +39,38 @@ export const UserList = () => {
         );
     }, [users, search]);
 
-    if (loading) return <PageLoading />;
-
     return (
         <PageLayout toolbar={<ListToolbar search={search} onSearchChange={setSearch} />}>
-            {filteredUsers.length === 0 ? (
-                <div className="text-center py-10 text-gray-400 text-sm">{ui('noResults')}</div>
+            {loading ? (
+                <div className="flex justify-center items-center py-12">
+                    <Loader2 className="animate-spin text-primary" size={32} />
+                </div>
+            ) : filteredUsers.length === 0 ? (
+                <div className="text-center py-10 text-muted-foreground text-sm">{ui('noResults')}</div>
             ) : (
-                <div className="bg-white rounded-lg shadow-sm border overflow-hidden divide-y divide-gray-100 space-y-0">
+                <div className="bg-card rounded-lg shadow-sm border border-border overflow-hidden divide-y divide-border space-y-0">
                     {filteredUsers.map(user => (
                         <div
                             key={user.id}
-                            className="px-3 py-3 flex items-center justify-between cursor-pointer hover:bg-gray-50 active:bg-gray-100 transition-colors"
+                            className="px-3 py-3 flex items-center justify-between cursor-pointer hover:bg-accent active:bg-accent/80 transition-colors"
                             onClick={() => {
                                 haptic.impact('light');
                                 navigate(`/admin/users/${user.id}`);
                             }}
                         >
                             <div className="flex items-center gap-3">
-                                <div className="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 font-bold text-xs">
-                                    {user.username?.[0]?.toUpperCase() || 'U'}
+                                <div className="h-8 w-8 rounded-full bg-accent flex items-center justify-center text-muted-foreground font-bold text-xs uppercase">
+                                    {user.username?.[0] || 'U'}
                                 </div>
                                 <div>
-                                    <div className="font-semibold text-[13px] text-gray-900 leading-none mb-1">
+                                    <div className="font-semibold text-[13px] text-foreground leading-none mb-1">
                                         {user.username || `User ${user.telegram_id}`}
                                     </div>
                                     <RoleBadge role={user.role} />
                                 </div>
                             </div>
-                            <div className="text-eden-500">
-                                <span className="text-xs font-medium px-2 py-1 bg-eden-50 rounded-full">{ui('edit')}</span>
+                            <div className="text-primary">
+                                <span className="text-xs font-medium px-2 py-1 bg-primary/10 rounded-full">{ui('edit')}</span>
                             </div>
                         </div>
                     ))}

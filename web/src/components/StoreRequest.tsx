@@ -45,9 +45,6 @@ const StoreRequestContent = () => {
     } = useStoreRequestContext();
 
     // --- Render ---
-    if (loading) return <ProductListSkeleton />;
-    if (error) return <ErrorRetry message={error} onRetry={refresh} />;
-
     const categoryCounts: Record<string, number> = {};
 
     const header = (
@@ -57,11 +54,11 @@ const StoreRequestContent = () => {
                 <div className="flex gap-2 items-center">
                     {/* Search (Expands) */}
                     <div className="relative flex-1">
-                        <Search className="absolute left-2.5 top-2 text-gray-400" size={14} />
+                        <Search className="absolute left-2.5 top-2 text-muted-foreground" size={14} />
                         <input
                             type="text"
                             placeholder={ui('search')}
-                            className="w-full pl-8 pr-7 py-1.5 bg-gray-100 rounded-lg outline-none focus:bg-white focus:ring-2 focus:ring-eden-500 text-[13px] transition-all"
+                            className="w-full pl-8 pr-7 py-1.5 bg-accent rounded-lg outline-none focus:bg-card focus:ring-2 focus:ring-primary text-[13px] transition-all text-foreground placeholder:text-muted-foreground"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
@@ -73,10 +70,10 @@ const StoreRequestContent = () => {
                     </div>
 
                     {/* Store (Compact Icon Only or Small Select) */}
-                    <div className="flex items-center bg-gray-100 px-2 py-1.5 rounded-lg shrink-0 transition-colors focus-within:bg-white focus-within:ring-2 focus-within:ring-eden-500/20 w-[100px]">
-                        <Store size={14} className="text-gray-500 shrink-0 mr-1.5" />
+                    <div className="flex items-center bg-accent px-2 py-1.5 rounded-lg shrink-0 transition-colors focus-within:bg-card focus-within:ring-2 focus-within:ring-primary/20 w-[100px]">
+                        <Store size={14} className="text-muted-foreground shrink-0 mr-1.5" />
                         <select
-                            className="bg-transparent font-medium text-[13px] w-full outline-none truncate appearance-none"
+                            className="bg-transparent font-medium text-[13px] w-full outline-none truncate appearance-none text-foreground"
                             value={selectedStore}
                             onChange={(e) => setSelectedStore(e.target.value)}
                         >
@@ -86,11 +83,11 @@ const StoreRequestContent = () => {
                     </div>
 
                     {/* Date picker (Compact) */}
-                    <div className="flex items-center bg-gray-100 px-2 py-1.5 rounded-lg shrink-0 transition-colors focus-within:bg-white focus-within:ring-2 focus-within:ring-eden-500/20 w-[100px]">
-                        <CalendarDays size={14} className="text-gray-500 mr-1.5" />
+                    <div className="flex items-center bg-accent px-2 py-1.5 rounded-lg shrink-0 transition-colors focus-within:bg-card focus-within:ring-2 focus-within:ring-primary/20 w-[100px]">
+                        <CalendarDays size={14} className="text-muted-foreground mr-1.5" />
                         <input
                             type="date"
-                            className="bg-transparent text-[13px] font-medium outline-none w-full"
+                            className="bg-transparent text-[13px] font-medium outline-none w-full text-foreground"
                             value={deliveryDate}
                             min={new Date().toISOString().split('T')[0]}
                             onChange={(e) => setDeliveryDate(e.target.value)}
@@ -109,7 +106,7 @@ const StoreRequestContent = () => {
                                 <div
                                     key={tmpl.id}
                                     onClick={() => handleLoadTemplate(tmpl)}
-                                    className="bg-indigo-50 text-indigo-600 border border-indigo-100 px-2.5 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5 active:bg-indigo-100 active:scale-95 transition-all cursor-pointer select-none"
+                                    className="bg-primary/10 text-primary border border-primary/20 px-2.5 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5 active:bg-primary/20 active:scale-95 transition-all cursor-pointer select-none"
                                 >
                                     {tmpl.name}
                                     <button
@@ -150,7 +147,7 @@ const StoreRequestContent = () => {
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                     onClick={() => setShowCart(true)}
-                    className="w-14 h-14 bg-eden-500 text-white rounded-full shadow-lg flex items-center justify-center"
+                    className="w-14 h-14 bg-primary text-primary-foreground rounded-full shadow-lg flex items-center justify-center"
                 >
                     <ListFilter size={22} />
                     <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-white">
@@ -162,9 +159,13 @@ const StoreRequestContent = () => {
     );
 
     return (
-        <PageLayout header={header} floatingAction={floatingAction} className="bg-gray-50">
+        <PageLayout header={header} floatingAction={floatingAction} className="bg-secondary">
             <div className="space-y-3 pb-24">
-                {Object.keys(groupedProducts).length === 0 ? (
+                {loading ? (
+                    <ProductListSkeleton />
+                ) : error ? (
+                    <ErrorRetry message={error} onRetry={refresh} />
+                ) : Object.keys(groupedProducts).length === 0 ? (
                     <EmptyState
                         title={ui('noProductsFound')}
                         description={undefined}
@@ -172,10 +173,10 @@ const StoreRequestContent = () => {
                 ) : (
                     Object.entries(groupedProducts).map(([category, items]) => (
                         <div key={category} className="space-y-1">
-                            <h3 className="font-semibold text-gray-500 text-[10px] uppercase tracking-wider py-0.5 pl-1">
+                            <h3 className="font-semibold text-muted-foreground text-[10px] uppercase tracking-wider py-0.5 pl-1">
                                 {category}
                             </h3>
-                            <div className="bg-white rounded-md shadow-sm border overflow-hidden divide-y divide-gray-100">
+                            <div className="bg-card rounded-md shadow-sm border border-border overflow-hidden divide-y divide-border">
                                 {items.map(product => (
                                     <ProductListItem
                                         key={product.id}
@@ -224,13 +225,13 @@ const StoreRequestContent = () => {
                             exit={{ opacity: 0, scale: 0.95 }}
                             className="fixed inset-0 z-overlay flex items-center justify-center p-4"
                         >
-                            <div className="bg-white rounded-xl shadow-xl p-5 w-full max-w-sm">
-                                <h3 className="font-bold text-lg mb-2">Save Template</h3>
-                                <p className="text-gray-500 text-sm mb-4">Enter a name for this template (e.g., 'Daily Veggies')</p>
+                            <div className="bg-card rounded-xl shadow-xl p-5 w-full max-w-sm">
+                                <h3 className="font-bold text-lg mb-2 text-foreground">Save Template</h3>
+                                <p className="text-muted-foreground text-sm mb-4">Enter a name for this template (e.g., 'Daily Veggies')</p>
                                 <input
                                     id="template-name-input"
                                     type="text"
-                                    className="w-full bg-gray-100 rounded-lg px-4 py-3 mb-4 outline-none focus:ring-2 focus:ring-eden-500 font-medium"
+                                    className="w-full bg-accent rounded-lg px-4 py-3 mb-4 outline-none focus:ring-2 focus:ring-primary font-medium text-foreground"
                                     placeholder="Template name"
                                     autoFocus
                                     onKeyDown={(e) => {
@@ -243,7 +244,7 @@ const StoreRequestContent = () => {
                                 />
                                 <div className="flex gap-3">
                                     <button
-                                        className="flex-1 py-2.5 rounded-lg bg-gray-100 text-gray-700 font-semibold active:scale-95 transition-transform"
+                                        className="flex-1 py-2.5 rounded-lg bg-accent text-foreground font-semibold active:scale-95 transition-transform"
                                         onClick={() => {
                                             templatePromptResolver?.(null);
                                             setShowTemplatePrompt(false);
@@ -252,7 +253,7 @@ const StoreRequestContent = () => {
                                         Cancel
                                     </button>
                                     <button
-                                        className="flex-1 py-2.5 rounded-lg bg-eden-500 text-white font-bold active:scale-95 transition-transform"
+                                        className="flex-1 py-2.5 rounded-lg bg-primary text-primary-foreground font-bold active:scale-95 transition-transform"
                                         onClick={() => {
                                             const val = (document.getElementById('template-name-input') as HTMLInputElement).value.trim();
                                             templatePromptResolver?.(val || null);

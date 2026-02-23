@@ -64,8 +64,8 @@ export const MarketItemRow = memo(({ item }: MarketItemRowProps) => {
 
     return (
         <div className={cn(
-            "px-3 py-3 flex flex-col gap-2.5 transition-colors border-b last:border-0",
-            item.status === 'bought' ? "bg-emerald-50/30" : "bg-white"
+            "px-3 py-3 flex flex-col gap-2.5 transition-colors border-b border-border last:border-0",
+            item.status === 'bought' ? "bg-success/10" : "bg-card"
         )}>
             {/* 1. Header Row (Name, Qty, Tick) */}
             <div className="flex items-start gap-3">
@@ -77,17 +77,17 @@ export const MarketItemRow = memo(({ item }: MarketItemRowProps) => {
                 >
                     <div className="flex flex-col gap-0.5">
                         <span className={cn(
-                            "font-bold text-[14px] leading-tight text-gray-900 line-clamp-2 pr-2",
-                            item.status === 'bought' && "text-emerald-700 line-through"
+                            "font-bold text-[14px] leading-tight text-foreground line-clamp-2 pr-2",
+                            item.status === 'bought' && "text-success line-through"
                         )}>
                             {t(item.product_name)}
                         </span>
                         <div className="flex items-center gap-2 mt-0.5">
-                            <span className="text-xs font-semibold text-gray-700 bg-gray-100 px-1.5 py-0.5 rounded">
+                            <span className="text-xs font-semibold text-muted-foreground bg-accent px-1.5 py-0.5 rounded">
                                 {qtyNum} {t(item.unit)}
                             </span>
                             {item.breakdown.length > 0 && (
-                                <div className="flex items-center gap-0.5 text-[10px] font-bold text-eden-700 bg-eden-50 px-1.5 py-0.5 rounded-full border border-eden-200">
+                                <div className="flex items-center gap-0.5 text-[10px] font-bold text-primary bg-primary/10 px-1.5 py-0.5 rounded-full border border-primary/20">
                                     {item.breakdown.length} {ui('stores')}
                                     {isExpanded ? <ChevronUp size={10} /> : <ChevronDown size={10} />}
                                 </div>
@@ -112,26 +112,23 @@ export const MarketItemRow = memo(({ item }: MarketItemRowProps) => {
                 isExpanded ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
             )}>
                 <div className="overflow-hidden">
-                    <div className="bg-gray-50/80 rounded-lg p-2 space-y-1.5 mb-1 mt-1 border border-gray-100">
+                    <div className="bg-accent/50 rounded-lg p-2 space-y-1.5 mb-1 mt-1 border border-border">
                         {item.breakdown.map((b, idx) => (
                             <div key={idx} className="flex justify-between items-center gap-2">
-                                <span className="text-gray-700 font-medium text-[11px] flex-1 truncate">{b.store_name}</span>
+                                <span className="text-foreground font-medium text-[11px] flex-1 truncate">{b.store_name}</span>
                                 <div className="flex items-center gap-1">
                                     <Input
                                         type="number"
-                                        className="h-6 w-16 text-right text-[11px] font-mono font-bold bg-white border-gray-200 focus:border-eden-500 px-1 placeholder:font-normal placeholder:text-gray-300"
+                                        className="h-6 w-16 text-right text-[11px] font-mono font-bold bg-card border-border focus:border-primary px-1 placeholder:font-normal placeholder:text-muted"
                                         value={b.quantity}
                                         onChange={(e) => {
                                             updateStoreQuantity(item.product_id, b.store_name, e.target.value);
-                                            // Optional: If they change store qty, you might want to recalculate localTotal dynamically here 
-                                            // But for now it's calculated in the hook and you can sync it down later if needed.
-                                            // To keep it simple, we just assume they type total price at the end.
                                             setTimeout(() => {
                                                 setLocalTotal(getPriceInput(item.product_id));
                                             }, 50);
                                         }}
                                     />
-                                    <span className="text-[10px] text-gray-400 font-medium w-5">{t(item.unit)}</span>
+                                    <span className="text-[10px] text-muted-foreground font-medium w-5">{t(item.unit)}</span>
                                 </div>
                             </div>
                         ))}
@@ -145,23 +142,23 @@ export const MarketItemRow = memo(({ item }: MarketItemRowProps) => {
                 item.status !== 'bought' ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
             )}>
                 <div className="overflow-hidden">
-                    <div className="flex items-center gap-2 pt-1 border-t border-gray-50 border-dashed mt-1">
-                        <div className="flex-1 flex items-center bg-gray-50 rounded-lg focus-within:ring-1 focus-within:ring-eden-500 overflow-hidden">
-                            <span className="text-[10px] font-bold text-gray-400 pl-2 pr-1 uppercase select-none w-10">{ui('unitPrice') || 'UNIT'}</span>
+                    <div className="flex items-center gap-2 pt-1 border-t border-border border-dashed mt-1">
+                        <div className="flex-1 flex items-center bg-accent rounded-lg focus-within:ring-1 focus-within:ring-primary overflow-hidden">
+                            <span className="text-[10px] font-bold text-muted-foreground pl-2 pr-1 uppercase select-none w-10">{ui('unitPrice') || 'UNIT'}</span>
                             <input
                                 type="number"
                                 placeholder="..."
-                                className="flex-1 h-8 bg-transparent text-right font-mono font-bold text-[13px] outline-none pr-2"
+                                className="flex-1 h-8 bg-transparent text-right font-mono font-bold text-[13px] outline-none pr-2 text-foreground"
                                 value={localUnit}
                                 onChange={(e) => handleLocalUnitChange(e.target.value)}
                             />
                         </div>
-                        <div className="flex-1 flex items-center bg-gray-50 rounded-lg focus-within:ring-1 focus-within:ring-eden-500 overflow-hidden">
-                            <span className="text-[10px] font-bold text-gray-400 pl-2 pr-1 uppercase select-none w-12">{ui('totalCost') || 'TOTAL'}</span>
+                        <div className="flex-1 flex items-center bg-accent rounded-lg focus-within:ring-1 focus-within:ring-primary overflow-hidden">
+                            <span className="text-[10px] font-bold text-muted-foreground pl-2 pr-1 uppercase select-none w-12">{ui('totalCost') || 'TOTAL'}</span>
                             <input
                                 type="number"
                                 placeholder="..."
-                                className="flex-1 h-8 bg-transparent text-right font-mono font-bold text-[13px] outline-none pr-2"
+                                className="flex-1 h-8 bg-transparent text-right font-mono font-bold text-[13px] outline-none pr-2 text-foreground"
                                 value={localTotal}
                                 onChange={(e) => handleLocalTotalChange(e.target.value)}
                             />

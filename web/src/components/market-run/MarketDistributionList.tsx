@@ -21,30 +21,30 @@ export const MarketDistributionList = () => {
     }
 
     return (
-        <div className="bg-gray-50 flex-1 p-3">
+        <div className="bg-secondary flex-1 p-3">
             <Tabs defaultValue={storeKeys[0]} className="w-full">
-                <TabsList className="w-full justify-start overflow-x-auto mb-3 bg-white p-1 rounded-xl shadow-sm border border-gray-100 h-auto scrollbar-hide">
+                <TabsList className="w-full justify-start overflow-x-auto mb-3 bg-card p-1 rounded-xl shadow-sm border border-border h-auto scrollbar-hide">
                     {storeKeys.map(key => (
                         <TabsTrigger
                             key={key}
                             value={key}
-                            className="flex-1 min-w-[80px] text-[13px] font-semibold py-2 px-3 rounded-lg data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 data-[state=active]:shadow-none transition-all text-gray-500 hover:text-gray-700"
+                            className="flex-1 min-w-[80px] text-[13px] font-semibold py-2 px-3 rounded-lg data-[state=active]:bg-primary/10 data-[state=active]:text-primary data-[state=active]:shadow-none transition-all text-muted-foreground hover:text-foreground"
                         >
-                            {key} <span className="ml-1.5 opacity-60 text-[10px] bg-white/50 px-1.5 py-0.5 rounded-full">{distributionSections[key].length}</span>
+                            {key} <span className="ml-1.5 opacity-60 text-[10px] bg-card/50 px-1.5 py-0.5 rounded-full">{distributionSections[key].length}</span>
                         </TabsTrigger>
                     ))}
                 </TabsList>
 
                 {storeKeys.map(key => (
                     <TabsContent key={key} value={key} className="space-y-1.5 outline-none focus:outline-none focus-visible:outline-none">
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden divide-y divide-gray-50">
+                        <div className="bg-card rounded-xl shadow-sm border border-border overflow-hidden divide-y divide-border/50">
                             {distributionSections[key].map((entry, idx) => (
-                                <div key={idx} className="px-4 py-3.5 flex items-center justify-between hover:bg-gray-50/50 transition-colors">
+                                <div key={idx} className="px-4 py-3.5 flex items-center justify-between hover:bg-accent/50 transition-colors">
                                     <div className="flex flex-col gap-0.5">
-                                        <div className="font-bold text-[14px] text-gray-900">{t(entry.item.product_name)}</div>
-                                        <div className="text-[11px] font-medium text-gray-500 uppercase tracking-wide">{t(entry.item.category_name)}</div>
+                                        <div className="font-bold text-[14px] text-foreground">{t(entry.item.product_name)}</div>
+                                        <div className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide">{t(entry.item.category_name)}</div>
                                     </div>
-                                    <Badge variant="outline" className="font-mono text-[13px] px-2 py-0.5 bg-blue-50/80 text-blue-700 border-blue-200 shadow-sm rounded-md">
+                                    <Badge variant="outline" className="font-mono text-[13px] px-2 py-0.5 bg-primary/10 text-primary border-primary/20 shadow-sm rounded-md">
                                         {entry.qty} {t(entry.item.unit)}
                                     </Badge>
                                 </div>
