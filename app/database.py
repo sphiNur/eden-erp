@@ -32,6 +32,10 @@ def _clean_database_url(raw_url: str) -> tuple[str, bool]:
     Returns:
         (cleaned_url, needs_ssl)
     """
+    # Only PostgreSQL URLs need SSL param stripping
+    if not raw_url.startswith("postgresql"):
+        return raw_url, False
+
     parsed = urlparse(raw_url)
     query_params = parse_qs(parsed.query, keep_blank_values=True)
 
