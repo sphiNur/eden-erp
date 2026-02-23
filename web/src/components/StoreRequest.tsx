@@ -48,8 +48,20 @@ const StoreRequestContent = () => {
 
     const [showAIModal, setShowAIModal] = useState(false);
 
-    // --- Render ---
+    // Calculate category selection counts
     const categoryCounts: Record<string, number> = {};
+    Object.entries(quantities).forEach(([productId, qty]) => {
+        if (qty > 0) {
+            // Find the product to get its category name
+            const product = groupedProducts &&
+                Object.values(groupedProducts).flat().find(p => p.id === productId);
+
+            if (product && product.category) {
+                const catName = product.category.name_i18n.en || product.category.name_i18n.uz || 'Unknown';
+                categoryCounts[catName] = (categoryCounts[catName] || 0) + 1;
+            }
+        }
+    });
 
     const header = (
         <PageHeader>
@@ -224,7 +236,7 @@ const StoreRequestContent = () => {
                 />
             </BottomDrawer>
 
-            {/* Template Name Prompt Overlay */}
+            {/* Template Name Prompt Modal */}
             <AnimatePresence>
                 {showTemplatePrompt && (
                     <>

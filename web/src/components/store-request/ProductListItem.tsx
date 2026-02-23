@@ -19,14 +19,14 @@ export const ProductListItem = memo(({ product, quantity, onChange }: ProductLis
         <div
             className={cn(
                 "px-3 py-2 flex items-center justify-between transition-colors",
-                quantity > 0 ? "bg-eden-50" : "hover:bg-gray-50"
+                quantity > 0 ? "bg-accent/50" : "hover:bg-accent/30"
             )}
         >
             <div className="flex-1 min-w-0 pr-2 flex items-center gap-1.5 overflow-hidden">
-                <div className="font-semibold text-gray-900 text-[13px] truncate">
+                <div className="font-semibold text-foreground text-[13px] truncate">
                     {t(product.name_i18n)}
                 </div>
-                <div className="text-[10px] text-gray-400 shrink-0">
+                <div className="text-[10px] text-muted-foreground shrink-0">
                     {formatCurrency(product.price_reference || 0, 'UZS', locale)} / {t(product.unit_i18n)}
                 </div>
             </div>

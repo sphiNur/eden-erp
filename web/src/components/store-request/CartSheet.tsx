@@ -34,17 +34,17 @@ export const CartSheet = ({
 
     return (
         <>
-            <div className="space-y-1 divide-y divide-gray-100 mb-4">
+            <div className="space-y-1 divide-y divide-border mb-4">
                 {cartItems.length === 0 ? (
-                    <div className="text-center text-gray-400 py-10">{ui('cartEmpty')}</div>
+                    <div className="text-center text-muted-foreground py-10">{ui('cartEmpty')}</div>
                 ) : (
                     cartItems.map(({ product, qty }) => (
                         <div key={product?.id} className="flex justify-between items-center py-2 px-1">
                             <div className="flex-1 min-w-0 pr-2 flex items-center gap-1.5 overflow-hidden">
-                                <div className="font-semibold text-gray-900 text-[13px] truncate">
+                                <div className="font-semibold text-foreground text-[13px] truncate">
                                     {product ? t(product.name_i18n) : 'Unknown'}
                                 </div>
-                                <div className="text-[10px] text-gray-400 shrink-0">
+                                <div className="text-[10px] text-muted-foreground shrink-0">
                                     {product ? t(product.unit_i18n) : ''}
                                 </div>
                             </div>
@@ -60,9 +60,9 @@ export const CartSheet = ({
 
             <div className="space-y-2 mt-auto">
                 {estimatedTotal > 0 && (
-                    <div className="flex justify-between text-sm text-gray-500 px-1">
+                    <div className="flex justify-between text-sm text-muted-foreground px-1">
                         <span>{ui('estimatedTotal')}</span>
-                        <span className="font-mono font-bold text-gray-700">
+                        <span className="font-mono font-bold text-foreground">
                             ~{formatCurrency(estimatedTotal, 'UZS', locale)}
                         </span>
                     </div>
@@ -72,7 +72,7 @@ export const CartSheet = ({
                     <Button
                         variant="outline"
                         onClick={onSaveTemplate}
-                        className="flex-1 border-dashed border-gray-300 text-gray-500 hover:text-eden-600 hover:border-eden-300"
+                        className="flex-1 border-dashed border-border text-muted-foreground hover:text-primary hover:border-primary/50"
                     >
                         <Save size={16} className="mr-2" />
                         Save Template
@@ -83,7 +83,7 @@ export const CartSheet = ({
                     onClick={onSubmit}
                     disabled={submitting || cartItems.length === 0}
                     size="lg"
-                    className="w-full text-lg font-bold bg-eden-500 hover:bg-eden-600 h-12 disabled:opacity-50"
+                    className="w-full text-lg font-bold h-12 disabled:opacity-50"
                 >
                     {submitting && <Loader2 className="animate-spin mr-2 h-5 w-5" />}
                     {ui('confirmSubmit')}
