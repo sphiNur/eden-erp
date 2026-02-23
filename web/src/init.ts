@@ -6,6 +6,8 @@ import {
     initData,
     setDebug,
     init as initSDK,
+    requestSafeAreaInsets,
+    requestContentSafeAreaInsets,
 } from '@telegram-apps/sdk-react';
 
 /**
@@ -77,8 +79,16 @@ export async function init(options: {
                 if (typeof viewport.requestFullscreen === 'function') {
                     viewport.requestFullscreen();
                 }
+
+                // TMA API >= v8.0 Requires explicit API requests for Safe Area bindings to populate CSS variables.
+                if (requestSafeAreaInsets && requestSafeAreaInsets.isAvailable()) {
+                    requestSafeAreaInsets();
+                }
+                if (requestContentSafeAreaInsets && requestContentSafeAreaInsets.isAvailable()) {
+                    requestContentSafeAreaInsets();
+                }
             } catch (e) {
-                console.warn('Request fullscreen failed:', e);
+                console.warn('Request fullscreen / safe area failed:', e);
             }
         }
     } catch (e) {
