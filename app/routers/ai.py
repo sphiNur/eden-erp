@@ -6,9 +6,8 @@ from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 
-from app.database import get_db
 from app.models import User, Product
-from app.dependencies import get_current_user
+from app.dependencies import get_current_user, get_db
 from openai import OpenAI
 
 router = APIRouter(prefix="/ai", tags=["AI Order Parsing"])
