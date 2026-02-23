@@ -1,5 +1,5 @@
 import { useEffect, ReactNode } from 'react';
-import { retrieveLaunchParams } from '@telegram-apps/sdk-react';
+import { retrieveLaunchParams, themeParams, useSignal } from '@telegram-apps/sdk-react';
 import { HashRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { MarketRun } from './components/MarketRun';
 import { StoreRequest } from './components/StoreRequest';
@@ -98,6 +98,17 @@ function App() {
             console.warn('Failed to apply platform class or retrieve parameters:', e);
         }
     }, []);
+
+    // --- ANDROID DARK MODE SYNC FIX ---
+    // Dynamically toggle the <html> `.dark` class relying on the SDK's parsed parameters
+    const isDark = useSignal(themeParams.isDark);
+    useEffect(() => {
+        if (isDark) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    }, [isDark]);
 
     return (
         <LanguageProvider>

@@ -35,15 +35,15 @@ export const StoreRequestToolbar = ({
     const { ui } = useLanguage();
 
     return (
-        <div className="bg-white border-b">
+        <div className="bg-card border-b border-border">
             <div className="px-3 pt-2 pb-1">
                 {/* ─── Top Row: Store & Date ─── */}
                 <div className="flex items-center gap-1.5 mb-1.5">
                     {/* Store selector */}
-                    <div className="flex items-center gap-1.5 bg-gray-50 px-2 py-1.5 rounded-lg flex-1 min-w-0">
-                        <Store size={16} className="text-gray-500 shrink-0" />
+                    <div className="flex items-center gap-1.5 bg-accent px-2 py-1.5 rounded-lg flex-1 min-w-0 transition-colors focus-within:ring-2 focus-within:ring-primary/20">
+                        <Store size={16} className="text-muted-foreground shrink-0" />
                         <select
-                            className="bg-transparent font-medium text-sm w-full outline-none truncate"
+                            className="bg-transparent font-medium text-sm w-full outline-none truncate text-foreground appearance-none"
                             value={selectedStoreId}
                             onChange={(e) => onStoreChange(e.target.value)}
                         >
@@ -53,11 +53,11 @@ export const StoreRequestToolbar = ({
                     </div>
 
                     {/* Date picker */}
-                    <div className="flex items-center gap-1 bg-gray-50 px-2 py-1.5 rounded-lg shrink-0">
-                        <CalendarDays size={14} className="text-gray-500" />
+                    <div className="flex items-center gap-1 bg-accent px-2 py-1.5 rounded-lg shrink-0 transition-colors focus-within:ring-2 focus-within:ring-primary/20">
+                        <CalendarDays size={14} className="text-muted-foreground" />
                         <input
                             type="date"
-                            className="bg-transparent text-sm font-medium outline-none w-[110px]"
+                            className="bg-transparent text-sm font-medium outline-none w-[110px] text-foreground"
                             value={deliveryDate}
                             min={new Date().toISOString().split('T')[0]}
                             onChange={(e) => onDateChange(e.target.value)}
@@ -69,16 +69,16 @@ export const StoreRequestToolbar = ({
             <div className="px-3 pb-1.5 space-y-1.5">
                 {/* ─── Search ─── */}
                 <div className="relative">
-                    <Search className="absolute left-2.5 top-2 text-gray-400" size={16} />
+                    <Search className="absolute left-2.5 top-2 text-muted-foreground" size={16} />
                     <input
                         type="text"
                         placeholder={ui('search')}
-                        className="w-full pl-8 pr-8 py-1.5 bg-gray-100 rounded-lg outline-none focus:ring-2 focus:ring-eden-500 text-sm"
+                        className="w-full pl-8 pr-8 py-1.5 bg-accent rounded-lg outline-none focus:ring-2 focus:ring-primary text-sm text-foreground placeholder:text-muted-foreground transition-all"
                         value={searchTerm}
                         onChange={(e) => onSearchChange(e.target.value)}
                     />
                     {searchTerm && (
-                        <button onClick={() => onSearchChange('')} className="absolute right-2.5 top-2 text-gray-400 hover:text-gray-600">
+                        <button onClick={() => onSearchChange('')} className="absolute right-2.5 top-2 text-muted-foreground hover:text-foreground">
                             <X size={16} />
                         </button>
                     )}
@@ -88,14 +88,14 @@ export const StoreRequestToolbar = ({
                 {templates.length > 0 && (
                     <div className="overflow-x-auto -mx-3 px-3 scrollbar-hide mb-1">
                         <div className="flex gap-2">
-                            <div className="text-[10px] uppercase font-bold text-gray-400 flex items-center shrink-0">
+                            <div className="text-[10px] uppercase font-bold text-muted-foreground flex items-center shrink-0">
                                 <Zap size={10} className="mr-1" /> Quick Order:
                             </div>
                             {templates.map(tmpl => (
                                 <div
                                     key={tmpl.id}
                                     onClick={() => onLoadTemplate(tmpl)}
-                                    className="bg-indigo-50 text-indigo-600 border border-indigo-100 px-2.5 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5 active:bg-indigo-100 active:scale-95 transition-all cursor-pointer select-none"
+                                    className="bg-primary/10 text-primary border border-primary/20 px-2.5 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5 active:bg-primary/20 active:scale-95 transition-all cursor-pointer select-none"
                                 >
                                     {tmpl.name}
                                     <button
@@ -103,7 +103,7 @@ export const StoreRequestToolbar = ({
                                             e.stopPropagation();
                                             onDeleteTemplate(tmpl.id);
                                         }}
-                                        className="w-4 h-4 rounded-full bg-indigo-100 flex items-center justify-center hover:bg-indigo-200"
+                                        className="w-4 h-4 rounded-full bg-primary/20 flex items-center justify-center hover:bg-primary/30"
                                     >
                                         <X size={10} />
                                     </button>

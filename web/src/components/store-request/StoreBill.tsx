@@ -58,19 +58,19 @@ export const StoreBill = () => {
 
     if (loading) {
         return (
-            <PageLayout header={header} className="bg-gray-50">
-                <div className="flex justify-center items-center min-h-[50vh]">
-                    <Loader2 className="animate-spin text-eden-500" size={48} />
+            <PageLayout header={header} className="bg-secondary">
+                <div className="flex justify-center items-center py-12">
+                    <Loader2 className="animate-spin text-primary" size={32} />
                 </div>
             </PageLayout>
         );
     }
 
     return (
-        <PageLayout header={header} className="bg-gray-50">
+        <PageLayout header={header} className="bg-secondary">
             <div className="space-y-3 pb-8">
                 {bills.length === 0 ? (
-                    <div className="text-center py-16 text-gray-400">
+                    <div className="text-center py-16 text-muted-foreground">
                         <Receipt size={48} className="mx-auto mb-3 opacity-50" />
                         <p className="font-medium">暂无账单</p>
                         <p className="text-sm mt-1">该日期还未生成账单</p>
@@ -100,97 +100,97 @@ const BillCard = ({ bill, expanded, onToggle }: {
     const expenses = bill.detail?.expenses || [];
 
     return (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div className="bg-card rounded-xl shadow-sm border border-border overflow-hidden">
             {/* Summary Header */}
             <button
                 onClick={onToggle}
-                className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 transition-colors"
+                className="w-full px-4 py-3 flex items-center justify-between hover:bg-accent transition-colors"
             >
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-eden-400 to-eden-600 flex items-center justify-center text-white font-bold text-sm">
+                    <div className="w-10 h-10 rounded-lg bg-primary text-primary-foreground flex items-center justify-center font-bold text-sm shadow-sm ring-1 ring-border">
                         {(bill.store_name || '?')[0]}
                     </div>
                     <div className="text-left">
-                        <p className="font-semibold text-gray-900">{bill.store_name || 'Store'}</p>
-                        <p className="text-xs text-gray-500">
+                        <p className="font-semibold text-foreground">{bill.store_name || 'Store'}</p>
+                        <p className="text-xs text-muted-foreground">
                             {items.length} 项商品 · {expenses.length} 项费用
                         </p>
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
                     <div className="text-right">
-                        <p className="font-bold text-lg text-eden-600">
-                            {Number(bill.grand_total).toLocaleString()} <span className="text-xs font-normal">UZS</span>
+                        <p className="font-bold text-lg text-primary">
+                            {Number(bill.grand_total).toLocaleString()} <span className="text-xs font-normal text-muted-foreground">UZS</span>
                         </p>
                     </div>
-                    {expanded ? <ChevronUp size={18} className="text-gray-400" /> : <ChevronDown size={18} className="text-gray-400" />}
+                    {expanded ? <ChevronUp size={18} className="text-muted-foreground" /> : <ChevronDown size={18} className="text-muted-foreground" />}
                 </div>
             </button>
 
             {/* Expanded Detail */}
             {expanded && (
-                <div className="border-t border-gray-100">
+                <div className="border-t border-border">
                     {/* Items Section */}
                     {items.length > 0 && (
-                        <div className="px-4 py-3">
-                            <p className="text-[10px] uppercase font-bold text-gray-400 tracking-wider mb-2">商品明细</p>
+                        <div className="px-4 py-3 bg-card">
+                            <p className="text-[10px] uppercase font-bold text-muted-foreground tracking-wider mb-2">商品明细</p>
                             <div className="space-y-1.5">
                                 {items.map((item: BillItemDetail, i: number) => (
                                     <div key={i} className="flex items-center justify-between text-sm">
                                         <div className="flex-1 min-w-0">
-                                            <span className="text-gray-700">{t(item.product_name)}</span>
-                                            <span className="text-gray-400 text-xs ml-1">
+                                            <span className="text-foreground">{t(item.product_name)}</span>
+                                            <span className="text-muted-foreground text-xs ml-1">
                                                 ×{Number(item.quantity).toFixed(1)} {t(item.unit)}
                                             </span>
                                         </div>
-                                        <span className="font-medium text-gray-900 ml-2 shrink-0">
+                                        <span className="font-medium text-foreground ml-2 shrink-0">
                                             {Number(item.subtotal).toLocaleString()}
                                         </span>
                                     </div>
                                 ))}
                             </div>
-                            <div className="mt-2 pt-2 border-t border-dashed flex justify-between text-sm font-semibold">
-                                <span className="text-gray-500">商品小计</span>
-                                <span className="text-gray-900">{Number(bill.items_total).toLocaleString()} UZS</span>
+                            <div className="mt-2 pt-2 border-t border-dashed border-border flex justify-between text-sm font-semibold">
+                                <span className="text-muted-foreground">商品小计</span>
+                                <span className="text-foreground">{Number(bill.items_total).toLocaleString()} UZS</span>
                             </div>
                         </div>
                     )}
 
                     {/* Shared Expenses Section */}
                     {expenses.length > 0 && (
-                        <div className="px-4 py-3 bg-amber-50/50 border-t">
-                            <p className="text-[10px] uppercase font-bold text-amber-600 tracking-wider mb-2">均摊费用</p>
+                        <div className="px-4 py-3 bg-secondary/80 border-t border-border">
+                            <p className="text-[10px] uppercase font-bold text-primary/80 tracking-wider mb-2">均摊费用</p>
                             <div className="space-y-1.5">
                                 {expenses.map((exp: BillExpenseDetail, i: number) => {
                                     const Icon = EXPENSE_ICONS[exp.expense_type] || HelpCircle;
                                     return (
                                         <div key={i} className="flex items-center justify-between text-sm">
                                             <div className="flex items-center gap-2">
-                                                <Icon size={14} className="text-amber-500" />
-                                                <span className="text-gray-700">{exp.description || exp.expense_type}</span>
-                                                <span className="text-[10px] text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">
+                                                <Icon size={14} className="text-primary/70" />
+                                                <span className="text-foreground">{exp.description || exp.expense_type}</span>
+                                                <span className="text-[10px] text-muted-foreground bg-accent px-1.5 py-0.5 rounded">
                                                     {exp.split_method === 'equal' ? '平均' : '按比例'}
                                                 </span>
                                             </div>
-                                            <span className="font-medium text-amber-700 ml-2 shrink-0">
+                                            <span className="font-medium text-primary ml-2 shrink-0">
                                                 {Number(exp.store_share).toLocaleString()}
                                             </span>
                                         </div>
                                     );
                                 })}
                             </div>
-                            <div className="mt-2 pt-2 border-t border-dashed border-amber-200 flex justify-between text-sm font-semibold">
-                                <span className="text-amber-600">均摊小计</span>
-                                <span className="text-amber-700">{Number(bill.shared_total).toLocaleString()} UZS</span>
+                            <div className="mt-2 pt-2 border-t border-dashed border-border flex justify-between text-sm font-semibold">
+                                <span className="text-primary/90">均摊小计</span>
+                                <span className="text-primary">{Number(bill.shared_total).toLocaleString()} UZS</span>
                             </div>
                         </div>
                     )}
 
                     {/* Grand Total */}
-                    <div className="px-4 py-3 bg-eden-50 flex justify-between items-center">
-                        <span className="font-bold text-eden-700">合计</span>
-                        <span className="text-xl font-bold text-eden-600">
-                            {Number(bill.grand_total).toLocaleString()} <span className="text-xs font-normal">UZS</span>
+                    <div className="px-4 py-3 bg-primary/10 flex justify-between items-center border-t border-border">
+                        <span className="font-bold text-foreground">合计</span>
+                        <span className="text-xl font-bold text-primary">
+                            {Number(bill.grand_total).toLocaleString()} <span className="text-xs font-normal text-muted-foreground">UZS</span>
                         </span>
                     </div>
                 </div>
