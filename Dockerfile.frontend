@@ -1,5 +1,9 @@
-# 生产版 Dockerfile (Production)
-# 第一阶段：构建静态文件
+# ============================================================
+# Frontend Dockerfile (for Cloud Run — deployed by CI/CD)
+# Builds React → serves via Nginx. Runtime env injection via entrypoint.
+# Usage: docker build -f Dockerfile.frontend -t eden-frontend .
+# ============================================================
+# Stage 1: Build static files
 FROM node:18-alpine AS builder
 
 WORKDIR /app

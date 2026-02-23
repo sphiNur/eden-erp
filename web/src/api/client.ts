@@ -3,7 +3,27 @@
  * Single source of truth for all backend communication.
  */
 import { getInitData } from '../lib/telegram';
-import type { OrderResponse, BatchResponse } from '../types';
+import type {
+    Product,
+    ProductCreate,
+    Category,
+    OrderResponse,
+    OrderItemInput,
+    ConsolidatedItem,
+    StallConsolidation,
+    BatchCreate,
+    BatchResponse,
+    User,
+    Store,
+    OrderTemplate,
+    TemplateCreate,
+    Stall,
+    StallCreate,
+    SharedExpenseResponse,
+    SharedExpenseCreate,
+    DailyBillSummary,
+    DailyBillResponse,
+} from '../types';
 
 // If VITE_API_URL isn't injected at build time (e.g., standard Docker build),
 // use a placeholder that will be replaced by docker-entrypoint.sh at container startup.
@@ -33,8 +53,6 @@ function getAuthHeaders(): Record<string, string> {
         return { 'X-Telegram-Init-Data': initData };
     }
     // Development / Admin Simulation fallback
-    // We allow this in production because the backend validates if the *real* user is an Admin
-    // before accepting the X-Dev-Telegram-Id header.
     const mock = localStorage.getItem('dev_mock_user');
     if (mock) {
         try {
@@ -91,11 +109,11 @@ async function request<T>(endpoint: string, options: RequestOptions = {}): Promi
 // --- Products ---
 
 export const productsApi = {
-    list: () => request<import('../types').Product[]>('/products/'),
-    create: (data: import('../types').ProductCreate) =>
-        request<import('../types').Product>('/products/', { method: 'POST', body: data }),
-    update: (id: string, data: Partial<import('../types').ProductCreate>) =>
-        request<import('../types').Product>(`/products/${id}`, { method: 'PUT', body: data }),
+    list: () => request<Product[]>('/products/'),
+    create: (data: ProductCreate) =>
+        request<Product>('/products/', { method: 'POST', body: data }),
+    update: (id: string, data: Partial<ProductCreate>) =>
+        request<Product>(`/products/${id}`, { method: 'PUT', body: data }),
     delete: (id: string) =>
         request<void>(`/products/${id}`, { method: 'DELETE' }),
 };
@@ -103,13 +121,13 @@ export const productsApi = {
 // --- Categories ---
 
 export const categoriesApi = {
-    list: () => request<import('../types').Category[]>('/categories/'),
+    list: () => request<Category[]>('/categories/'),
 };
 
 // --- Orders ---
 
 export const ordersApi = {
-    create: (data: { store_id: string; delivery_date: string; items: import('../types').OrderItemInput[] }) =>
+    create: (data: { store_id: string; delivery_date: string; items: OrderItemInput[] }) =>
         request<OrderResponse>('/orders/', { method: 'POST', body: data }),
     list: (params?: { status?: string; store_id?: string }) => {
         const searchParams = new URLSearchParams();
@@ -126,22 +144,22 @@ export const ordersApi = {
 
 export const purchasesApi = {
     getConsolidation: () =>
-        request<import('../types').ConsolidatedItem[]>('/purchases/consolidation'),
+        request<ConsolidatedItem[]>('/purchases/consolidation'),
     getConsolidationByStall: (targetDate?: string) => {
         const qs = targetDate ? `?target_date=${targetDate}` : '';
-        return request<import('../types').StallConsolidation[]>(`/purchases/by-stall${qs}`);
+        return request<StallConsolidation[]>(`/purchases/by-stall${qs}`);
     },
-    submitBatch: (data: import('../types').BatchCreate) =>
+    submitBatch: (data: BatchCreate) =>
         request<BatchResponse>('/purchases/', { method: 'POST', body: data }),
 };
 
 // --- Users ---
 
 export const usersApi = {
-    me: () => request<import('../types').User>('/users/me'),
-    list: () => request<import('../types').User[]>('/users/'),
+    me: () => request<User>('/users/me'),
+    list: () => request<User[]>('/users/'),
     update: (id: string, data: { role: string; allowed_store_ids: string[] }) =>
-        request<import('../types').User>(`/users/${id}`, { method: 'PUT', body: data }),
+        request<User>(`/users/${id}`, { method: 'PUT', body: data }),
     switchRole: (role: string) =>
         request<{ ok: boolean; role: string }>(`/users/switch-role?role=${role}`, { method: 'POST' }),
 };
@@ -149,29 +167,29 @@ export const usersApi = {
 // --- Stores ---
 
 export const storesApi = {
-    list: () => request<import('../types').Store[]>('/stores/'),
+    list: () => request<Store[]>('/stores/'),
     create: (data: { name: string; address?: string; location?: string }) =>
-        request<import('../types').Store>('/stores/', { method: 'POST', body: data }),
+        request<Store>('/stores/', { method: 'POST', body: data }),
     update: (id: string, data: { name?: string; address?: string; location?: string }) =>
-        request<import('../types').Store>(`/stores/${id}`, { method: 'PUT', body: data }),
+        request<Store>(`/stores/${id}`, { method: 'PUT', body: data }),
 };
 
 // --- Templates ---
 
 export const templatesApi = {
-    list: (store_id: string) => request<import('../types').OrderTemplate[]>(`/templates/?store_id=${store_id}`),
-    create: (data: import('../types').TemplateCreate) => request<import('../types').OrderTemplate>('/templates/', { method: 'POST', body: data }),
+    list: (store_id: string) => request<OrderTemplate[]>(`/templates/?store_id=${store_id}`),
+    create: (data: TemplateCreate) => request<OrderTemplate>('/templates/', { method: 'POST', body: data }),
     delete: (id: string) => request<void>(`/templates/${id}`, { method: 'DELETE' }),
 };
 
 // --- Stalls ---
 
 export const stallsApi = {
-    list: () => request<import('../types').Stall[]>('/stalls/'),
-    create: (data: import('../types').StallCreate) =>
-        request<import('../types').Stall>('/stalls/', { method: 'POST', body: data }),
-    update: (id: string, data: Partial<import('../types').StallCreate & { is_active?: boolean }>) =>
-        request<import('../types').Stall>(`/stalls/${id}`, { method: 'PUT', body: data }),
+    list: () => request<Stall[]>('/stalls/'),
+    create: (data: StallCreate) =>
+        request<Stall>('/stalls/', { method: 'POST', body: data }),
+    update: (id: string, data: Partial<StallCreate & { is_active?: boolean }>) =>
+        request<Stall>(`/stalls/${id}`, { method: 'PUT', body: data }),
     delete: (id: string) => request<{ ok: boolean }>(`/stalls/${id}`, { method: 'DELETE' }),
 };
 
@@ -180,10 +198,10 @@ export const stallsApi = {
 export const expensesApi = {
     list: (date?: string) => {
         const qs = date ? `?expense_date=${date}` : '';
-        return request<import('../types').SharedExpenseResponse[]>(`/expenses/${qs}`);
+        return request<SharedExpenseResponse[]>(`/expenses/${qs}`);
     },
-    create: (data: import('../types').SharedExpenseCreate) =>
-        request<import('../types').SharedExpenseResponse>('/expenses/', { method: 'POST', body: data }),
+    create: (data: SharedExpenseCreate) =>
+        request<SharedExpenseResponse>('/expenses/', { method: 'POST', body: data }),
     delete: (id: string) => request<{ ok: boolean }>(`/expenses/${id}`, { method: 'DELETE' }),
 };
 
@@ -191,15 +209,15 @@ export const expensesApi = {
 
 export const billsApi = {
     generate: (date: string) =>
-        request<import('../types').DailyBillSummary>(`/bills/generate?bill_date=${date}`, { method: 'POST' }),
+        request<DailyBillSummary>(`/bills/generate?bill_date=${date}`, { method: 'POST' }),
     list: (params?: { bill_date?: string; store_id?: string }) => {
         const searchParams = new URLSearchParams();
         if (params?.bill_date) searchParams.set('bill_date', params.bill_date);
         if (params?.store_id) searchParams.set('store_id', params.store_id);
         const qs = searchParams.toString();
-        return request<import('../types').DailyBillResponse[]>(`/bills/${qs ? '?' + qs : ''}`);
+        return request<DailyBillResponse[]>(`/bills/${qs ? '?' + qs : ''}`);
     },
-    get: (id: string) => request<import('../types').DailyBillResponse>(`/bills/${id}`),
+    get: (id: string) => request<DailyBillResponse>(`/bills/${id}`),
 };
 
 export { ApiError };

@@ -1,59 +1,89 @@
+"""Database engine and session setup.
+
+Uses centralized settings from app.config for all configuration.
+URL cleanup uses urllib.parse instead of fragile string replacement.
+"""
+import logging
+import ssl as _ssl
+from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
+
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
 from sqlalchemy.orm import DeclarativeBase
 
-import os
-import ssl as _ssl
+from app.config import get_settings
 
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+asyncpg://user:password@localhost/dbname")
+logger = logging.getLogger(__name__)
 
-# Neon/Koyeb may provide postgres:// but asyncpg requires postgresql+asyncpg://
-if DATABASE_URL.startswith("postgres://"):
-    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql+asyncpg://", 1)
-elif DATABASE_URL.startswith("postgresql://") and "+asyncpg" not in DATABASE_URL:
-    DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://", 1)
+settings = get_settings()
 
-# --- SSL handling for Neon / cloud Postgres ---
-# asyncpg does NOT understand ?sslmode= or ?ssl= in URLs.
+# --- URL Cleanup ---
+# asyncpg does NOT understand ?sslmode= or ?ssl= or ?channel_binding= in URLs.
 # We must strip them and pass SSL context via connect_args.
+
+_STRIP_PARAMS = {"sslmode", "ssl", "channel_binding"}
+_SSL_TRIGGER_VALUES = {"require", "verify-ca", "verify-full", "prefer"}
+
+
+def _clean_database_url(raw_url: str) -> tuple[str, bool]:
+    """
+    Parse the database URL, strip asyncpg-incompatible query params,
+    and detect if SSL is needed.
+
+    Returns:
+        (cleaned_url, needs_ssl)
+    """
+    parsed = urlparse(raw_url)
+    query_params = parse_qs(parsed.query, keep_blank_values=True)
+
+    needs_ssl = False
+
+    # Check SSL params and remove them
+    for param in _STRIP_PARAMS:
+        values = query_params.pop(param, [])
+        if any(v.lower() in _SSL_TRIGGER_VALUES for v in values):
+            needs_ssl = True
+
+    # Rebuild query string without stripped params
+    remaining_params = {k: v[0] for k, v in query_params.items() if v}
+    new_query = urlencode(remaining_params) if remaining_params else ""
+
+    cleaned = urlunparse((
+        parsed.scheme,
+        parsed.netloc,
+        parsed.path,
+        parsed.params,
+        new_query,
+        parsed.fragment,
+    ))
+
+    return cleaned, needs_ssl
+
+
+# Get the asyncpg-compatible URL from settings
+_raw_url = settings.async_database_url
+_is_placeholder = "user:password@localhost" in _raw_url or "no_user:no_password" in _raw_url
+
+if _is_placeholder:
+    logger.warning("DATABASE_URL is not configured. Database operations will fail.")
+    _clean_url = "postgresql+asyncpg://no_user:no_password@no_host/no_db"
+    _needs_ssl = False
+else:
+    _clean_url, _needs_ssl = _clean_database_url(_raw_url)
+
+# --- SSL Context ---
 connect_args: dict = {}
-_clean_url = DATABASE_URL
-_needs_ssl = False
-
-# Check for any ssl-related query params
-for _ssl_param in ["?sslmode=require", "&sslmode=require", "?ssl=require", "&ssl=require"]:
-    if _ssl_param in _clean_url:
-        _clean_url = _clean_url.replace(_ssl_param, "")
-        _needs_ssl = True
-
-# Also strip channel_binding param (not supported by asyncpg)
-for _cb_param in ["?channel_binding=require", "&channel_binding=require"]:
-    if _cb_param in _clean_url:
-        _clean_url = _clean_url.replace(_cb_param, "")
-
-# Fix broken URL if stripping left a dangling ? or &
-_clean_url = _clean_url.rstrip("?").rstrip("&")
-if "?&" in _clean_url:
-    _clean_url = _clean_url.replace("?&", "?")
-
 if _needs_ssl:
     ssl_ctx = _ssl.create_default_context()
     ssl_ctx.check_hostname = False
     ssl_ctx.verify_mode = _ssl.CERT_NONE
     connect_args["ssl"] = ssl_ctx
 
-# echo=False for production; set DATABASE_ECHO=1 env var to enable SQL logging
-_echo = os.getenv("DATABASE_ECHO", "").lower() in ("1", "true", "yes")
-
-# --- Safety Check: Ensure URL is not empty ---
-if not _clean_url or _clean_url.strip() in ("", "postgresql+asyncpg://user:password@localhost/dbname"):
-    # In CI or local dev without ENV, we don't want the app to crash on import
-    # But we want to log that the database is not configured.
-    import logging
-    logging.warning("DATABASE_URL is not configured. Database operations will fail.")
-    # Use a dummy URL to prevent create_async_engine from throwing ArgumentError immediately
-    _clean_url = "postgresql+asyncpg://no_user:no_password@no_host/no_db"
-
-engine = create_async_engine(_clean_url, echo=_echo, connect_args=connect_args)
+# --- Engine & Session ---
+engine = create_async_engine(
+    _clean_url,
+    echo=settings.database_echo,
+    connect_args=connect_args,
+)
 
 AsyncSessionLocal = async_sessionmaker(
     bind=engine,
@@ -61,6 +91,7 @@ AsyncSessionLocal = async_sessionmaker(
     expire_on_commit=False,
     autoflush=False,
 )
+
 
 class Base(DeclarativeBase):
     pass

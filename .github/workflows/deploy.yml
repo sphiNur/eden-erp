@@ -12,10 +12,34 @@ env:
   SERVICE_ACCOUNT: 'github-actions-deployer@eden-erp.iam.gserviceaccount.com'
 
 jobs:
+  # --- TEST ---
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run Backend Tests
+        env:
+          DATABASE_URL: 'sqlite+aiosqlite://'
+          APP_ENV: testing
+        run: pytest tests/ -v
+
+  # --- DEPLOY ---
   deploy:
     name: Deploy to Cloud Run
     runs-on: ubuntu-latest
-    
+    needs: test  # Only deploy if tests pass
+
     # Add "id-token" with the intended permissions for Workload Identity Federation
     permissions:
       contents: 'read'
@@ -52,13 +76,12 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           PYTHONPATH: .
-        run: python scripts/migrate_v2.py
+        run: alembic upgrade head
 
       # --- BACKEND Build & Deploy ---
       - name: Build Backend Docker Image
         run: |-
           docker build -t ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/eden-repo/backend:${{ github.sha }} -f Dockerfile.backend .
-          # Tag as latest for cache/convenience
           docker tag ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/eden-repo/backend:${{ github.sha }} ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/eden-repo/backend:latest
 
       - name: Push Backend Docker Image

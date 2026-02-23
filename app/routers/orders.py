@@ -6,7 +6,7 @@ from typing import List, Optional
 from uuid import UUID
 
 from app import models, schemas
-from app.dependencies import get_db, get_current_user, require_role
+from app.dependencies import get_db, get_current_user, require_role, require_store_access
 
 router = APIRouter(prefix="/orders", tags=["orders"])
 
@@ -24,6 +24,7 @@ VALID_TRANSITIONS = {
 async def create_order(
     order_in: schemas.OrderCreate,
     current_user: models.User = Depends(get_current_user),
+    _=Depends(require_store_access()),
     db: AsyncSession = Depends(get_db)
 ):
     """Create a new purchase order with items."""
@@ -35,14 +36,6 @@ async def create_order(
     store = store_result.scalars().first()
     if not store:
         raise HTTPException(status_code=404, detail="Store not found")
-    
-    # Store managers can only order for their assigned stores
-    if (
-        current_user.role == models.UserRole.STORE_MANAGER
-        and current_user.allowed_store_ids
-        and order_in.store_id not in current_user.allowed_store_ids
-    ):
-        raise HTTPException(status_code=403, detail="Not authorized for this store")
     
     # Create Order
     new_order = models.PurchaseOrder(

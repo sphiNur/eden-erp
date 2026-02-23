@@ -1,3 +1,8 @@
+# ============================================================
+# Backend-only Dockerfile (for Cloud Run — deployed by CI/CD)
+# API only, no frontend. See Dockerfile.frontend for the UI.
+# Usage: docker build -f Dockerfile.backend -t eden-backend .
+# ============================================================
 FROM python:3.11-slim
 
 WORKDIR /app

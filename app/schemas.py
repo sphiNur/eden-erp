@@ -259,3 +259,24 @@ class DailyBillSummary(BaseModel):
     grand_total: Decimal
     bills: List[DailyBillResponse] = []
 
+# --- Template Schemas ---
+
+class TemplateItem(BaseModel):
+    product_id: UUID
+    quantity: float
+    notes: Dict[str, str] = {}
+
+class TemplateCreate(BaseModel):
+    store_id: UUID
+    name: str
+    items: List[TemplateItem]
+
+class TemplateResponse(BaseModel):
+    id: UUID
+    store_id: UUID
+    name: str
+    items: List[TemplateItem]
+    created_at: datetime
+
+    class Config:
+        from_attributes = True

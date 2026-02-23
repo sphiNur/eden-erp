@@ -2,33 +2,32 @@ import hashlib
 import hmac
 import json
 import logging
-import os
 import time
 from typing import List
+from uuid import UUID
 from urllib.parse import unquote, parse_qs
 
 from fastapi import Depends, HTTPException, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
+from app.config import get_settings
 from app.database import AsyncSessionLocal
+from app.models import User, UserRole
 
 logger = logging.getLogger(__name__)
 
-BOT_TOKEN = os.getenv("BOT_TOKEN", "")
-APP_ENV = os.getenv("APP_ENV", "development")
-INIT_DATA_MAX_AGE = int(os.getenv("INIT_DATA_MAX_AGE", "3600"))  # seconds
+settings = get_settings()
+
 
 
 async def get_db() -> AsyncSession:
     """Yield a database session for request-scoped dependency injection."""
-    # DEBUG: Test if get_db is called
-    # raise HTTPException(status_code=418, detail="Teapot from get_db")
     try:
         async with AsyncSessionLocal() as session:
             yield session
     except Exception as e:
-        print(f"DB CONFIG ERROR: {e}")
+        logger.error("DB session error: %s", e)
         raise HTTPException(status_code=500, detail=f"DB Error: {str(e)}")
 
 
@@ -76,7 +75,7 @@ def _validate_telegram_init_data(init_data: str, bot_token: str) -> dict | None:
     if auth_date_str:
         try:
             auth_date = int(auth_date_str)
-            if time.time() - auth_date > INIT_DATA_MAX_AGE:
+            if time.time() - auth_date > settings.init_data_max_age:
                 return None  # initData too old
         except (ValueError, TypeError):
             pass
@@ -91,12 +90,10 @@ async def get_current_user(request: Request, db: AsyncSession = Depends(get_db))
     Production: Validate Telegram initData HMAC from X-Telegram-Init-Data header.
     Development: Allow X-Dev-Telegram-Id header override, or fall back to first user.
     """
-    from app.models import User
-
     # --- Production path: Telegram initData ---
     init_data = request.headers.get("X-Telegram-Init-Data", "")
-    if init_data and BOT_TOKEN:
-        tg_user = _validate_telegram_init_data(init_data, BOT_TOKEN)
+    if init_data and settings.bot_token:
+        tg_user = _validate_telegram_init_data(init_data, settings.bot_token)
         if not tg_user:
             raise HTTPException(status_code=401, detail="Invalid Telegram initData signature")
 
@@ -110,7 +107,6 @@ async def get_current_user(request: Request, db: AsyncSession = Depends(get_db))
         user = result.scalars().first()
         if not user:
             # Auto-register: first user becomes admin, others get store_manager
-            from app.models import UserRole
             existing_count = (await db.execute(select(User))).scalars().all()
             auto_role = UserRole.ADMIN if len(existing_count) == 0 else UserRole.STORE_MANAGER
 
@@ -170,3 +166,40 @@ def require_role(allowed_roles: List[str]):
             )
         return current_user
     return role_checker
+
+
+def require_store_access(store_id_param: str = "store_id"):
+    """
+    Dependency factory: checks that a store_manager can only access their assigned stores.
+    Admins and other roles pass through.
+
+    The store_id is read from a path/query parameter or request body field.
+
+    Usage:
+        async def endpoint(
+            store_id: UUID,
+            _=Depends(require_store_access()),
+        ): ...
+    """
+    async def checker(
+        request: Request,
+        current_user: User = Depends(get_current_user),
+    ):
+        if current_user.role != UserRole.STORE_MANAGER:
+            return current_user
+
+        if not current_user.allowed_store_ids:
+            return current_user  # No restrictions configured
+
+        # Try path params, then query params
+        store_id = request.path_params.get(store_id_param)
+        if not store_id:
+            store_id = request.query_params.get(store_id_param)
+
+        if store_id and UUID(str(store_id)) not in current_user.allowed_store_ids:
+            raise HTTPException(
+                status_code=403,
+                detail="Not authorized for this store"
+            )
+        return current_user
+    return checker

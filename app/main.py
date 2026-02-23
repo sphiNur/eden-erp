@@ -1,4 +1,3 @@
-import os
 from contextlib import asynccontextmanager
 from pathlib import Path
 
@@ -7,25 +6,28 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 
-from app.database import engine, Base
-from app.routers import orders, purchases, products, users, stores, categories, stalls, expenses, bills
+from app.config import get_settings
+from app.routers import orders, purchases, products, users, stores, categories, stalls, expenses, bills, templates
+
+settings = get_settings()
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Application lifespan: create tables on startup."""
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+    """Application lifespan.
+
+    Database schema is managed by Alembic migrations.
+    Run `alembic upgrade head` before starting the app in a new environment.
+    """
     yield
 
 
-app = FastAPI(title="Eden Core ERP", version="0.2.0", lifespan=lifespan)
+app = FastAPI(title="Eden Core ERP", version="0.3.0", lifespan=lifespan)
 
 # --- CORS ---
-cors_origins = os.getenv("CORS_ORIGINS", "http://localhost:5173").split(",")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[o.strip() for o in cors_origins],
+    allow_origins=settings.cors_origins_list,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -41,7 +43,6 @@ app.include_router(categories.router, prefix="/api")
 app.include_router(stalls.router, prefix="/api")
 app.include_router(expenses.router, prefix="/api")
 app.include_router(bills.router, prefix="/api")
-from app.routers import templates
 app.include_router(templates.router, prefix="/api")
 
 # --- Static Files & SPA Catch-All (Production) ---

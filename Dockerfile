@@ -1,3 +1,9 @@
+# ============================================================
+# Monolith Dockerfile (for Koyeb single-container deployment)
+# Builds React frontend → serves via FastAPI static files
+# Usage: docker build -t eden-erp .
+# ============================================================
+
 # === Stage 1: Build React Frontend ===
 FROM node:18-alpine AS frontend-builder
 WORKDIR /app/web

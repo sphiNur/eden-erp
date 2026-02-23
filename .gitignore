@@ -23,3 +23,7 @@ postgres_data/
 
 # Database
 *.db
+
+# Secrets / Service Account Keys
+*-key.json
+*.key.json
