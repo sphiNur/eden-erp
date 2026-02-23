@@ -9,7 +9,7 @@ from sqlalchemy import (
     BigInteger, Boolean, Date, DateTime, ForeignKey, String, Text,
     Enum, Numeric, ARRAY, UniqueConstraint, JSON, TypeDecorator,
 )
-from sqlalchemy.dialects.postgresql import JSONB, UUID as PG_UUID
+from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
@@ -102,7 +102,7 @@ class Store(Base):
     id: Mapped[UUID] = mapped_column(PG_UUID(as_uuid=True), primary_key=True, default=uuid4)
     name: Mapped[str] = mapped_column(String, unique=True)
     address: Mapped[Optional[str]] = mapped_column(String, nullable=True)
-    config: Mapped[Optional[Dict]] = mapped_column(JSONB, nullable=True)
+    config: Mapped[Optional[Dict]] = mapped_column(JSON, nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
     updated_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), onupdate=_utcnow, nullable=True)
@@ -130,7 +130,7 @@ class Category(Base):
     __tablename__ = "categories"
 
     id: Mapped[UUID] = mapped_column(PG_UUID(as_uuid=True), primary_key=True, default=uuid4)
-    name_i18n: Mapped[Dict[str, str]] = mapped_column(JSONB)
+    name_i18n: Mapped[Dict[str, str]] = mapped_column(JSON)
     sort_order: Mapped[int] = mapped_column(default=0)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
@@ -145,8 +145,8 @@ class Product(Base):
     id: Mapped[UUID] = mapped_column(PG_UUID(as_uuid=True), primary_key=True, default=uuid4)
     category_id: Mapped[UUID] = mapped_column(ForeignKey("categories.id"))
     default_stall_id: Mapped[Optional[UUID]] = mapped_column(ForeignKey("stalls.id"), nullable=True)
-    name_i18n: Mapped[Dict[str, str]] = mapped_column(JSONB)
-    unit_i18n: Mapped[Dict[str, str]] = mapped_column(JSONB)
+    name_i18n: Mapped[Dict[str, str]] = mapped_column(JSON)
+    unit_i18n: Mapped[Dict[str, str]] = mapped_column(JSON)
     price_reference: Mapped[Optional[Decimal]] = mapped_column(Numeric(12, 2), nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
@@ -185,7 +185,7 @@ class OrderItem(Base):
     quantity_approved: Mapped[Optional[Decimal]] = mapped_column(Numeric(10, 3), nullable=True)
     allocated_cost_uzs: Mapped[Optional[Decimal]] = mapped_column(Numeric(12, 2), nullable=True)
     quantity_fulfilled: Mapped[Optional[Decimal]] = mapped_column(Numeric(10, 3), nullable=True)
-    notes: Mapped[Optional[Dict[str, str]]] = mapped_column(JSONB, nullable=True)
+    notes: Mapped[Optional[Dict[str, str]]] = mapped_column(JSON, nullable=True)
 
     order: Mapped["PurchaseOrder"] = relationship("PurchaseOrder", back_populates="items")
     product: Mapped["Product"] = relationship("Product")
@@ -230,7 +230,7 @@ class OrderTemplate(Base):
     id: Mapped[UUID] = mapped_column(PG_UUID(as_uuid=True), primary_key=True, default=uuid4)
     store_id: Mapped[UUID] = mapped_column(ForeignKey("stores.id"))
     name: Mapped[str] = mapped_column(String)
-    items: Mapped[List[Dict]] = mapped_column(JSONB) # List of {product_id, quantity, notes}
+    items: Mapped[List[Dict]] = mapped_column(JSON) # List of {product_id, quantity, notes}
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
 
     store: Mapped["Store"] = relationship("Store")
@@ -266,7 +266,7 @@ class DailyBill(Base):
     shared_total: Mapped[Decimal] = mapped_column(Numeric(14, 2), default=Decimal("0"))
     grand_total: Mapped[Decimal] = mapped_column(Numeric(14, 2), default=Decimal("0"))
     status: Mapped[BillStatus] = mapped_column(Enum(BillStatus), default=BillStatus.DRAFT)
-    detail: Mapped[Optional[Dict]] = mapped_column(JSONB, nullable=True)  # Breakdown snapshot
+    detail: Mapped[Optional[Dict]] = mapped_column(JSON, nullable=True)  # Breakdown snapshot
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
     updated_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), onupdate=_utcnow, nullable=True)
 
