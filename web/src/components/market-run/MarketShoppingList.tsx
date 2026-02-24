@@ -14,7 +14,7 @@ export const MarketShoppingList = () => {
     if (shoppingSectionKeys.length === 0) {
         return (
             <div className="text-center py-20 text-muted-foreground">
-                <ShoppingBag size={48} className="mx-auto mb-4 opacity-50" />
+                <ShoppingBag size={48} className="mx-auto mb-4 opacity-50" aria-hidden />
                 <p>{ui('noItemsFound')}</p>
             </div>
         );

@@ -17,9 +17,9 @@ export const EmptyState = ({
     action
 }: EmptyStateProps) => (
     <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
-        <Icon size={48} className="text-muted-foreground/60 mb-4" strokeWidth={1.5} />
-        <h3 className="text-base font-semibold text-muted-foreground mb-1">{title}</h3>
-        {description && <p className="text-sm text-muted-foreground/80 max-w-xs">{description}</p>}
+        <Icon size={48} className="text-muted-foreground/70 mb-4" strokeWidth={1.5} aria-hidden />
+        <h3 className="text-base font-semibold text-foreground mb-1">{title}</h3>
+        {description && <p className="text-sm text-muted-foreground max-w-xs">{description}</p>}
         {action && <div className="mt-4">{action}</div>}
     </div>
 );

@@ -5,6 +5,7 @@ import { useLanguage } from '../../contexts/LanguageContext';
 import { useMarketRunContext } from '../../contexts/MarketRunContext';
 import { useState } from 'react';
 import { tgAlert } from '../../lib/telegram';
+import { SegmentControl } from '../ui/segment-control';
 
 export const MarketDistributionList = () => {
     const { t } = useLanguage();
@@ -47,25 +48,24 @@ export const MarketDistributionList = () => {
         }
     };
 
-    return (
-        <div className="bg-secondary flex-1 p-3 flex flex-col h-full">
-            <div className="flex bg-accent/50 p-1 rounded-xl mb-3 shrink-0">
-                <button
-                    onClick={() => setSubView('store')}
-                    className={`flex-1 flex items-center justify-center gap-2 py-1.5 rounded-lg text-[13px] font-semibold transition-all ${subView === 'store' ? 'bg-card text-primary shadow-sm ring-1 ring-border' : 'text-muted-foreground hover:bg-accent'}`}
-                >
-                    <Building size={14} /> By Store
-                </button>
-                <button
-                    onClick={() => setSubView('vendor')}
-                    className={`flex-1 flex items-center justify-center gap-2 py-1.5 rounded-lg text-[13px] font-semibold transition-all ${subView === 'vendor' ? 'bg-card text-primary shadow-sm ring-1 ring-border' : 'text-muted-foreground hover:bg-accent'}`}
-                >
-                    <Store size={14} /> By Vendor
-                </button>
-            </div>
+    const subViewOptions = [
+        { value: 'store' as const, label: 'By Store', icon: <Building size={14} aria-hidden /> },
+        { value: 'vendor' as const, label: 'By Vendor', icon: <Store size={14} aria-hidden /> },
+    ];
 
+    return (
+        <div className="bg-secondary flex-1 min-h-0 p-3 flex flex-col">
+            <SegmentControl<'store' | 'vendor'>
+                options={subViewOptions}
+                value={subView}
+                onChange={setSubView}
+                className="mb-3 shrink-0"
+                aria-label="Group by"
+            />
+
+            {/* Separate Tabs per view with key so state resets and layout doesn’t overlap */}
             {subView === 'store' && (
-                <Tabs defaultValue={storeKeys[0]} className="w-full flex-1 flex flex-col overflow-hidden">
+                <Tabs key="by-store" defaultValue={storeKeys[0]} className="w-full flex-1 min-h-0 flex flex-col overflow-hidden">
                     <TabsList className="w-full justify-start overflow-x-auto mb-3 bg-card p-1 rounded-xl shadow-sm border border-border shrink-0 scrollbar-hide">
                         {storeKeys.map(key => (
                             <TabsTrigger
@@ -77,10 +77,9 @@ export const MarketDistributionList = () => {
                             </TabsTrigger>
                         ))}
                     </TabsList>
-
-                    <div className="flex-1 overflow-y-auto">
+                    <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden">
                         {storeKeys.map(key => (
-                            <TabsContent key={key} value={key} className="space-y-1.5 mt-0 outline-none focus:outline-none focus-visible:outline-none">
+                            <TabsContent key={key} value={key} className="space-y-1.5 mt-0 outline-none focus:outline-none focus-visible:outline-none data-[state=inactive]:hidden">
                                 <div className="bg-card rounded-xl shadow-sm border border-border overflow-hidden divide-y divide-border/50">
                                     {distributionSections[key].map((entry, idx) => (
                                         <div key={idx} className="px-4 py-3.5 flex items-center justify-between hover:bg-accent/50 transition-colors">
@@ -101,7 +100,7 @@ export const MarketDistributionList = () => {
             )}
 
             {subView === 'vendor' && (
-                <Tabs defaultValue={stallKeys[0]} className="w-full flex-1 flex flex-col overflow-hidden">
+                <Tabs key="by-vendor" defaultValue={stallKeys[0]} className="w-full flex-1 min-h-0 flex flex-col overflow-hidden">
                     <TabsList className="w-full justify-start overflow-x-auto mb-3 bg-card p-1 rounded-xl shadow-sm border border-border shrink-0 scrollbar-hide">
                         {stallKeys.map(key => (
                             <TabsTrigger
@@ -113,18 +112,17 @@ export const MarketDistributionList = () => {
                             </TabsTrigger>
                         ))}
                     </TabsList>
-
-                    <div className="flex-1 overflow-y-auto">
+                    <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden">
                         {stallKeys.map(key => (
-                            <TabsContent key={key} value={key} className="space-y-3 mt-0 outline-none focus:outline-none focus-visible:outline-none">
+                            <TabsContent key={key} value={key} className="space-y-3 mt-0 outline-none focus:outline-none focus-visible:outline-none data-[state=inactive]:hidden">
                                 <button
+                                    type="button"
                                     onClick={() => handleShare(key)}
-                                    className="w-full bg-primary/10 text-primary border border-primary/20 font-bold py-3 rounded-xl flex items-center justify-center gap-2 hover:bg-primary/20 active:scale-[0.98] transition-all shadow-sm"
+                                    className="w-full bg-primary/10 text-primary border border-primary/20 font-bold py-3 rounded-xl flex items-center justify-center gap-2 hover:bg-primary/20 active:scale-[0.98] transition-all shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                                 >
-                                    <Share size={16} />
+                                    <Share size={16} aria-hidden />
                                     Copy List to Clipboard
                                 </button>
-
                                 <div className="bg-card rounded-xl shadow-sm border border-border overflow-hidden divide-y divide-border/50">
                                     {stallSections[key].map((item, idx) => (
                                         <div key={idx} className="px-4 py-3.5 flex items-center justify-between hover:bg-accent/50 transition-colors">

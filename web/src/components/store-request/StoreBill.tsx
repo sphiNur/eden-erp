@@ -43,8 +43,8 @@ export const StoreBill = () => {
                 <Receipt className="text-eden-500" size={20} />
                 <h1 className="text-lg font-bold">每日账单</h1>
                 <div className="flex-1" />
-                <div className="flex items-center bg-muted px-2 py-1.5 rounded-lg shrink-0 focus-within:ring-2 focus-within:ring-ring">
-                    <Calendar size={14} className="text-muted-foreground mr-1.5" />
+                <div className="flex items-center bg-accent px-2 py-1.5 rounded-lg shrink-0 focus-within:ring-2 focus-within:ring-primary/20">
+                    <Calendar size={14} className="text-muted-foreground mr-1.5" aria-hidden />
                     <input
                         type="date"
                         className="bg-transparent text-[13px] font-medium outline-none"

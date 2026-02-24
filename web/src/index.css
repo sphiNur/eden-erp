@@ -28,6 +28,7 @@
         --z-nav: 40;
         --z-drawer: 50;
         --z-overlay: 60;
+        --z-alert: 70;
 
         /* ─── Radius (12px standard) ─── */
         --radius: 0.75rem;

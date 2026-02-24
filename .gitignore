@@ -27,3 +27,6 @@ postgres_data/
 # Secrets / Service Account Keys
 *-key.json
 *.key.json
+
+# Local deployment manifests (may contain secrets)
+backend-service.yaml

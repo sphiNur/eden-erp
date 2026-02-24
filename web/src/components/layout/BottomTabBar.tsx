@@ -88,19 +88,20 @@ export const BottomTabBar = () => {
                             onClick={() => handleNav(tab.path)}
                             type="button"
                             className={cn(
-                                "flex flex-col items-center justify-center space-y-0.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-md",
+                                "flex flex-col items-center justify-center space-y-0.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md",
                                 isSingleTab ? "px-4" : "w-full h-full",
                                 isActive
                                     ? "text-primary"
-                                    : "text-muted-foreground hover:text-foreground active:text-foreground/80"
+                                    : "text-muted-foreground hover:text-foreground active:text-muted-foreground"
                             )}
-                            aria-label={tabLabel}
                             aria-current={isActive ? 'page' : undefined}
+                            aria-label={tabLabel}
                         >
                             <tab.icon
                                 size={isActive ? 22 : 20}
                                 strokeWidth={isActive ? 2.5 : 2}
                                 className={cn("transition-all", isActive && "scale-110")}
+                                aria-hidden
                             />
                             <span className="text-[10px] font-medium leading-tight text-center max-w-[60px] truncate">
                                 {tabLabel}
@@ -113,12 +114,13 @@ export const BottomTabBar = () => {
             {/* Settings tab — always present, triggers SettingsMenu */}
             <SettingsMenu open={settingsOpen} onOpenChange={setSettingsOpen}>
                 <button
+                    type="button"
                     onClick={() => {
                         haptic.selection();
                         setSettingsOpen(true);
                     }}
                     className={cn(
-                        "flex flex-col items-center justify-center space-y-0.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-md",
+                        "flex flex-col items-center justify-center space-y-0.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md",
                         isSingleTab ? "px-6 pr-4" : "w-16 shrink-0",
                         settingsOpen
                             ? "text-primary"
@@ -131,6 +133,7 @@ export const BottomTabBar = () => {
                         size={settingsOpen ? 22 : 20}
                         strokeWidth={settingsOpen ? 2.5 : 2}
                         className="transition-all"
+                        aria-hidden
                     />
                     <span className="text-[10px] font-medium leading-tight">
                         Settings

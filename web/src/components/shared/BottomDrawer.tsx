@@ -34,7 +34,7 @@ export const BottomDrawer = ({ open, onClose, title, badge, children, footer }: 
                     animate={{ y: 0 }}
                     exit={{ y: '100%' }}
                     transition={SPRING.snappy}
-                    className="fixed bottom-0 left-0 right-0 bg-card rounded-t-2xl z-drawer max-h-[85vh] flex flex-col shadow-2xl border-t border-border"
+                    className="fixed bottom-0 left-0 right-0 bg-card rounded-t-2xl z-drawer max-h-[85vh] flex flex-col shadow-2xl"
                 >
                     {/* Header */}
                     <div className="p-4 border-b flex justify-between items-center shrink-0">

@@ -19,7 +19,7 @@ export const SuccessOverlay = ({ show, message }: SuccessOverlayProps) => (
                 exit={{ opacity: 0, scale: 0.8 }}
                 className="fixed inset-0 z-overlay flex items-center justify-center bg-black/40"
             >
-                <div className="bg-card text-card-foreground rounded-2xl p-8 flex flex-col items-center gap-4 shadow-2xl border border-border">
+                <div className="bg-card rounded-2xl p-8 flex flex-col items-center gap-4 shadow-2xl border border-border">
                     <motion.div
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}

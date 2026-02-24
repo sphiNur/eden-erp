@@ -8,14 +8,14 @@ interface SkeletonProps {
  * Base shimmer skeleton block.
  */
 export const Skeleton = ({ className }: SkeletonProps) => (
-    <div className={cn("animate-pulse bg-muted rounded", className)} />
+    <div className={cn("animate-pulse bg-muted rounded", className)} aria-hidden />
 );
 
 /**
  * Skeleton preset for a product list page (toolbar + 8 rows).
  */
 export const ProductListSkeleton = () => (
-    <div className="bg-background">
+    <div className="bg-secondary">
         {/* Toolbar skeleton */}
         <div className="bg-card border-b border-border p-4 space-y-3">
             <Skeleton className="h-10 w-full rounded-lg" />

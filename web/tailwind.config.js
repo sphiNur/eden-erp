@@ -69,6 +69,7 @@ export default {
                 'nav': 'var(--z-nav)',
                 'drawer': 'var(--z-drawer)',
                 'overlay': 'var(--z-overlay)',
+                'alert': 'var(--z-alert)',
             },
             borderRadius: {
                 lg: "var(--radius)",

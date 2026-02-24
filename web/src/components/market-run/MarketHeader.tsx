@@ -1,8 +1,15 @@
+import { type ReactNode } from 'react';
 import { ShoppingCart, Store } from 'lucide-react';
-import { cn } from '../../lib/utils';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useMarketRunContext } from '../../contexts/MarketRunContext';
 import { PageHeader } from '../layout/PageHeader';
+import { SegmentControl } from '../ui/segment-control';
+import type { ViewMode } from '../../hooks/useMarketRun';
+
+const VIEW_OPTIONS: { value: ViewMode; label: string; icon: ReactNode }[] = [
+    { value: 'shopping', label: 'Shopping', icon: <ShoppingCart size={14} aria-hidden /> },
+    { value: 'distribution', label: 'Distribution', icon: <Store size={14} aria-hidden /> },
+];
 
 export const MarketHeader = () => {
     const { ui } = useLanguage();
@@ -10,36 +17,13 @@ export const MarketHeader = () => {
 
     return (
         <PageHeader>
-            <div className="flex bg-accent/50 p-1 rounded-xl mb-2">
-                <button
-                    onClick={() => setViewMode('shopping')}
-                    className={cn(
-                        "flex-1 flex items-center justify-center gap-2 py-1.5 rounded-lg text-xs font-semibold transition-all",
-                        viewMode === 'shopping'
-                            ? "bg-card text-primary shadow-sm ring-1 ring-border"
-                            : "bg-transparent text-muted-foreground hover:bg-accent"
-                    )}
-                    aria-label={ui('marketRun')}
-                    aria-pressed={viewMode === 'shopping'}
-                >
-                    <ShoppingCart size={14} className={viewMode === 'shopping' ? "text-primary" : "text-muted-foreground"} />
-                    Shopping
-                </button>
-                <button
-                    onClick={() => setViewMode('distribution')}
-                    className={cn(
-                        "flex-1 flex items-center justify-center gap-2 py-1.5 rounded-lg text-xs font-semibold transition-all",
-                        viewMode === 'distribution'
-                            ? "bg-card text-primary shadow-sm ring-1 ring-border"
-                            : "bg-transparent text-muted-foreground hover:bg-accent"
-                    )}
-                    aria-label="Distribution View"
-                    aria-pressed={viewMode === 'distribution'}
-                >
-                    <Store size={14} className={viewMode === 'distribution' ? "text-primary" : "text-muted-foreground"} />
-                    Distribution
-                </button>
-            </div>
+            <SegmentControl<ViewMode>
+                options={VIEW_OPTIONS}
+                value={viewMode}
+                onChange={setViewMode}
+                className="mb-2"
+                aria-label={ui('marketRun')}
+            />
 
             {viewMode === 'shopping' && (
                 <div className="flex justify-between items-end px-1 mt-3">

@@ -79,7 +79,7 @@ const StoreRequestContent = () => {
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
                         {searchTerm && (
-                            <button type="button" onClick={() => setSearchTerm('')} className="absolute right-2 top-2 text-muted-foreground hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring rounded" aria-label="Clear search">
+                            <button type="button" onClick={() => setSearchTerm('')} className="absolute right-2 top-2 text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded">
                                 <X size={14} />
                             </button>
                         )}
@@ -116,7 +116,7 @@ const StoreRequestContent = () => {
                     <div className="overflow-x-auto -mx-3 px-3 scrollbar-hide py-1">
                         <div className="flex gap-2">
                             <div className="text-[10px] uppercase font-bold text-muted-foreground flex items-center shrink-0">
-                                <Zap size={12} className="mr-1" /> Quick:
+                                <Zap size={12} className="mr-1" aria-hidden /> Quick:
                             </div>
                             {templates.map(tmpl => (
                                 <div
@@ -130,7 +130,7 @@ const StoreRequestContent = () => {
                                             e.stopPropagation();
                                             handleDeleteTemplate(tmpl.id);
                                         }}
-                                        className="w-4 h-4 rounded-full bg-indigo-100 flex items-center justify-center hover:bg-indigo-200"
+                                        className="w-4 h-4 rounded-full bg-primary/20 flex items-center justify-center hover:bg-primary/30 text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                                     >
                                         <X size={10} />
                                     </button>
@@ -177,7 +177,7 @@ const StoreRequestContent = () => {
                     className="w-14 h-14 bg-primary text-primary-foreground rounded-full shadow-lg flex items-center justify-center"
                 >
                     <ListFilter size={22} />
-                    <span className="absolute -top-1.5 -right-1.5 bg-destructive text-destructive-foreground text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-primary">
+                    <span className="absolute -top-1.5 -right-1.5 bg-destructive text-destructive-foreground text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-card">
                         {totalCount}
                     </span>
                 </motion.button>

@@ -56,7 +56,7 @@ export const QuantityControl = ({ value, onChange }: QuantityControlProps) => {
             <Button
                 variant="ghost"
                 size="icon"
-                className="h-11 w-11 rounded-full bg-muted hover:bg-eden-50 hover:text-eden-500 text-muted-foreground"
+                className="h-11 w-11 rounded-full bg-muted hover:bg-primary/10 hover:text-primary text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 onClick={() => step(1)}
                 aria-label="Add item"
             >

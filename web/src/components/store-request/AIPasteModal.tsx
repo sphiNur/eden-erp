@@ -73,24 +73,29 @@ export const AIPasteModal = ({ open, onClose }: AIPasteModalProps) => {
                         onClick={onClose}
                     />
 
-                    {/* Modal */}
+                    {/* Modal — z-alert above overlay so it draws on top */}
                     <motion.div
                         initial={{ opacity: 0, y: '100%' }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: '100%' }}
                         transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                        className="fixed bottom-0 left-0 right-0 z-alert bg-card rounded-t-2xl shadow-xl flex flex-col max-h-[90dvh]"
+                        className="fixed bottom-0 left-0 right-0 z-alert bg-card rounded-t-2xl shadow-xl flex flex-col max-h-[90dvh] overflow-hidden"
                         onClick={(e) => e.stopPropagation()}
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="ai-paste-title"
                     >
                         {/* Header */}
                         <div className="flex items-center justify-between p-4 border-b border-border shrink-0">
                             <div className="flex items-center gap-2">
-                                <Sparkles className="text-primary w-5 h-5" />
-                                <h2 className="font-bold text-lg text-foreground">AI Smart Paste</h2>
+                                <Sparkles className="text-primary w-5 h-5" aria-hidden />
+                                <h2 id="ai-paste-title" className="font-bold text-lg text-foreground">AI Smart Paste</h2>
                             </div>
                             <button
+                                type="button"
                                 onClick={onClose}
-                                className="p-2 -mr-2 text-muted-foreground hover:bg-accent rounded-full transition-colors"
+                                className="p-2 -mr-2 text-muted-foreground hover:bg-accent rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                aria-label="Close"
                             >
                                 <X size={20} />
                             </button>
@@ -115,9 +120,10 @@ Kartoshka 2 kilo...`}
                         {/* Footer */}
                         <div className="p-4 border-t border-border bg-card shrink-0">
                             <button
+                                type="button"
                                 onClick={handleParse}
                                 disabled={!rawText.trim() || isParsing}
-                                className="w-full bg-primary text-primary-foreground font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 hover:bg-primary/90 active:scale-[0.98] transition-all disabled:opacity-50 disabled:scale-100"
+                                className="w-full bg-primary text-primary-foreground font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 hover:bg-primary/90 active:scale-[0.98] transition-all disabled:opacity-50 disabled:scale-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                             >
                                 {isParsing ? (
                                     <>
