@@ -238,7 +238,7 @@ export const ProductFormPage = () => {
                 <div className="fixed right-4 z-fab sm:hidden" style={{ bottom: 'calc(var(--nav-h) + 12px)' }}>
                     <Button
                         size="icon"
-                        className="h-14 w-14 rounded-full shadow-lg bg-eden-500 hover:bg-eden-600"
+                        className="h-14 w-14 rounded-full shadow-lg bg-primary hover:bg-primary/90"
                         onClick={form.handleSubmit(onSubmit)}
                         disabled={submitting}
                     >

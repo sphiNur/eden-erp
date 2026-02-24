@@ -98,7 +98,7 @@ export const SettingsMenu = ({ children, open: controlledOpen, onOpenChange }: S
                                 {user.photo_url ? (
                                     <img src={user.photo_url} alt="" className="h-10 w-10 rounded-full border border-border" />
                                 ) : (
-                                    <div className="h-10 w-10 rounded-full bg-eden-50 flex items-center justify-center text-eden-600 border border-eden-100">
+                                    <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
                                         <User size={18} strokeWidth={2.5} />
                                     </div>
                                 )}
@@ -139,7 +139,7 @@ export const SettingsMenu = ({ children, open: controlledOpen, onOpenChange }: S
                                 <button
                                     type="button"
                                     onClick={handleFullscreenToggle}
-                                    className="flex items-center gap-1.5 text-[10px] font-bold text-eden-600 uppercase tracking-widest hover:text-eden-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
+                                    className="flex items-center gap-1.5 text-[10px] font-bold text-primary uppercase tracking-widest hover:text-primary/80 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
                                 >
                                     {isFullscreen ? <Minimize size={11} /> : <Maximize size={11} />}
                                     <span>{isFullscreen ? 'Exit Full' : 'Fullscreen'}</span>
@@ -155,13 +155,13 @@ export const SettingsMenu = ({ children, open: controlledOpen, onOpenChange }: S
                                     className={cn(
                                         "flex flex-col items-center justify-center py-2 rounded-lg border border-border transition-all duration-200 relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                                         language === lang.code
-                                            ? "bg-eden-50 border-eden-200 text-eden-700 shadow-sm"
+                                            ? "bg-primary/10 border-primary/20 text-primary shadow-sm"
                                             : "bg-transparent text-foreground hover:bg-muted"
                                     )}
                                 >
                                     <span className="text-xs font-bold">{lang.code.toUpperCase()}</span>
                                     {language === lang.code && (
-                                        <div className="absolute top-1 right-1 h-1.5 w-1.5 rounded-full bg-eden-500" />
+                                        <div className="absolute top-1 right-1 h-1.5 w-1.5 rounded-full bg-primary" />
                                     )}
                                 </button>
                             ))}
@@ -202,7 +202,7 @@ export const SettingsMenu = ({ children, open: controlledOpen, onOpenChange }: S
                                                 )}
                                                 title={meta.label}
                                             >
-                                                <Icon className={cn("w-3.5 h-3.5", isActive ? "text-eden-600" : "opacity-50")} />
+                                                <Icon className={cn("w-3.5 h-3.5", isActive ? "text-primary" : "opacity-50")} />
                                                 <span className="text-[10px] font-medium truncate max-w-[50px]">{meta.label.split(' ')[0]}</span>
                                             </button>
                                         );

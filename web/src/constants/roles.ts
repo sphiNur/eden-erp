@@ -13,26 +13,26 @@ export const ROLE_METADATA = {
     [USER_ROLES.ADMIN]: {
         label: 'Admin',
         icon: Shield,
-        color: 'text-purple-600',
-        bg: 'bg-purple-50',
+        color: 'text-primary',
+        bg: 'bg-primary/10',
     },
     [USER_ROLES.STORE_MANAGER]: {
         label: 'Store Manager',
         icon: Store,
-        color: 'text-eden-500',
-        bg: 'bg-eden-50',
+        color: 'text-primary',
+        bg: 'bg-primary/10',
     },
     [USER_ROLES.GLOBAL_PURCHASER]: {
         label: 'Global Purchaser',
         icon: ShoppingCart,
-        color: 'text-green-600',
-        bg: 'bg-green-50',
+        color: 'text-success',
+        bg: 'bg-success/10',
     },
     [USER_ROLES.FINANCE]: {
         label: 'Finance',
         icon: Briefcase,
-        color: 'text-amber-600',
-        bg: 'bg-amber-50',
+        color: 'text-warning',
+        bg: 'bg-warning/10',
     },
 } as const;
 
@@ -40,7 +40,7 @@ export const getRoleMetadata = (role: string) => {
     return ROLE_METADATA[role as UserRole] || {
         label: role,
         icon: User,
-        color: 'text-gray-500',
-        bg: 'bg-gray-50',
+        color: 'text-muted-foreground',
+        bg: 'bg-muted',
     };
 };
