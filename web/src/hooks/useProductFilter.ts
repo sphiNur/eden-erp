@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import Fuse from 'fuse.js';
 import { Product } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -12,7 +12,7 @@ export const useProductFilter = (products: Product[]) => {
     const [activeCategory, setActiveCategory] = useState<string>(allLabel);
 
     // Reset filtering when language changes (since labels change)
-    useMemo(() => {
+    useEffect(() => {
         setActiveCategory(allLabel);
     }, [allLabel]);
 

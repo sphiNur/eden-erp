@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Product, OrderTemplate } from '../types';
-import { productsApi, storesApi, templatesApi } from '../api/client';
+import { Product } from '../types';
+import { productsApi, storesApi } from '../api/client';
 import { useUser } from '../contexts/UserContext';
 import { useLanguage } from '../contexts/LanguageContext';
 
@@ -15,7 +15,6 @@ export const useStoreCatalog = () => {
 
     const [products, setProducts] = useState<Product[]>([]);
     const [stores, setStores] = useState<StoreOption[]>([]);
-    const [templates, setTemplates] = useState<OrderTemplate[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -46,29 +45,11 @@ export const useStoreCatalog = () => {
     useEffect(() => {
         fetchData();
     }, [fetchData]);
-
-    const fetchTemplates = useCallback(async (storeId: string) => {
-        if (!storeId) {
-            setTemplates([]);
-            return;
-        }
-        try {
-            const data = await templatesApi.list(storeId);
-            setTemplates(data);
-        } catch (err) {
-            console.error(err);
-            setTemplates([]);
-        }
-    }, []);
-
     return {
         products,
         stores,
-        templates,
         loading,
         error,
-        fetchTemplates,
-        setTemplates, // Exposed for optimistic updates
         refresh: fetchData
     };
 };

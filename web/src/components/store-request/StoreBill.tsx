@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Loader2, Receipt, Calendar, ChevronDown, ChevronUp, Truck, Users, Snowflake, HelpCircle } from 'lucide-react';
+import { Input } from '../ui/input';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { billsApi } from '../../api/client';
 import type { DailyBillResponse, BillItemDetail, BillExpenseDetail } from '../../types';
@@ -45,9 +46,9 @@ export const StoreBill = () => {
                 <div className="flex-1" />
                 <div className="flex items-center bg-accent px-2 py-1.5 rounded-lg shrink-0 focus-within:ring-2 focus-within:ring-primary/20">
                     <Calendar size={14} className="text-muted-foreground mr-1.5" aria-hidden />
-                    <input
+                    <Input
                         type="date"
-                        className="bg-transparent text-[13px] font-medium outline-none"
+                        className="h-8 border-none bg-transparent text-[13px] font-medium outline-none focus-visible:ring-0 shadow-none px-0"
                         value={selectedDate}
                         onChange={(e) => setSelectedDate(e.target.value)}
                     />

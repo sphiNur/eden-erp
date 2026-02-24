@@ -1,6 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { ListFilter } from 'lucide-react';
-import { useState } from 'react';
 
 import { useLanguage } from '../contexts/LanguageContext';
 import { StoreRequestProvider, useStoreRequestContext } from '../contexts/StoreRequestContext';
@@ -16,10 +15,10 @@ import { BottomDrawer } from './shared/BottomDrawer';
 import { CategoryFilter } from './store-request/CategoryFilter';
 import { ProductListItem } from './store-request/ProductListItem';
 import { CartSheet } from './store-request/CartSheet';
-import { AIPasteModal } from './store-request/AIPasteModal';
 import { PageLayout } from './layout/PageLayout';
 import { PageHeader } from './layout/PageHeader';
-import { Store, CalendarDays, Search, X, Zap, Sparkles } from 'lucide-react';
+import { Store, CalendarDays, Search, X } from 'lucide-react';
+import { Input } from './ui/input';
 
 export const StoreRequest = () => {
     return (
@@ -34,7 +33,7 @@ const StoreRequestContent = () => {
 
     const {
         loading, error, refresh,
-        stores, templates, groupedProducts, categories,
+        stores, groupedProducts, categories,
         searchTerm, setSearchTerm,
         activeCategory, setActiveCategory,
         selectedStore, setSelectedStore,
@@ -42,11 +41,8 @@ const StoreRequestContent = () => {
         quantities, setQty, cartItems, totalCount, estimatedTotal,
         showCart, setShowCart,
         submitting, showSuccess,
-        handleLoadTemplate, handleDeleteTemplate, handleSaveTemplate, handleSubmit,
-        showTemplatePrompt, setShowTemplatePrompt, templatePromptResolver
+        handleSubmit
     } = useStoreRequestContext();
-
-    const [showAIModal, setShowAIModal] = useState(false);
 
     // Calculate category selection counts
     const categoryCounts: Record<string, number> = {};
@@ -71,10 +67,10 @@ const StoreRequestContent = () => {
                     {/* Search (Expands) */}
                     <div className="relative flex-1">
                         <Search className="absolute left-2.5 top-2 text-muted-foreground" size={14} />
-                        <input
+                        <Input
                             type="text"
                             placeholder={ui('search')}
-                            className="w-full pl-8 pr-7 py-1.5 bg-accent rounded-lg outline-none focus:bg-card focus:ring-2 focus:ring-primary text-[13px] transition-all text-foreground placeholder:text-muted-foreground"
+                            className="w-full pl-8 pr-7 py-1.5 bg-accent border-none rounded-lg focus-visible:bg-card focus-visible:ring-2 focus-visible:ring-primary text-[13px] transition-all text-foreground placeholder:text-muted-foreground"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
@@ -101,9 +97,9 @@ const StoreRequestContent = () => {
                     {/* Date picker (Compact) */}
                     <div className="flex items-center bg-accent px-2 py-1.5 rounded-lg shrink-0 transition-colors focus-within:bg-card focus-within:ring-2 focus-within:ring-primary/20 w-[100px]">
                         <CalendarDays size={14} className="text-muted-foreground mr-1.5" />
-                        <input
+                        <Input
                             type="date"
-                            className="bg-transparent text-[13px] font-medium outline-none w-full text-foreground"
+                            className="h-8 border-none bg-transparent text-[13px] font-medium outline-none focus-visible:ring-0 shadow-none px-0 w-full text-foreground"
                             value={deliveryDate}
                             min={new Date().toISOString().split('T')[0]}
                             onChange={(e) => setDeliveryDate(e.target.value)}
@@ -111,34 +107,6 @@ const StoreRequestContent = () => {
                     </div>
                 </div>
 
-                {/* ─── Quick Order Templates ─── */}
-                {templates.length > 0 && (
-                    <div className="overflow-x-auto -mx-3 px-3 scrollbar-hide py-1">
-                        <div className="flex gap-2">
-                            <div className="text-[10px] uppercase font-bold text-muted-foreground flex items-center shrink-0">
-                                <Zap size={12} className="mr-1" aria-hidden /> Quick:
-                            </div>
-                            {templates.map(tmpl => (
-                                <div
-                                    key={tmpl.id}
-                                    onClick={() => handleLoadTemplate(tmpl)}
-                                    className="bg-primary/10 text-primary border border-primary/20 px-2.5 py-1 rounded-full text-xs font-semibold flex items-center gap-1.5 active:bg-primary/20 active:scale-95 transition-all cursor-pointer select-none"
-                                >
-                                    {tmpl.name}
-                                    <button
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleDeleteTemplate(tmpl.id);
-                                        }}
-                                        className="w-4 h-4 rounded-full bg-primary/20 flex items-center justify-center hover:bg-primary/30 text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                                    >
-                                        <X size={10} />
-                                    </button>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                )}
             </div>
             <div className="pt-1 flex items-center justify-between">
                 <div className="flex-1 overflow-x-auto scrollbar-hide">
@@ -151,15 +119,6 @@ const StoreRequestContent = () => {
                         allLabel={ui('all')}
                     />
                 </div>
-
-                {/* AI Paste Button */}
-                <button
-                    onClick={() => setShowAIModal(true)}
-                    className="ml-2 shrink-0 bg-primary/10 text-primary border border-primary/20 pl-2 pr-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-1.5 active:bg-primary/20 transition-all shadow-sm"
-                >
-                    <Sparkles size={14} className="animate-pulse" />
-                    AI Auto-Fill
-                </button>
             </div>
         </PageHeader>
     );
@@ -231,75 +190,9 @@ const StoreRequestContent = () => {
                     estimatedTotal={estimatedTotal}
                     submitting={submitting}
                     onSubmit={handleSubmit}
-                    onSaveTemplate={handleSaveTemplate}
                     onUpdateQty={setQty}
                 />
             </BottomDrawer>
-
-            {/* Template Name Prompt Modal */}
-            <AnimatePresence>
-                {showTemplatePrompt && (
-                    <>
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 0.5 }}
-                            exit={{ opacity: 0 }}
-                            className="fixed inset-0 bg-black z-overlay"
-                        />
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.95 }}
-                            className="fixed inset-0 z-overlay flex items-center justify-center p-4"
-                        >
-                            <div className="bg-card rounded-xl shadow-xl p-5 w-full max-w-sm">
-                                <h3 className="font-bold text-lg mb-2 text-foreground">Save Template</h3>
-                                <p className="text-muted-foreground text-sm mb-4">Enter a name for this template (e.g., 'Daily Veggies')</p>
-                                <input
-                                    id="template-name-input"
-                                    type="text"
-                                    className="w-full bg-accent rounded-lg px-4 py-3 mb-4 outline-none focus:ring-2 focus:ring-primary font-medium text-foreground"
-                                    placeholder="Template name"
-                                    autoFocus
-                                    onKeyDown={(e) => {
-                                        if (e.key === 'Enter') {
-                                            const val = (e.target as HTMLInputElement).value.trim();
-                                            templatePromptResolver?.(val || null);
-                                            setShowTemplatePrompt(false);
-                                        }
-                                    }}
-                                />
-                                <div className="flex gap-3">
-                                    <button
-                                        className="flex-1 py-2.5 rounded-lg bg-accent text-foreground font-semibold active:scale-95 transition-transform"
-                                        onClick={() => {
-                                            templatePromptResolver?.(null);
-                                            setShowTemplatePrompt(false);
-                                        }}
-                                    >
-                                        Cancel
-                                    </button>
-                                    <button
-                                        className="flex-1 py-2.5 rounded-lg bg-primary text-primary-foreground font-bold active:scale-95 transition-transform"
-                                        onClick={() => {
-                                            const val = (document.getElementById('template-name-input') as HTMLInputElement).value.trim();
-                                            templatePromptResolver?.(val || null);
-                                            setShowTemplatePrompt(false);
-                                        }}
-                                    >
-                                        Save
-                                    </button>
-                                </div>
-                            </div>
-                        </motion.div>
-                    </>
-                )}
-            </AnimatePresence>
-
-            <AIPasteModal
-                open={showAIModal}
-                onClose={() => setShowAIModal(false)}
-            />
         </PageLayout>
     );
 };

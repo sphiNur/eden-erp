@@ -3,6 +3,7 @@ import { Loader2, Plus, X, Trash2, MapPin } from 'lucide-react';
 import { stallsApi } from '../../api/client';
 import type { Stall, StallCreate } from '../../types';
 import { Button } from '../ui/button';
+import { Input } from '../ui/input';
 
 export const StallManager = () => {
     const [stalls, setStalls] = useState<Stall[]>([]);
@@ -90,24 +91,24 @@ export const StallManager = () => {
                         <h3 className="font-semibold text-foreground">{editingId ? '编辑档口' : '新增档口'}</h3>
                         <button onClick={() => setShowForm(false)}><X size={18} className="text-muted-foreground" /></button>
                     </div>
-                    <input
+                    <Input
                         type="text"
                         placeholder="档口名称 (e.g. 蔬菜档)"
-                        className="w-full px-3 py-2 bg-accent rounded-lg outline-none focus:ring-2 focus:ring-primary text-sm text-foreground placeholder:text-muted-foreground"
+                        className="w-full bg-accent border-none rounded-lg focus-visible:ring-2 focus-visible:ring-ring text-sm"
                         value={formData.name}
                         onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                     />
-                    <input
+                    <Input
                         type="text"
                         placeholder="位置描述 (可选)"
-                        className="w-full px-3 py-2 bg-accent rounded-lg outline-none focus:ring-2 focus:ring-primary text-sm text-foreground placeholder:text-muted-foreground"
+                        className="w-full bg-accent border-none rounded-lg focus-visible:ring-2 focus-visible:ring-ring text-sm"
                         value={formData.location || ''}
                         onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
                     />
-                    <input
+                    <Input
                         type="number"
                         placeholder="排序"
-                        className="w-full px-3 py-2 bg-accent rounded-lg outline-none focus:ring-2 focus:ring-primary text-sm text-foreground placeholder:text-muted-foreground"
+                        className="w-full bg-accent border-none rounded-lg focus-visible:ring-2 focus-visible:ring-ring text-sm"
                         value={formData.sort_order || 0}
                         onChange={(e) => setFormData(prev => ({ ...prev, sort_order: parseInt(e.target.value) || 0 }))}
                     />

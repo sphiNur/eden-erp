@@ -1,16 +1,15 @@
-import { createContext, useContext, useState, useCallback, useMemo, ReactNode } from 'react';
-import { haptic, tgAlert, tgConfirm, tgMainButton } from '../lib/telegram';
+import { createContext, useContext, useState, useMemo, ReactNode } from 'react';
+import { haptic, tgAlert, tgMainButton } from '../lib/telegram';
 import { useLanguage } from './LanguageContext';
 import { useStoreCatalog } from '../hooks/useStoreCatalog';
 import { useProductFilter } from '../hooks/useProductFilter';
 import { useCart } from '../hooks/useCart';
-import { OrderTemplate, OrderItemInput, Product, Store } from '../types';
-import { ordersApi, templatesApi } from '../api/client';
+import { Product, Store, OrderItemInput } from '../types';
+import { ordersApi } from '../api/client';
 
 interface StoreRequestContextProps {
     products: Product[];
     stores: Store[];
-    templates: OrderTemplate[];
     loading: boolean;
     error: string | null;
     refresh: () => void;
@@ -37,14 +36,7 @@ interface StoreRequestContextProps {
     deliveryDate: string;
     setDeliveryDate: (date: string) => void;
 
-    handleLoadTemplate: (template: OrderTemplate) => void;
-    handleDeleteTemplate: (id: string) => void;
-    handleSaveTemplate: () => void;
     handleSubmit: () => void;
-
-    showTemplatePrompt: boolean;
-    setShowTemplatePrompt: (val: boolean) => void;
-    templatePromptResolver: ((name: string | null) => void) | null;
 }
 
 const StoreRequestContext = createContext<StoreRequestContextProps | undefined>(undefined);
@@ -53,7 +45,7 @@ export const StoreRequestProvider = ({ children }: { children: ReactNode }) => {
     const { ui } = useLanguage();
 
     // Data Hooks
-    const { products, stores, templates, loading, error, refresh, setTemplates } = useStoreCatalog();
+    const { products, stores, loading, error, refresh } = useStoreCatalog();
     const { groupedProducts, searchTerm, setSearchTerm, activeCategory, setActiveCategory, categories } = useProductFilter(products);
     const { quantities, setQty, cartItems, totalCount, estimatedTotal, reset: resetCart } = useCart(products);
 
@@ -77,68 +69,6 @@ export const StoreRequestProvider = ({ children }: { children: ReactNode }) => {
             setSelectedStore(stores[0].id);
         }
     }, [stores, selectedStore]);
-
-    // Template Prompt State
-    const [showTemplatePrompt, setShowTemplatePrompt] = useState(false);
-    const [templatePromptResolver, setTemplatePromptResolver] = useState<((name: string | null) => void) | null>(null);
-
-    // Template Handlers
-    const handleLoadTemplate = useCallback((template: OrderTemplate) => {
-        template.items.forEach(item => {
-            if (products.some(p => p.id === item.product_id)) {
-                setQty(item.product_id, (quantities[item.product_id] || 0) + item.quantity);
-            }
-        });
-        haptic.notification('success');
-    }, [products, quantities, setQty]);
-
-    const handleDeleteTemplate = useCallback((id: string) => {
-        tgConfirm("Delete this template?", async (isConfirmed) => {
-            if (!isConfirmed) return;
-            try {
-                await templatesApi.delete(id);
-                setTemplates(prev => prev.filter(t => t.id !== id));
-            } catch (err) {
-                console.error(err);
-                tgAlert("Failed to delete");
-            }
-        });
-    }, [setTemplates]);
-
-    // Use a custom promise for prompt
-    const promptTemplateName = (): Promise<string | null> => {
-        return new Promise((resolve) => {
-            setTemplatePromptResolver(() => resolve);
-            setShowTemplatePrompt(true);
-        });
-    };
-
-    const handleSaveTemplate = async () => {
-        if (!selectedStore) return;
-
-        const name = await promptTemplateName();
-        if (!name) return;
-
-        try {
-            tgMainButton.showProgress(true);
-            const items = Object.entries(quantities)
-                .filter(([_, qty]) => qty > 0)
-                .map(([pid, qty]) => ({ product_id: pid, quantity: qty }));
-
-            const newTemplate = await templatesApi.create({
-                store_id: selectedStore,
-                name,
-                items
-            });
-            setTemplates(prev => [...prev, newTemplate]);
-            haptic.notification('success');
-        } catch (err) {
-            console.error(err);
-            tgAlert("Failed to save template");
-        } finally {
-            tgMainButton.hideProgress();
-        }
-    };
 
     const handleSubmit = async () => {
         if (totalCount === 0) { tgAlert(ui('cartIsEmpty')); return; }
@@ -175,13 +105,12 @@ export const StoreRequestProvider = ({ children }: { children: ReactNode }) => {
     };
 
     const value = {
-        products, stores, templates, loading, error, refresh,
+        products, stores, loading, error, refresh,
         groupedProducts, searchTerm, setSearchTerm, activeCategory, setActiveCategory, categories,
         quantities, setQty, cartItems, totalCount, estimatedTotal,
         selectedStore, setSelectedStore, showCart, setShowCart,
         submitting, showSuccess, deliveryDate, setDeliveryDate,
-        handleLoadTemplate, handleDeleteTemplate, handleSaveTemplate, handleSubmit,
-        showTemplatePrompt, setShowTemplatePrompt, templatePromptResolver
+        handleSubmit
     };
 
     return (

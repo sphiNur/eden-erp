@@ -71,7 +71,7 @@ export const MarketItemRow = memo(({ item }: MarketItemRowProps) => {
             <div className="flex items-start gap-3">
                 <button
                     type="button"
-                    className="flex-1 min-w-0 text-left focus:outline-none rounded-md"
+                    className="flex-1 min-w-0 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md"
                     onClick={() => toggleBreakdown(item.product_id)}
                     aria-expanded={isExpanded}
                 >
@@ -145,20 +145,20 @@ export const MarketItemRow = memo(({ item }: MarketItemRowProps) => {
                     <div className="flex items-center gap-2 pt-1 border-t border-border border-dashed mt-1">
                         <div className="flex-1 flex items-center bg-accent rounded-lg focus-within:ring-1 focus-within:ring-primary overflow-hidden">
                             <span className="text-[10px] font-bold text-muted-foreground pl-2 pr-1 uppercase select-none w-10">{ui('unitPrice') || 'UNIT'}</span>
-                            <input
+                            <Input
                                 type="number"
                                 placeholder="..."
-                                className="flex-1 h-8 bg-transparent text-right font-mono font-bold text-[13px] outline-none pr-2 text-foreground"
+                                className="flex-1 h-8 bg-transparent text-right font-mono font-bold text-[13px] border-none shadow-none focus-visible:ring-0 rounded-sm pr-2 text-foreground"
                                 value={localUnit}
                                 onChange={(e) => handleLocalUnitChange(e.target.value)}
                             />
                         </div>
                         <div className="flex-1 flex items-center bg-accent rounded-lg focus-within:ring-1 focus-within:ring-primary overflow-hidden">
                             <span className="text-[10px] font-bold text-muted-foreground pl-2 pr-1 uppercase select-none w-12">{ui('totalCost') || 'TOTAL'}</span>
-                            <input
+                            <Input
                                 type="number"
                                 placeholder="..."
-                                className="flex-1 h-8 bg-transparent text-right font-mono font-bold text-[13px] outline-none pr-2 text-foreground"
+                                className="flex-1 h-8 bg-transparent text-right font-mono font-bold text-[13px] border-none shadow-none focus-visible:ring-0 rounded-sm pr-2 text-foreground"
                                 value={localTotal}
                                 onChange={(e) => handleLocalTotalChange(e.target.value)}
                             />

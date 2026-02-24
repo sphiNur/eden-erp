@@ -1,4 +1,4 @@
-import { Loader2, Save } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 
 import { Button } from '../ui/button';
 import { useLanguage } from '../../contexts/LanguageContext';
@@ -17,7 +17,6 @@ interface CartSheetProps {
     estimatedTotal: number;
     submitting: boolean;
     onSubmit: () => void;
-    onSaveTemplate: () => void;
     onUpdateQty: (productId: string, val: number) => void;
 }
 
@@ -26,7 +25,6 @@ export const CartSheet = ({
     estimatedTotal,
     submitting,
     onSubmit,
-    onSaveTemplate,
     onUpdateQty
 }: CartSheetProps) => {
     const { t, ui, language } = useLanguage();
@@ -67,17 +65,6 @@ export const CartSheet = ({
                         </span>
                     </div>
                 )}
-
-                <div className="flex gap-2">
-                    <Button
-                        variant="outline"
-                        onClick={onSaveTemplate}
-                        className="flex-1 border-dashed border-border text-muted-foreground hover:text-primary hover:border-primary/50"
-                    >
-                        <Save size={16} className="mr-2" />
-                        Save Template
-                    </Button>
-                </div>
 
                 <Button
                     onClick={onSubmit}

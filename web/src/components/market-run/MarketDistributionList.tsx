@@ -66,12 +66,12 @@ export const MarketDistributionList = () => {
             {/* Separate Tabs per view with key so state resets and layout doesn’t overlap */}
             {subView === 'store' && (
                 <Tabs key="by-store" defaultValue={storeKeys[0]} className="w-full flex-1 min-h-0 flex flex-col overflow-hidden">
-                    <TabsList className="w-full justify-start overflow-x-auto mb-3 bg-card p-1 rounded-xl shadow-sm border border-border shrink-0 scrollbar-hide">
+                    <TabsList className="w-full justify-start overflow-x-auto mb-3 bg-card p-1 rounded-xl shadow-sm border border-border shrink-0 scrollbar-hide flex-nowrap">
                         {storeKeys.map(key => (
                             <TabsTrigger
                                 key={key}
                                 value={key}
-                                className="flex-1 min-w-[80px] text-[13px] font-semibold py-2 px-3 rounded-lg data-[state=active]:bg-primary/10 data-[state=active]:text-primary data-[state=active]:shadow-none transition-all text-muted-foreground hover:text-foreground"
+                                className="shrink-0 min-w-fit flex-1 whitespace-nowrap text-[13px] font-semibold py-2 px-3 rounded-lg data-[state=active]:bg-primary/10 data-[state=active]:text-primary data-[state=active]:shadow-none transition-all text-muted-foreground hover:text-foreground"
                             >
                                 {key} <span className="ml-1.5 opacity-60 text-[10px] bg-card/50 px-1.5 py-0.5 rounded-full">{distributionSections[key].length}</span>
                             </TabsTrigger>
@@ -79,7 +79,7 @@ export const MarketDistributionList = () => {
                     </TabsList>
                     <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden">
                         {storeKeys.map(key => (
-                            <TabsContent key={key} value={key} className="space-y-1.5 mt-0 outline-none focus:outline-none focus-visible:outline-none data-[state=inactive]:hidden">
+                            <TabsContent key={key} value={key} className="space-y-1.5 mt-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md data-[state=inactive]:hidden">
                                 <div className="bg-card rounded-xl shadow-sm border border-border overflow-hidden divide-y divide-border/50">
                                     {distributionSections[key].map((entry, idx) => (
                                         <div key={idx} className="px-4 py-3.5 flex items-center justify-between hover:bg-accent/50 transition-colors">
@@ -101,12 +101,12 @@ export const MarketDistributionList = () => {
 
             {subView === 'vendor' && (
                 <Tabs key="by-vendor" defaultValue={stallKeys[0]} className="w-full flex-1 min-h-0 flex flex-col overflow-hidden">
-                    <TabsList className="w-full justify-start overflow-x-auto mb-3 bg-card p-1 rounded-xl shadow-sm border border-border shrink-0 scrollbar-hide">
+                    <TabsList className="w-full justify-start overflow-x-auto mb-3 bg-card p-1 rounded-xl shadow-sm border border-border shrink-0 scrollbar-hide flex-nowrap">
                         {stallKeys.map(key => (
                             <TabsTrigger
                                 key={key}
                                 value={key}
-                                className="flex-1 min-w-[80px] text-[13px] font-semibold py-2 px-3 rounded-lg data-[state=active]:bg-primary/10 data-[state=active]:text-primary data-[state=active]:shadow-none transition-all text-muted-foreground hover:text-foreground"
+                                className="shrink-0 min-w-fit flex-1 whitespace-nowrap text-[13px] font-semibold py-2 px-3 rounded-lg data-[state=active]:bg-primary/10 data-[state=active]:text-primary data-[state=active]:shadow-none transition-all text-muted-foreground hover:text-foreground"
                             >
                                 {key} <span className="ml-1.5 opacity-60 text-[10px] bg-card/50 px-1.5 py-0.5 rounded-full">{stallSections[key].length}</span>
                             </TabsTrigger>
@@ -114,7 +114,7 @@ export const MarketDistributionList = () => {
                     </TabsList>
                     <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden">
                         {stallKeys.map(key => (
-                            <TabsContent key={key} value={key} className="space-y-3 mt-0 outline-none focus:outline-none focus-visible:outline-none data-[state=inactive]:hidden">
+                            <TabsContent key={key} value={key} className="space-y-3 mt-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md data-[state=inactive]:hidden">
                                 <button
                                     type="button"
                                     onClick={() => handleShare(key)}
