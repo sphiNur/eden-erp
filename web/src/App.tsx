@@ -2,7 +2,6 @@ import { useEffect, ReactNode } from 'react';
 import { retrieveLaunchParams, themeParams, useSignal } from '@telegram-apps/sdk-react';
 import { HashRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import {
-    Dispatcher,
     StoreRequest,
     MarketRun,
     StoreBill,
