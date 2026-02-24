@@ -12,7 +12,7 @@ WORKDIR /app
 COPY web/package*.json ./
 
 # 安装依赖
-RUN npm install
+RUN npm install --legacy-peer-deps
 
 # 复制源文件并构建
 COPY web/ .
