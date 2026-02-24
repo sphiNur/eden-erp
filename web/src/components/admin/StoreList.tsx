@@ -1,12 +1,13 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Plus } from 'lucide-react';
-import { Button } from '../ui/button';
+import { Button } from '@/components/ui/button';
 import { Store } from '../../types';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { storesApi } from '../../api/client';
 import { haptic } from '../../lib/telegram';
 import { PageLayout } from '../layout/PageLayout';
-import { ListToolbar } from '../shared/ListToolbar';
+import { Input } from '@/components/ui/input';
+import { Search } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 
@@ -41,22 +42,27 @@ export const StoreList = () => {
     }, [stores, search]);
 
     const toolbar = (
-        <ListToolbar
-            search={search}
-            onSearchChange={setSearch}
-            actions={
-                <Button
-                    size="sm"
-                    className="h-9 w-9 p-0 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm shrink-0"
-                    onClick={() => {
-                        haptic.impact('light');
-                        navigate('/admin/stores/new');
-                    }}
-                >
-                    <Plus className="h-5 w-5" />
-                </Button>
-            }
-        />
+        <div className="flex items-center gap-2 px-3 py-2 bg-card border-b border-border min-h-[50px]">
+            <div className="relative flex-1">
+                <Search className="absolute left-2.5 top-[9px] h-4 w-4 text-muted-foreground" />
+                <Input
+                    placeholder={ui('search')}
+                    value={search}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
+                    className="pl-9 h-9 bg-accent border-transparent focus-visible:ring-1"
+                />
+            </div>
+            <Button
+                size="icon"
+                className="h-9 w-9 rounded-full shrink-0 shadow-sm"
+                onClick={() => {
+                    haptic.impact('light');
+                    navigate('/admin/stores/new');
+                }}
+            >
+                <Plus className="h-5 w-5" />
+            </Button>
+        </div>
     );
 
     return (

@@ -3,7 +3,7 @@ import { ShoppingCart, Store } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useMarketRunContext } from '../../contexts/MarketRunContext';
 import { PageHeader } from '../layout/PageHeader';
-import { SegmentControl } from '../ui/segment-control';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import type { ViewMode } from '../../hooks/useMarketRun';
 
 const VIEW_OPTIONS: { value: ViewMode; label: string; icon: ReactNode }[] = [
@@ -17,13 +17,16 @@ export const MarketHeader = () => {
 
     return (
         <PageHeader>
-            <SegmentControl<ViewMode>
-                options={VIEW_OPTIONS}
-                value={viewMode}
-                onChange={setViewMode}
-                className="mb-2"
-                aria-label={ui('marketRun')}
-            />
+            <Tabs value={viewMode} onValueChange={(val) => setViewMode(val as ViewMode)} className="mb-2 w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                    {VIEW_OPTIONS.map(opt => (
+                        <TabsTrigger key={opt.value} value={opt.value} className="flex items-center gap-2 text-xs">
+                            {opt.icon}
+                            {opt.label}
+                        </TabsTrigger>
+                    ))}
+                </TabsList>
+            </Tabs>
 
             {viewMode === 'shopping' && (
                 <div className="flex justify-between items-end px-1 mt-3">

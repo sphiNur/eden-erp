@@ -1,4 +1,5 @@
 import { cn } from '../../lib/utils';
+import { Badge } from '@/components/ui/badge';
 
 
 interface CategoryFilterProps {
@@ -31,14 +32,13 @@ export const CategoryFilter = ({
                         const count = isAll ? totalSelectedCount : (categoryCounts[cat] || 0);
 
                         return (
-                            <button
+                            <Badge
                                 key={cat}
+                                variant={activeCategory === cat ? "default" : "secondary"}
                                 onClick={() => onSelectCategory(cat)}
                                 className={cn(
-                                    "px-2.5 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-colors flex items-center gap-1",
-                                    activeCategory === cat
-                                        ? "bg-primary text-primary-foreground shadow-sm"
-                                        : "bg-accent text-accent-foreground hover:bg-accent/80"
+                                    "px-3 py-1 cursor-pointer whitespace-nowrap transition-colors flex items-center gap-1.5",
+                                    activeCategory !== cat && "bg-accent hover:bg-accent/80 text-muted-foreground hover:text-foreground"
                                 )}
                             >
                                 {cat}
@@ -46,13 +46,13 @@ export const CategoryFilter = ({
                                     <span className={cn(
                                         "min-w-[16px] h-[16px] rounded-full text-[9px] font-bold inline-flex items-center justify-center",
                                         activeCategory === cat
-                                            ? "bg-background text-foreground"
-                                            : "bg-primary/20 text-primary"
+                                            ? "bg-primary-foreground text-primary"
+                                            : "bg-primary/20 text-foreground"
                                     )}>
                                         {count}
                                     </span>
                                 )}
-                            </button>
+                            </Badge>
                         );
                     })}
                 </div>

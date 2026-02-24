@@ -32,10 +32,12 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
             const tgUser = getTelegramUser();
             const tgLang = tgUser?.language_code;
             if (tgLang) {
-                if (tgLang === 'zh' || tgLang.startsWith('zh-')) setLanguage('cn');
-                else if (tgLang === 'uz') setLanguage('uz');
-                else if (tgLang === 'ru') setLanguage('ru');
-                else setLanguage('en');
+                setTimeout(() => {
+                    if (tgLang === 'zh' || tgLang.startsWith('zh-')) setLanguage('cn');
+                    else if (tgLang === 'uz') setLanguage('uz');
+                    else if (tgLang === 'ru') setLanguage('ru');
+                    else setLanguage('en');
+                }, 0);
             }
         } catch {
             // Outside Telegram — use default

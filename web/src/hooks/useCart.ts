@@ -14,7 +14,7 @@ export const useCart = (products: Product[]) => {
 
     const cartItems = useMemo(
         () => Object.entries(quantities)
-            .filter(([_, qty]) => qty > 0)
+            .filter(([, qty]) => qty > 0)
             .map(([pid, qty]) => ({ product: productMap.get(pid), qty })),
         [quantities, productMap]
     );

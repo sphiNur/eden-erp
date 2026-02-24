@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Globe, Bug, Power, User, X, Maximize, Minimize } from 'lucide-react';
-import { Button } from '../ui/button';
-import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '../ui/sheet';
+import { Button } from '@/components/ui/button';
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { useLanguage, SUPPORTED_LANGUAGES } from '../../contexts/LanguageContext';
 import { useUser } from '../../contexts/UserContext';
 import { UserRole } from '../../types';
@@ -45,13 +45,13 @@ export const SettingsMenu = ({ children, open: controlledOpen, onOpenChange }: S
             role: role
         };
         localStorage.setItem('dev_mock_user', JSON.stringify(mockUser));
-        window.location.href = '/';
+        window.location.assign('/');
     };
 
     const handleClearMock = () => {
         haptic.impact('heavy');
         localStorage.removeItem('dev_mock_user');
-        window.location.href = '/';
+        window.location.assign('/');
     };
 
     const [isFullscreen, setIsFullscreen] = useState(false);

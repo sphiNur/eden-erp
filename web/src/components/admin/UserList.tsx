@@ -4,8 +4,9 @@ import { useLanguage } from '../../contexts/LanguageContext';
 import { usersApi } from '../../api/client';
 import { haptic } from '../../lib/telegram';
 import { PageLayout } from '../layout/PageLayout';
-import { ListToolbar } from '../shared/ListToolbar';
-import { RoleBadge } from '../shared/RoleBadge';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Search } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 
@@ -40,7 +41,19 @@ export const UserList = () => {
     }, [users, search]);
 
     return (
-        <PageLayout toolbar={<ListToolbar search={search} onSearchChange={setSearch} />}>
+        <PageLayout toolbar={
+            <div className="flex items-center px-3 py-2 bg-card border-b border-border min-h-[50px]">
+                <div className="relative flex-1">
+                    <Search className="absolute left-2.5 top-[9px] h-4 w-4 text-muted-foreground" />
+                    <Input
+                        placeholder={ui('search')}
+                        value={search}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
+                        className="pl-9 h-9 bg-accent border-transparent focus-visible:ring-1"
+                    />
+                </div>
+            </div>
+        }>
             {loading ? (
                 <div className="flex justify-center items-center py-12">
                     <Loader2 className="animate-spin text-primary" size={32} />
@@ -66,7 +79,7 @@ export const UserList = () => {
                                     <div className="font-semibold text-[13px] text-foreground leading-none mb-1">
                                         {user.username || `User ${user.telegram_id}`}
                                     </div>
-                                    <RoleBadge role={user.role} />
+                                    <Badge variant="secondary" className="text-[9px] px-1.5 py-0 leading-none h-[18px] uppercase tracking-wider">{user.role}</Badge>
                                 </div>
                             </div>
                             <div className="text-primary">

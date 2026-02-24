@@ -1,11 +1,10 @@
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '../ui/tabs';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Store, Share, Building } from 'lucide-react';
-import { Badge } from '../ui/badge';
+import { Badge } from '@/components/ui/badge';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useMarketRunContext } from '../../contexts/MarketRunContext';
 import { useState } from 'react';
 import { tgAlert } from '../../lib/telegram';
-import { SegmentControl } from '../ui/segment-control';
 
 export const MarketDistributionList = () => {
     const { t } = useLanguage();
@@ -55,13 +54,16 @@ export const MarketDistributionList = () => {
 
     return (
         <div className="bg-secondary flex-1 min-h-0 p-3 flex flex-col">
-            <SegmentControl<'store' | 'vendor'>
-                options={subViewOptions}
-                value={subView}
-                onChange={setSubView}
-                className="mb-3 shrink-0"
-                aria-label="Group by"
-            />
+            <Tabs value={subView} onValueChange={(val) => setSubView(val as 'store' | 'vendor')} className="mb-3 shrink-0 w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                    {subViewOptions.map(opt => (
+                        <TabsTrigger key={opt.value} value={opt.value} className="flex items-center gap-2 text-xs">
+                            {opt.icon}
+                            {opt.label}
+                        </TabsTrigger>
+                    ))}
+                </TabsList>
+            </Tabs>
 
             {/* Separate Tabs per view with key so state resets and layout doesn’t overlap */}
             {subView === 'store' && (

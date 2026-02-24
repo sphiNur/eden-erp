@@ -80,7 +80,7 @@ export const StoreRequestProvider = ({ children }: { children: ReactNode }) => {
         const allNotes = { en: noteText, ru: noteText, uz: noteText, cn: noteText };
 
         const items: OrderItemInput[] = Object.entries(quantities)
-            .filter(([_, qty]) => qty > 0)
+            .filter(([, qty]) => qty > 0)
             .map(([pid, qty]) => ({
                 product_id: pid,
                 quantity_requested: qty,

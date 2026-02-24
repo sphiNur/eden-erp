@@ -2,8 +2,9 @@ import { memo } from 'react';
 import { Product } from '../../types';
 import { cn, formatCurrency } from '../../lib/utils';
 import { useLanguage } from '../../contexts/LanguageContext';
-import { QuantityControl } from '../shared/QuantityControl';
 import { getLocale } from '../../lib/locale';
+import { Button } from '@/components/ui/button';
+import { Plus, Minus } from 'lucide-react';
 
 interface ProductListItemProps {
     product: Product;
@@ -31,10 +32,28 @@ export const ProductListItem = memo(({ product, quantity, onChange }: ProductLis
                 </div>
             </div>
 
-            <QuantityControl
-                value={quantity}
-                onChange={onChange}
-            />
+            <div className="flex items-center gap-1 shrink-0">
+                <Button
+                    variant="outline"
+                    size="icon"
+                    className="h-8 w-8 rounded-full shadow-none border-border"
+                    onClick={() => onChange(Math.max(0, quantity - 1))}
+                    disabled={quantity <= 0}
+                >
+                    <Minus size={14} />
+                </Button>
+                <div className="w-8 text-center font-bold text-sm tabular-nums">
+                    {quantity}
+                </div>
+                <Button
+                    variant="outline"
+                    size="icon"
+                    className="h-8 w-8 rounded-full border-primary/20 bg-primary/5 text-primary hover:bg-primary/20"
+                    onClick={() => onChange(quantity + 1)}
+                >
+                    <Plus size={14} />
+                </Button>
+            </div>
         </div>
     );
 }, (prev, next) => {

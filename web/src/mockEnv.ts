@@ -13,7 +13,7 @@ if (import.meta.env.DEV) {
         // If we're able to retrieve launch parameters, it means the environment
         // is already mocked or we're running the application in Telegram.
         shouldMock = false;
-    } catch (e) {
+    } catch {
         shouldMock = true;
     }
 

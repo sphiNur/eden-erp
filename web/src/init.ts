@@ -33,7 +33,6 @@ export async function init(options: {
     // Check if we should use Eruda.
     if (eruda) {
         try {
-            // @ts-ignore
             await import('eruda').then((lib) => lib.default.init());
         } catch (e) {
             console.warn('Eruda not available:', e);

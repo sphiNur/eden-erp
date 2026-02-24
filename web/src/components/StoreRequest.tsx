@@ -4,21 +4,17 @@ import { ListFilter } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { StoreRequestProvider, useStoreRequestContext } from '../contexts/StoreRequestContext';
 
-// Shared components
-import { ProductListSkeleton } from './shared/Skeleton';
-import { EmptyState } from './shared/EmptyState';
-import { ErrorRetry } from './shared/ErrorRetry';
-import { SuccessOverlay } from './shared/SuccessOverlay';
-import { BottomDrawer } from './shared/BottomDrawer';
-
-// Sub-components
 import { CategoryFilter } from './store-request/CategoryFilter';
 import { ProductListItem } from './store-request/ProductListItem';
 import { CartSheet } from './store-request/CartSheet';
 import { PageLayout } from './layout/PageLayout';
 import { PageHeader } from './layout/PageHeader';
-import { Store, CalendarDays, Search, X } from 'lucide-react';
-import { Input } from './ui/input';
+import { Store, CalendarDays, Search, X, CheckCircle2, Package } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 
 export const StoreRequest = () => {
     return (
@@ -72,7 +68,7 @@ const StoreRequestContent = () => {
                             placeholder={ui('search')}
                             className="w-full pl-8 pr-7 py-1.5 bg-accent border-none rounded-lg focus-visible:bg-card focus-visible:ring-2 focus-visible:ring-primary text-[13px] transition-all text-foreground placeholder:text-muted-foreground"
                             value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
                         />
                         {searchTerm && (
                             <button type="button" onClick={() => setSearchTerm('')} className="absolute right-2 top-2 text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded">
@@ -102,7 +98,7 @@ const StoreRequestContent = () => {
                             className="h-8 border-none bg-transparent text-[13px] font-medium outline-none focus-visible:ring-0 shadow-none px-0 w-full text-foreground"
                             value={deliveryDate}
                             min={new Date().toISOString().split('T')[0]}
-                            onChange={(e) => setDeliveryDate(e.target.value)}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDeliveryDate(e.target.value)}
                         />
                     </div>
                 </div>
@@ -148,14 +144,23 @@ const StoreRequestContent = () => {
         <PageLayout header={header} floatingAction={floatingAction} className="bg-secondary">
             <div className="space-y-3 pb-24">
                 {loading ? (
-                    <ProductListSkeleton />
+                    <div className="space-y-4 px-3">
+                        <Skeleton className="h-[20px] w-[100px] rounded" />
+                        <Skeleton className="h-[60px] w-full rounded-md" />
+                        <Skeleton className="h-[60px] w-full rounded-md" />
+                    </div>
                 ) : error ? (
-                    <ErrorRetry message={error} onRetry={refresh} />
+                    <div className="flex flex-col items-center justify-center p-8 text-center bg-card rounded-xl border border-destructive/20 m-3 shadow-sm">
+                        <p className="text-destructive font-medium mb-4 text-sm">{error}</p>
+                        <Button variant="outline" onClick={refresh} className="bg-destructive/10 text-destructive border-transparent hover:bg-destructive/20 hover:text-destructive">
+                            {ui('retry')}
+                        </Button>
+                    </div>
                 ) : Object.keys(groupedProducts).length === 0 ? (
-                    <EmptyState
-                        title={ui('noProductsFound')}
-                        description={undefined}
-                    />
+                    <div className="flex flex-col items-center justify-center p-12 text-center text-muted-foreground">
+                        <Package size={48} className="mb-4 opacity-20" />
+                        <p className="font-semibold">{ui('noProductsFound')}</p>
+                    </div>
                 ) : (
                     Object.entries(groupedProducts).map(([category, items]) => (
                         <div key={category} className="space-y-1">
@@ -177,22 +182,34 @@ const StoreRequestContent = () => {
                 )}
             </div>
 
-            <SuccessOverlay show={showSuccess} message={ui('orderSubmitted')} />
+            <Dialog open={showSuccess}>
+                <DialogContent className="sm:max-w-md bg-card border-none shadow-2xl flex flex-col items-center justify-center p-8 [&>button]:hidden">
+                    <motion.div initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: "spring", bounce: 0.5 }}>
+                        <CheckCircle2 className="w-20 h-20 text-success mb-4" />
+                    </motion.div>
+                    <h2 className="text-2xl font-bold text-foreground text-center">{ui('orderSubmitted')}</h2>
+                </DialogContent>
+            </Dialog>
 
-            <BottomDrawer
-                open={showCart}
-                onClose={() => setShowCart(false)}
-                title={ui('selectedItems')}
-                badge={totalCount}
-            >
-                <CartSheet
-                    cartItems={cartItems}
-                    estimatedTotal={estimatedTotal}
-                    submitting={submitting}
-                    onSubmit={handleSubmit}
-                    onUpdateQty={setQty}
-                />
-            </BottomDrawer>
+            <Sheet open={showCart} onOpenChange={setShowCart}>
+                <SheetContent side="bottom" className="rounded-t-2xl px-4 py-2 flex flex-col max-h-[85dvh] border-border bg-card/95 backdrop-blur-md">
+                    <SheetHeader className="shrink-0 pb-2 border-b border-border">
+                        <SheetTitle className="text-left font-bold flex items-center justify-between mt-2">
+                            <span>{ui('selectedItems')}</span>
+                            <span className="bg-primary/10 text-primary text-xs px-2 py-0.5 rounded-full">{totalCount} items</span>
+                        </SheetTitle>
+                    </SheetHeader>
+                    <div className="flex-1 overflow-y-auto mt-2 pb-safe">
+                        <CartSheet
+                            cartItems={cartItems}
+                            estimatedTotal={estimatedTotal}
+                            submitting={submitting}
+                            onSubmit={handleSubmit}
+                            onUpdateQty={setQty}
+                        />
+                    </div>
+                </SheetContent>
+            </Sheet>
         </PageLayout>
     );
 };
