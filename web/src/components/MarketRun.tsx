@@ -26,7 +26,7 @@ const MarketRunContent = () => {
     if (loading) {
         return (
             <div className="flex justify-center items-center min-h-screen">
-                <Loader2 className="animate-spin text-eden-500" size={48} />
+                <Loader2 className="animate-spin text-primary" size={48} />
             </div>
         );
     }

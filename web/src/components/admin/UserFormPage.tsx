@@ -159,16 +159,6 @@ export const UserFormPage = () => {
                 </div>
             </div>
 
-            <div className="fixed right-4 z-fab sm:hidden" style={{ bottom: 'calc(var(--nav-h) + 12px)' }}>
-                <Button
-                    size="icon"
-                    className="h-14 w-14 rounded-full shadow-lg bg-eden-500 hover:bg-eden-600"
-                    onClick={handleSave}
-                    disabled={submitting}
-                >
-                    {submitting ? <Loader2 className="h-6 w-6 animate-spin" /> : <Save className="h-6 w-6" />}
-                </Button>
-            </div>
         </PageLayout>
     );
 };

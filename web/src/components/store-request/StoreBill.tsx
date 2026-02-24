@@ -40,7 +40,7 @@ export const StoreBill = () => {
     const header = (
         <PageHeader>
             <div className="flex items-center gap-3">
-                <Receipt className="text-eden-500" size={20} />
+                <Receipt className="text-primary" size={20} />
                 <h1 className="text-lg font-bold">每日账单</h1>
                 <div className="flex-1" />
                 <div className="flex items-center bg-accent px-2 py-1.5 rounded-lg shrink-0 focus-within:ring-2 focus-within:ring-primary/20">

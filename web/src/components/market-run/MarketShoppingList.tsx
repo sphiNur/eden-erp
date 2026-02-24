@@ -24,7 +24,7 @@ export const MarketShoppingList = () => {
         <div className="h-full bg-secondary flex flex-col">
             <Tabs defaultValue={shoppingSectionKeys[0]} className="w-full flex-1 flex flex-col">
                 {/* Category Bar */}
-                <div className="sticky top-0 z-10 bg-secondary/95 backdrop-blur-sm border-b border-border shadow-sm">
+                <div className="sticky top-0 z-header bg-secondary/95 backdrop-blur-sm border-b border-border shadow-sm">
                     <TabsList className="w-full justify-start overflow-x-auto h-auto bg-transparent p-2 gap-2 scrollbar-hide py-2.5">
                         {shoppingSectionKeys.map(key => (
                             <TabsTrigger
@@ -38,7 +38,7 @@ export const MarketShoppingList = () => {
                     </TabsList>
                 </div>
 
-                <div className="p-3 flex-1 relative z-0">
+                <div className="p-3 flex-1 relative">
                     {shoppingSectionKeys.map(key => (
                         <TabsContent key={key} value={key} className="space-y-1 m-0 focus-visible:outline-none">
                             <div className="bg-card rounded-lg shadow-sm border border-border overflow-hidden divide-y divide-border">

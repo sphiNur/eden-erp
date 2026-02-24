@@ -155,7 +155,7 @@ const StoreRequestContent = () => {
                 {/* AI Paste Button */}
                 <button
                     onClick={() => setShowAIModal(true)}
-                    className="ml-2 shrink-0 bg-primary/10 text-primary border border-primary/20 pl-2 pr-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-1.5 active:bg-primary/20 transition-all shadow-sm h-[28px]"
+                    className="ml-2 shrink-0 bg-primary/10 text-primary border border-primary/20 pl-2 pr-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-1.5 active:bg-primary/20 transition-all shadow-sm"
                 >
                     <Sparkles size={14} className="animate-pulse" />
                     AI Auto-Fill
