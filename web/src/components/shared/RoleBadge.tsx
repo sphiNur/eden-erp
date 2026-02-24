@@ -15,7 +15,7 @@ export const RoleBadge = ({ role, showLabel = true, className }: RoleBadgeProps)
         <div className={cn("flex items-center gap-1.5", className)}>
             <Icon className={cn("h-4 w-4", meta.color)} />
             {showLabel && (
-                <span className="text-[11px] text-gray-500 capitalize">{meta.label}</span>
+                <span className="text-[11px] text-muted-foreground capitalize">{meta.label}</span>
             )}
         </div>
     );

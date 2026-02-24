@@ -87,7 +87,7 @@ export const UserFormPage = () => {
     const toolbar = (
         <div className="flex items-center gap-3 px-3 py-2">
             <Button variant="ghost" size="icon" className="-ml-2" onClick={() => navigate('/admin/users')}>
-                <ArrowLeft size={20} className="text-gray-500" />
+                <ArrowLeft size={20} className="text-muted-foreground" />
             </Button>
             <h1 className="text-lg font-bold flex-1">
                 {ui('editUser')}
@@ -102,7 +102,7 @@ export const UserFormPage = () => {
     if (loading) {
         return (
             <PageLayout toolbar={toolbar}>
-                <div className="flex justify-center p-8"><Loader2 className="animate-spin text-gray-400" /></div>
+                <div className="flex justify-center p-8"><Loader2 className="animate-spin text-muted-foreground" /></div>
             </PageLayout>
         );
     }
@@ -111,27 +111,27 @@ export const UserFormPage = () => {
         <PageLayout toolbar={toolbar}>
             <div className="max-w-lg mx-auto py-2 space-y-6">
                 {/* User Info Card */}
-                <div className="bg-white p-4 rounded-xl shadow-sm border flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 font-bold text-xl">
+                <div className="bg-card p-4 rounded-xl shadow-sm border border-border flex items-center gap-4">
+                    <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center text-muted-foreground font-bold text-xl">
                         {user?.username?.[0]?.toUpperCase() || 'U'}
                     </div>
                     <div>
-                        <div className="font-bold text-gray-900 text-lg">{user?.username || `User ${user?.telegram_id}`}</div>
-                        <div className="text-sm text-gray-500">ID: {user?.telegram_id}</div>
+                        <div className="font-bold text-foreground text-lg">{user?.username || `User ${user?.telegram_id}`}</div>
+                        <div className="text-sm text-muted-foreground">ID: {user?.telegram_id}</div>
                     </div>
                 </div>
 
                 {/* Settings Card */}
-                <div className="bg-white p-4 rounded-xl shadow-sm border space-y-4">
-                    <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-2">🔐 Permissions</h3>
+                <div className="bg-card p-4 rounded-xl shadow-sm border border-border space-y-4">
+                    <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-2">🔐 Permissions</h3>
 
                     <div className="space-y-2">
                         <Label>{ui('role')}</Label>
                         <Select value={role} onValueChange={(r: UserRole) => setRole(r)}>
-                            <SelectTrigger className="bg-gray-50 border-gray-200">
+                            <SelectTrigger className="bg-muted/50 border-border">
                                 <SelectValue />
                             </SelectTrigger>
-                            <SelectContent className="bg-white">
+                            <SelectContent className="bg-card">
                                 {Object.values(USER_ROLES).map((r) => (
                                     <SelectItem key={r} value={r}>
                                         {getRoleMetadata(r).label}
@@ -145,10 +145,10 @@ export const UserFormPage = () => {
                         <div className="space-y-2">
                             <Label>{ui('assignedStore')}</Label>
                             <Select value={storeId} onValueChange={setStoreId}>
-                                <SelectTrigger className="bg-gray-50 border-gray-200">
+                                <SelectTrigger className="bg-muted/50 border-border">
                                     <SelectValue placeholder={ui('selectStore')} />
                                 </SelectTrigger>
-                                <SelectContent className="bg-white">
+                                <SelectContent className="bg-card">
                                     {stores.map(store => (
                                         <SelectItem key={store.id} value={store.id}>{store.name}</SelectItem>
                                     ))}

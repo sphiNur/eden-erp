@@ -81,17 +81,21 @@ export const BottomTabBar = () => {
                     const isActive = location.pathname === tab.path ||
                         location.pathname.startsWith(tab.path);
 
+                    const tabLabel = tab.shortLabel ?? ui(tab.key as Parameters<typeof ui>[0]);
                     return (
                         <button
                             key={tab.path}
                             onClick={() => handleNav(tab.path)}
+                            type="button"
                             className={cn(
-                                "flex flex-col items-center justify-center space-y-0.5 transition-colors",
+                                "flex flex-col items-center justify-center space-y-0.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-md",
                                 isSingleTab ? "px-4" : "w-full h-full",
                                 isActive
-                                    ? "text-eden-500"
-                                    : "text-gray-400 hover:text-gray-600 active:text-gray-500"
+                                    ? "text-primary"
+                                    : "text-muted-foreground hover:text-foreground active:text-foreground/80"
                             )}
+                            aria-label={tabLabel}
+                            aria-current={isActive ? 'page' : undefined}
                         >
                             <tab.icon
                                 size={isActive ? 22 : 20}
@@ -99,7 +103,7 @@ export const BottomTabBar = () => {
                                 className={cn("transition-all", isActive && "scale-110")}
                             />
                             <span className="text-[10px] font-medium leading-tight text-center max-w-[60px] truncate">
-                                {tab.shortLabel || ui(tab.key as Parameters<typeof ui>[0])}
+                                {tabLabel}
                             </span>
                         </button>
                     );
@@ -114,12 +118,14 @@ export const BottomTabBar = () => {
                         setSettingsOpen(true);
                     }}
                     className={cn(
-                        "flex flex-col items-center justify-center space-y-0.5 transition-colors",
+                        "flex flex-col items-center justify-center space-y-0.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-md",
                         isSingleTab ? "px-6 pr-4" : "w-16 shrink-0",
                         settingsOpen
-                            ? "text-eden-500"
-                            : "text-gray-400 hover:text-gray-600"
+                            ? "text-primary"
+                            : "text-muted-foreground hover:text-foreground"
                     )}
+                    aria-label="Settings"
+                    aria-expanded={settingsOpen}
                 >
                     <Settings
                         size={settingsOpen ? 22 : 20}

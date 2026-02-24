@@ -85,7 +85,7 @@ export const StoreFormPage = () => {
     const toolbar = (
         <div className="flex items-center gap-3 px-3 py-2">
             <Button variant="ghost" size="icon" className="-ml-2" onClick={() => navigate('/admin/stores')}>
-                <ArrowLeft size={20} className="text-gray-500" />
+                <ArrowLeft size={20} className="text-muted-foreground" />
             </Button>
             <h1 className="text-lg font-bold flex-1">
                 {isEdit ? ui('edit') : ui('addStore')}
@@ -100,7 +100,7 @@ export const StoreFormPage = () => {
     if (loading) {
         return (
             <PageLayout toolbar={toolbar}>
-                <div className="flex justify-center p-8"><Loader2 className="animate-spin text-gray-400" /></div>
+                <div className="flex justify-center p-8"><Loader2 className="animate-spin text-muted-foreground" /></div>
             </PageLayout>
         )
     }
@@ -108,21 +108,21 @@ export const StoreFormPage = () => {
     return (
         <PageLayout toolbar={toolbar}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 max-w-lg mx-auto py-2">
-                <div className="bg-white p-4 rounded-xl shadow-sm border space-y-4">
+                <div className="bg-card p-4 rounded-xl shadow-sm border border-border space-y-4">
                     <div className="space-y-2">
-                        <Label htmlFor="name">{ui('stores')} {ui('name')} <span className="text-red-500">*</span></Label>
-                        <Input id="name" {...form.register('name')} placeholder="e.g. Magic Store" className="bg-gray-50 border-gray-200" />
-                        {form.formState.errors.name && <p className="text-xs text-red-500">{form.formState.errors.name.message}</p>}
+                        <Label htmlFor="name">{ui('stores')} {ui('name')} <span className="text-destructive">*</span></Label>
+                        <Input id="name" {...form.register('name')} placeholder="e.g. Magic Store" className="bg-muted/50 border-border" />
+                        {form.formState.errors.name && <p className="text-xs text-destructive">{form.formState.errors.name.message}</p>}
                     </div>
 
                     <div className="space-y-2">
                         <Label htmlFor="address">{ui('locations')}</Label>
-                        <Input id="address" {...form.register('address')} placeholder="e.g. 123 Main St" className="bg-gray-50 border-gray-200" />
+                        <Input id="address" {...form.register('address')} placeholder="e.g. 123 Main St" className="bg-muted/50 border-border" />
                     </div>
 
                     <div className="space-y-2">
                         <Label htmlFor="location">Map Coordinates (Optional)</Label>
-                        <Input id="location" {...form.register('location')} placeholder="olat,long" className="bg-gray-50 border-gray-200" />
+                        <Input id="location" {...form.register('location')} placeholder="olat,long" className="bg-muted/50 border-border" />
                     </div>
                 </div>
 

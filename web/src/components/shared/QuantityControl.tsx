@@ -56,7 +56,7 @@ export const QuantityControl = ({ value, onChange }: QuantityControlProps) => {
             <Button
                 variant="ghost"
                 size="icon"
-                className="h-11 w-11 rounded-full bg-gray-100 hover:bg-eden-50 hover:text-eden-500 text-gray-500"
+                className="h-11 w-11 rounded-full bg-muted hover:bg-eden-50 hover:text-eden-500 text-muted-foreground"
                 onClick={() => step(1)}
                 aria-label="Add item"
             >
@@ -70,7 +70,7 @@ export const QuantityControl = ({ value, onChange }: QuantityControlProps) => {
             <Button
                 variant="outline"
                 size="icon"
-                className="h-11 w-11 rounded-full border-gray-200 bg-white"
+                className="h-11 w-11 rounded-full border-border bg-card"
                 onClick={() => step(-1)}
                 aria-label="Decrease quantity"
             >

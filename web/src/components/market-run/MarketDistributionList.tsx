@@ -19,7 +19,7 @@ export const MarketDistributionList = () => {
 
     if (storeKeys.length === 0) {
         return (
-            <div className="text-center py-20 text-gray-400">
+            <div className="text-center py-20 text-muted-foreground">
                 <Store size={48} className="mx-auto mb-4 opacity-50" />
                 <p>No stores pending.</p>
             </div>

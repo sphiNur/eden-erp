@@ -132,7 +132,7 @@ export const ProductFormPage = () => {
     const toolbar = (
         <div className="flex items-center gap-3 px-3 py-2">
             <Button variant="ghost" size="icon" className="-ml-2" onClick={() => navigate('/admin/products')}>
-                <ArrowLeft size={20} className="text-gray-500" />
+                <ArrowLeft size={20} className="text-muted-foreground" />
             </Button>
             <h1 className="text-lg font-bold flex-1">
                 {isEdit ? ui('editProduct') : ui('addProduct')}
@@ -147,7 +147,7 @@ export const ProductFormPage = () => {
     if (loading) {
         return (
             <PageLayout toolbar={toolbar}>
-                <div className="flex justify-center p-8"><Loader2 className="animate-spin text-gray-400" /></div>
+                <div className="flex justify-center p-8"><Loader2 className="animate-spin text-muted-foreground" /></div>
             </PageLayout>
         )
     }
@@ -156,14 +156,14 @@ export const ProductFormPage = () => {
         <PageLayout toolbar={toolbar}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 max-w-2xl mx-auto py-2">
                 {/* Basic Info Group */}
-                <div className="bg-white p-4 rounded-xl shadow-sm border space-y-4">
-                    <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-2">📦 {ui('basicInfo')}</h3>
+                <div className="bg-card p-4 rounded-xl shadow-sm border border-border space-y-4">
+                    <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-2">📦 {ui('basicInfo')}</h3>
 
                     {/* Category */}
                     <div className="space-y-2">
-                        <Label>{ui('category')} <span className="text-red-500">*</span></Label>
+                        <Label>{ui('category')} <span className="text-destructive">*</span></Label>
                         <Select onValueChange={(val: string) => form.setValue('category_id', val)} value={form.watch('category_id')}>
-                            <SelectTrigger className="bg-gray-50 border-gray-200">
+                            <SelectTrigger className="bg-muted/50 border-border">
                                 <SelectValue placeholder={ui('select')} />
                             </SelectTrigger>
                             <SelectContent>
@@ -172,13 +172,13 @@ export const ProductFormPage = () => {
                                 ))}
                             </SelectContent>
                         </Select>
-                        {form.formState.errors.category_id && <p className="text-xs text-red-500">{form.formState.errors.category_id.message}</p>}
+                        {form.formState.errors.category_id && <p className="text-xs text-destructive">{form.formState.errors.category_id.message}</p>}
                     </div>
 
                     {/* Unit & Price */}
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
-                            <Label>{ui('unit')} <span className="text-red-500">*</span></Label>
+                            <Label>{ui('unit')} <span className="text-destructive">*</span></Label>
                             <Select onValueChange={(val: string) => {
                                 const unit = PRODUCT_UNITS.find(u => u.value === val);
                                 if (unit) {
@@ -186,7 +186,7 @@ export const ProductFormPage = () => {
                                     form.setValue('unit_ru', unit.label_ru);
                                 }
                             }} value={PRODUCT_UNITS.find(u => u.label_ru === form.watch('unit_ru'))?.value}>
-                                <SelectTrigger className="bg-gray-50 border-gray-200">
+                                <SelectTrigger className="bg-muted/50 border-border">
                                     <SelectValue placeholder={ui('select')} />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -201,35 +201,35 @@ export const ProductFormPage = () => {
 
                         <div className="space-y-2">
                             <Label htmlFor="price">{ui('referencePrice')} (UZS)</Label>
-                            <Input id="price" type="number" {...form.register('price_reference')} placeholder="0" className="bg-gray-50 border-gray-200" />
+                            <Input id="price" type="number" {...form.register('price_reference')} placeholder="0" className="bg-muted/50 border-border" />
                         </div>
                     </div>
                 </div>
 
                 {/* Translations Group */}
-                <div className="bg-white p-4 rounded-xl shadow-sm border space-y-4">
-                    <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-2">🌐 {ui('translations')}</h3>
+                <div className="bg-card p-4 rounded-xl shadow-sm border border-border space-y-4">
+                    <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-2">🌐 {ui('translations')}</h3>
 
                     <div className="space-y-4">
                         <div className="space-y-1">
-                            <Label htmlFor="name_ru">🇷🇺 Русское <span className="text-red-500">*</span></Label>
-                            <Input id="name_ru" {...form.register('name_ru')} placeholder="e.g. Картофель (Required)" className="bg-gray-50 border-gray-200" />
-                            {form.formState.errors.name_ru && <p className="text-xs text-red-500">{form.formState.errors.name_ru.message}</p>}
+                            <Label htmlFor="name_ru">🇷🇺 Русское <span className="text-destructive">*</span></Label>
+                            <Input id="name_ru" {...form.register('name_ru')} placeholder="e.g. Картофель (Required)" className="bg-muted/50 border-border" />
+                            {form.formState.errors.name_ru && <p className="text-xs text-destructive">{form.formState.errors.name_ru.message}</p>}
                         </div>
 
                         <div className="space-y-1">
                             <Label htmlFor="name_cn">🇨🇳 中文 (Optional)</Label>
-                            <Input id="name_cn" {...form.register('name_cn')} placeholder="e.g. 土豆" className="bg-gray-50 border-gray-200" />
+                            <Input id="name_cn" {...form.register('name_cn')} placeholder="e.g. 土豆" className="bg-muted/50 border-border" />
                         </div>
 
                         <div className="space-y-1">
                             <Label htmlFor="name_en">🇬🇧 English (Optional)</Label>
-                            <Input id="name_en" {...form.register('name_en')} placeholder="e.g. Potato" className="bg-gray-50 border-gray-200" />
+                            <Input id="name_en" {...form.register('name_en')} placeholder="e.g. Potato" className="bg-muted/50 border-border" />
                         </div>
 
                         <div className="space-y-1">
                             <Label htmlFor="name_uz">🇺🇿 O'zbekcha (Optional)</Label>
-                            <Input id="name_uz" {...form.register('name_uz')} placeholder="e.g. Kartoshka" className="bg-gray-50 border-gray-200" />
+                            <Input id="name_uz" {...form.register('name_uz')} placeholder="e.g. Kartoshka" className="bg-muted/50 border-border" />
                         </div>
                     </div>
                 </div>

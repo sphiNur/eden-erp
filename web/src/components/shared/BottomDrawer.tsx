@@ -34,14 +34,14 @@ export const BottomDrawer = ({ open, onClose, title, badge, children, footer }: 
                     animate={{ y: 0 }}
                     exit={{ y: '100%' }}
                     transition={SPRING.snappy}
-                    className="fixed bottom-0 left-0 right-0 bg-white rounded-t-2xl z-drawer max-h-[85vh] flex flex-col shadow-2xl"
+                    className="fixed bottom-0 left-0 right-0 bg-card rounded-t-2xl z-drawer max-h-[85vh] flex flex-col shadow-2xl border-t border-border"
                 >
                     {/* Header */}
                     <div className="p-4 border-b flex justify-between items-center shrink-0">
                         <h2 className="text-xl font-bold">
                             {title}
                             {badge !== undefined && (
-                                <span className="ml-1 text-gray-400 font-normal">({badge})</span>
+                                <span className="ml-1 text-muted-foreground font-normal">({badge})</span>
                             )}
                         </h2>
                         <Button variant="ghost" size="icon" onClick={onClose}>
@@ -56,7 +56,7 @@ export const BottomDrawer = ({ open, onClose, title, badge, children, footer }: 
 
                     {/* Footer */}
                     {footer && (
-                        <div className="p-4 border-t bg-gray-50 shrink-0 pb-tma-safe">
+                        <div className="p-4 border-t border-border bg-muted/50 shrink-0 pb-tma-safe">
                             {footer}
                         </div>
                     )}
