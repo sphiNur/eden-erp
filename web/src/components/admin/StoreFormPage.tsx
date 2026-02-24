@@ -83,14 +83,14 @@ export const StoreFormPage = () => {
     };
 
     const toolbar = (
-        <div className="flex items-center gap-3 px-3 py-2">
-            <Button variant="ghost" size="icon" className="-ml-2" onClick={() => navigate('/admin/stores')}>
+        <div className="flex items-center gap-3 px-3 py-2 min-w-0">
+            <Button variant="ghost" size="icon" className="-ml-2 shrink-0" onClick={() => navigate('/admin/stores')}>
                 <ArrowLeft size={20} className="text-muted-foreground" />
             </Button>
-            <h1 className="text-lg font-bold flex-1">
+            <h1 className="text-lg font-bold flex-1 min-w-0 truncate">
                 {isEdit ? ui('edit') : ui('addStore')}
             </h1>
-            <Button size="sm" onClick={form.handleSubmit(onSubmit)} disabled={submitting || loading}>
+            <Button size="sm" className="shrink-0" onClick={form.handleSubmit(onSubmit)} disabled={submitting || loading}>
                 {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save size={18} />}
                 <span className="ml-2 hidden sm:inline">{ui('save')}</span>
             </Button>
@@ -126,16 +126,6 @@ export const StoreFormPage = () => {
                     </div>
                 </div>
 
-                <div className="fixed right-4 z-fab sm:hidden" style={{ bottom: 'calc(var(--nav-h) + 12px)' }}>
-                    <Button
-                        size="icon"
-                        className="h-14 w-14 rounded-full shadow-lg bg-primary hover:bg-primary/90"
-                        onClick={form.handleSubmit(onSubmit)}
-                        disabled={submitting}
-                    >
-                        {submitting ? <Loader2 className="h-6 w-6 animate-spin" /> : <Save className="h-6 w-6" />}
-                    </Button>
-                </div>
             </form>
         </PageLayout>
     );

@@ -81,7 +81,7 @@ export const QuantityControl = ({ value, onChange }: QuantityControlProps) => {
                 type="number"
                 step="0.001"
                 min="0"
-                className="w-16 h-11 text-center p-0 text-base font-bold mx-0.5 border-none shadow-none focus-visible:ring-0"
+                className="w-16 h-11 text-center p-0 text-base font-bold mx-0.5 border-none shadow-none focus-visible:ring-0 bg-transparent text-foreground"
                 value={localValue}
                 onChange={handleInputChange}
                 onBlur={handleBlur}
@@ -92,7 +92,7 @@ export const QuantityControl = ({ value, onChange }: QuantityControlProps) => {
             <Button
                 variant="default"
                 size="icon"
-                className="h-11 w-11 rounded-full bg-eden-500 hover:bg-eden-600"
+                className="h-11 w-11 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground"
                 onClick={() => step(1)}
                 aria-label="Increase quantity"
             >

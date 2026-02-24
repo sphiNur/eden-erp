@@ -26,7 +26,7 @@ export const BottomDrawer = ({ open, onClose, title, badge, children, footer }: 
                     animate={{ opacity: 0.5 }}
                     exit={{ opacity: 0 }}
                     onClick={onClose}
-                    className="fixed inset-0 bg-black z-drawer"
+                    className="fixed inset-0 bg-black z-overlay"
                 />
 
                 <motion.div
@@ -34,7 +34,7 @@ export const BottomDrawer = ({ open, onClose, title, badge, children, footer }: 
                     animate={{ y: 0 }}
                     exit={{ y: '100%' }}
                     transition={SPRING.snappy}
-                    className="fixed bottom-0 left-0 right-0 bg-card rounded-t-2xl z-drawer max-h-[85vh] flex flex-col shadow-2xl"
+                    className="fixed bottom-0 left-0 right-0 bg-card rounded-t-2xl z-alert max-h-[85vh] flex flex-col shadow-2xl"
                 >
                     {/* Header */}
                     <div className="p-4 border-b flex justify-between items-center shrink-0">
@@ -56,7 +56,7 @@ export const BottomDrawer = ({ open, onClose, title, badge, children, footer }: 
 
                     {/* Footer */}
                     {footer && (
-                        <div className="p-4 border-t border-border bg-muted/50 shrink-0 pb-tma-safe">
+                        <div className="p-4 border-t border-border bg-muted/50 shrink-0 pb-[calc(var(--tma-safe-bottom)+1.5rem)]">
                             {footer}
                         </div>
                     )}

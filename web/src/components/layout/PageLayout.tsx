@@ -55,7 +55,7 @@ export const PageLayout = ({
             {floatingAction && (
                 <div
                     className="fixed right-4 z-fab"
-                    style={{ bottom: 'calc(var(--nav-h) + 12px)' }}
+                    style={{ bottom: 'calc(var(--nav-h) + 24px + var(--tma-safe-bottom))' }}
                 >
                     {floatingAction}
                 </div>
