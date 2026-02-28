@@ -40,14 +40,12 @@ const StoreRequestContent = () => {
         handleSubmit
     } = useStoreRequestContext();
 
-    // Calculate category selection counts
+    // Category selection counts
     const categoryCounts: Record<string, number> = {};
     Object.entries(quantities).forEach(([productId, qty]) => {
         if (qty > 0) {
-            // Find the product to get its category name
             const product = groupedProducts &&
                 Object.values(groupedProducts).flat().find(p => p.id === productId);
-
             if (product && product.category) {
                 const catName = product.category.name_i18n.en || product.category.name_i18n.uz || 'Unknown';
                 categoryCounts[catName] = (categoryCounts[catName] || 0) + 1;
@@ -58,9 +56,8 @@ const StoreRequestContent = () => {
     const header = (
         <PageHeader>
             <div className="space-y-3 pb-1">
-                {/* ─── Compact Top Row: Search + Store + Date ─── */}
+                {/* Top Row: Search + Store + Date */}
                 <div className="flex gap-2 items-center">
-                    {/* Search (Expands) */}
                     <div className="relative flex-1">
                         <Search className="absolute left-2.5 top-2 text-muted-foreground" size={14} />
                         <Input
@@ -77,7 +74,6 @@ const StoreRequestContent = () => {
                         )}
                     </div>
 
-                    {/* Store (Compact Icon Only or Small Select) */}
                     <div className="flex items-center bg-accent px-2 py-1.5 rounded-lg shrink-0 transition-colors focus-within:bg-card focus-within:ring-2 focus-within:ring-primary/20 w-[100px]">
                         <Store size={14} className="text-muted-foreground shrink-0 mr-1.5" />
                         <select
@@ -90,7 +86,6 @@ const StoreRequestContent = () => {
                         </select>
                     </div>
 
-                    {/* Date picker (Compact) */}
                     <div className="flex items-center bg-accent px-2 py-1.5 rounded-lg shrink-0 transition-colors focus-within:bg-card focus-within:ring-2 focus-within:ring-primary/20 w-[100px]">
                         <CalendarDays size={14} className="text-muted-foreground mr-1.5" />
                         <Input
@@ -102,7 +97,6 @@ const StoreRequestContent = () => {
                         />
                     </div>
                 </div>
-
             </div>
             <div className="pt-1 flex items-center justify-between">
                 <div className="flex-1 overflow-x-auto scrollbar-hide">
@@ -214,4 +208,3 @@ const StoreRequestContent = () => {
         </PageLayout>
     );
 };
-

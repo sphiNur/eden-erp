@@ -20,7 +20,6 @@ export const SettingsMenu = ({ children, open: controlledOpen, onOpenChange }: S
     const { user } = useUser();
     const [internalOpen, setInternalOpen] = useState(false);
 
-    // Support both controlled (from BottomTabBar) and uncontrolled
     const isControlled = controlledOpen !== undefined;
     const open = isControlled ? controlledOpen : internalOpen;
     const setOpen = (val: boolean) => {
@@ -31,7 +30,6 @@ export const SettingsMenu = ({ children, open: controlledOpen, onOpenChange }: S
         }
     };
 
-    // DevTools Logic
     const isDev = import.meta.env.DEV;
     const canShowDevTools = isDev || (user?.role === 'admin');
     const isMocking = !!localStorage.getItem('dev_mock_user');
@@ -76,7 +74,6 @@ export const SettingsMenu = ({ children, open: controlledOpen, onOpenChange }: S
             if (val) haptic.impact('light');
             setOpen(val);
         }}>
-            {/* Trigger: provided by parent (BottomTabBar button) */}
             {children && (
                 <SheetTrigger asChild>
                     {children}
@@ -90,7 +87,7 @@ export const SettingsMenu = ({ children, open: controlledOpen, onOpenChange }: S
                     "p-0 gap-0 w-full max-h-[75vh] overflow-hidden flex flex-col"
                 )}
             >
-                {/* Header Section */}
+                {/* Header */}
                 <div className="px-4 py-3 flex items-center justify-between border-b border-border">
                     <div className="flex items-center gap-3">
                         {user ? (
@@ -127,7 +124,7 @@ export const SettingsMenu = ({ children, open: controlledOpen, onOpenChange }: S
                 </div>
 
                 <div className="p-4 space-y-5 overflow-y-auto pb-safe">
-                    {/* ─── Compact Language Section ─── */}
+                    {/* Language Section */}
                     <div className="space-y-2">
                         <div className="flex items-center justify-between px-1">
                             <div className="flex items-center gap-1.5 text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
@@ -168,7 +165,7 @@ export const SettingsMenu = ({ children, open: controlledOpen, onOpenChange }: S
                         </div>
                     </div>
 
-                    {/* ─── DevTools Section ─── */}
+                    {/* DevTools Section */}
                     {(canShowDevTools || isMocking) && (
                         <div className="space-y-2 pt-2 border-t border-dashed border-border">
                             <div className="flex items-center justify-between px-1">

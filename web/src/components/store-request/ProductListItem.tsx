@@ -1,10 +1,8 @@
-import { memo } from 'react';
+import { Minus, Plus } from 'lucide-react';
 import { Product } from '../../types';
-import { cn, formatCurrency } from '../../lib/utils';
 import { useLanguage } from '../../contexts/LanguageContext';
-import { getLocale } from '../../lib/locale';
-import { Button } from '@/components/ui/button';
-import { Plus, Minus } from 'lucide-react';
+import { haptic } from '../../lib/telegram';
+import { cn } from '../../lib/utils';
 
 interface ProductListItemProps {
     product: Product;
@@ -12,56 +10,70 @@ interface ProductListItemProps {
     onChange: (val: number) => void;
 }
 
-export const ProductListItem = memo(({ product, quantity, onChange }: ProductListItemProps) => {
-    const { t, language } = useLanguage();
-    const locale = getLocale(language);
+export const ProductListItem = ({ product, quantity, onChange }: ProductListItemProps) => {
+    const { t } = useLanguage();
+    const name = t(product.name_i18n);
+    const unit = t(product.unit_i18n);
+    const hasQty = quantity > 0;
 
     return (
-        <div
-            className={cn(
-                "px-3 py-2 flex items-center justify-between transition-colors",
-                quantity > 0 ? "bg-accent/50" : "hover:bg-accent/30"
-            )}
-        >
-            <div className="flex-1 min-w-0 pr-2 flex items-center gap-1.5 overflow-hidden">
-                <div className="font-semibold text-foreground text-[13px] truncate">
-                    {t(product.name_i18n)}
-                </div>
-                <div className="text-[10px] text-muted-foreground shrink-0">
-                    {formatCurrency(product.price_reference || 0, 'UZS', locale)} / {t(product.unit_i18n)}
+        <div className={cn(
+            "flex items-center px-3 py-2.5 gap-3 transition-colors",
+            hasQty ? "bg-primary/[0.03]" : "bg-card"
+        )}>
+            <div className="flex-1 min-w-0">
+                <div className="text-sm font-semibold text-foreground truncate">{name}</div>
+                <div className="text-[11px] text-muted-foreground">
+                    {unit}
+                    {product.price_reference ? ` · ${product.price_reference.toLocaleString()} UZS` : ''}
                 </div>
             </div>
 
-            <div className="flex items-center gap-1.5 shrink-0">
-                <Button
-                    variant="outline"
-                    size="icon"
-                    className="h-10 w-10 rounded-full shadow-none border-border"
-                    onClick={() => onChange(Math.max(0, quantity - 1))}
-                    disabled={quantity <= 0}
+            <div className="flex items-center gap-1 shrink-0">
+                {hasQty && (
+                    <button
+                        type="button"
+                        onClick={() => {
+                            haptic.impact('light');
+                            onChange(Math.max(0, quantity - 1));
+                        }}
+                        className="h-7 w-7 flex items-center justify-center rounded-full bg-muted hover:bg-muted/80 text-foreground transition-colors active:scale-90"
+                    >
+                        <Minus size={14} />
+                    </button>
+                )}
+                <button
+                    type="button"
+                    onClick={() => {
+                        haptic.impact('light');
+                        if (!hasQty) onChange(1);
+                    }}
+                    className={cn(
+                        "h-7 min-w-[28px] flex items-center justify-center rounded-full transition-all active:scale-90",
+                        hasQty
+                            ? "bg-primary/10 text-primary font-bold text-sm px-2"
+                            : "bg-accent text-foreground hover:bg-muted"
+                    )}
                 >
-                    <Minus size={16} />
-                </Button>
-                <div className="w-8 text-center font-bold text-sm tabular-nums">
-                    {quantity}
-                </div>
-                <Button
-                    variant="outline"
-                    size="icon"
-                    className="h-10 w-10 rounded-full border-primary/20 bg-primary/10 text-primary hover:bg-primary/20"
-                    onClick={() => onChange(quantity + 1)}
-                >
-                    <Plus size={16} />
-                </Button>
+                    {hasQty ? (
+                        <span>{quantity}</span>
+                    ) : (
+                        <Plus size={14} />
+                    )}
+                </button>
+                {hasQty && (
+                    <button
+                        type="button"
+                        onClick={() => {
+                            haptic.impact('light');
+                            onChange(quantity + 1);
+                        }}
+                        className="h-7 w-7 flex items-center justify-center rounded-full bg-primary text-primary-foreground transition-colors active:scale-90"
+                    >
+                        <Plus size={14} />
+                    </button>
+                )}
             </div>
         </div>
     );
-}, (prev, next) => {
-    // Custom comparison for performance optimization
-    return (
-        prev.quantity === next.quantity &&
-        prev.product.id === next.product.id &&
-        // We assume product details rarely change during a session
-        true
-    );
-});
+};

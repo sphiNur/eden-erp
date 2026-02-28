@@ -22,11 +22,11 @@ export function UserProvider({ children }: { children: ReactNode }) {
         setLoading(true);
         setError(null);
         try {
-            // 1. Priority: Production/Real Telegram User
+            // Priority 1: Real Telegram user
             if (getInitData()) {
                 const realUser = await usersApi.me();
 
-                // Enhance with Telegram UI data if available
+                // Enhance with Telegram UI data
                 const tgUser = getTelegramUser();
                 if (tgUser) {
                     realUser.first_name = tgUser.first_name;
@@ -35,24 +35,21 @@ export function UserProvider({ children }: { children: ReactNode }) {
                     realUser.username = tgUser.username || realUser.username;
                 }
 
-                // Allow Admin to simulate other roles
+                // Admin role simulation
                 const mock = localStorage.getItem('dev_mock_user');
                 if (mock && realUser.role === 'admin') {
                     const parsed = JSON.parse(mock);
-                    console.log("Admin Simulating Role:", parsed.role);
-                    setUser({ ...realUser, ...parsed, role: parsed.role }); // Keep real details, override role
+                    setUser({ ...realUser, ...parsed, role: parsed.role });
                 } else {
                     setUser(realUser);
                 }
                 return;
             }
 
-            // 2. Fallback: Local Mock User (Dev/Admin Simulation only)
-            // This path is taken when running locally without Telegram InitData
+            // Priority 2: Local mock user (dev only)
             const mock = localStorage.getItem('dev_mock_user');
             if (mock) {
                 const parsed = JSON.parse(mock);
-                console.log("Using Mock User (Local):", parsed);
                 setUser(parsed);
                 setLoading(false);
                 return;

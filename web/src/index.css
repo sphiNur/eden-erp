@@ -27,26 +27,26 @@
         --z-overlay: 60;
         --z-alert: 70;
 
-        /* ─── Radius (12px standard for iOS feel) ─── */
+        /* ─── Radius ─── */
         --radius: 0.75rem;
 
-        /* ─── Web Fallbacks (Light Mode) ─── */
+        /* ─── Web Fallbacks (Light) ─── */
         --wb-bg: #ffffff;
-        --wb-text: #000000;
-        --wb-hint: #999999;
-        --wb-link: #2481cc;
-        --wb-button: #2481cc;
+        --wb-text: #0a0a0a;
+        --wb-hint: #737373;
+        --wb-link: #2563eb;
+        --wb-button: #2563eb;
         --wb-button-text: #ffffff;
-        --wb-secondary-bg: #f4f4f5;
+        --wb-secondary-bg: #f5f5f5;
         --wb-header-bg: #ffffff;
-        --wb-accent-text: #2481cc;
+        --wb-accent-text: #2563eb;
         --wb-section-bg: #ffffff;
-        --wb-section-header-text: #6d6d71;
-        --wb-subtitle-text: #999999;
-        --wb-destructive: #ff3b30;
-        --wb-separator: #e4e4e7;
+        --wb-section-header-text: #525252;
+        --wb-subtitle-text: #a3a3a3;
+        --wb-destructive: #ef4444;
+        --wb-separator: #e5e5e5;
 
-        /* ─── Surfaces (Mapped directly to TMA variables) ─── */
+        /* ─── Surfaces (TMA → Fallback) ─── */
         --background: var(--tg-theme-bg-color, var(--wb-bg));
         --foreground: var(--tg-theme-text-color, var(--wb-text));
 
@@ -75,7 +75,7 @@
         --input: var(--tg-theme-section-separator-color, var(--wb-separator));
         --ring: var(--tg-theme-button-color, var(--wb-button));
 
-        /* ─── Semantic Colors (Still HSL if needed, or just HEX) ─── */
+        /* ─── Semantic Status ─── */
         --success: 142 71% 45%;
         --warning: 38 92% 50%;
         --danger: 0 84% 60%;
@@ -85,6 +85,8 @@
 
         /* ─── Animation ─── */
         --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+        /* ─── Chart ─── */
         --chart-1: 12 76% 61%;
         --chart-2: 173 58% 39%;
         --chart-3: 197 37% 24%;
@@ -93,21 +95,21 @@
     }
 
     .dark {
-        --wb-bg: #000000;
-        --wb-text: #ffffff;
-        --wb-hint: #98989d;
-        --wb-link: #59b5f6;
-        --wb-button: #59b5f6;
+        --wb-bg: #0a0a0a;
+        --wb-text: #fafafa;
+        --wb-hint: #a3a3a3;
+        --wb-link: #60a5fa;
+        --wb-button: #3b82f6;
         --wb-button-text: #ffffff;
-        --wb-secondary-bg: #1c1c1d;
-        --wb-header-bg: #1c1c1d;
-        --wb-accent-text: #59b5f6;
-        --wb-section-bg: #1c1c1d;
-        --wb-section-header-text: #7d7d83;
-        --wb-subtitle-text: #98989d;
-        --wb-destructive: #ff3b30;
-        --wb-separator: #27272a;
-        
+        --wb-secondary-bg: #171717;
+        --wb-header-bg: #171717;
+        --wb-accent-text: #60a5fa;
+        --wb-section-bg: #171717;
+        --wb-section-header-text: #a3a3a3;
+        --wb-subtitle-text: #737373;
+        --wb-destructive: #ef4444;
+        --wb-separator: #262626;
+
         --chart-1: 220 70% 50%;
         --chart-2: 160 60% 45%;
         --chart-3: 30 80% 55%;
@@ -127,53 +129,29 @@
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
         -webkit-tap-highlight-color: transparent;
-
-        /* Fallback mapping directly just in case */
         background-color: var(--background);
         color: var(--foreground);
-
-        /* Full screen adaptation */
         min-height: 100dvh;
         overscroll-behavior-y: none;
     }
 
     /* ─── TMA Safe Area Utilities ─── */
-    .pt-tma-safe {
-        padding-top: var(--tma-safe-top);
-    }
-
-    .pb-tma-safe {
-        padding-bottom: var(--tma-safe-bottom);
-    }
-
-    .pt-tma-content {
-        padding-top: var(--tma-content-top);
-    }
-
-    /* Legacy compat — fallback to TMA vars */
-    .pt-safe {
-        padding-top: var(--tma-safe-top);
-    }
-
-    .pb-safe {
-        padding-bottom: var(--tma-safe-bottom);
-    }
+    .pt-tma-safe { padding-top: var(--tma-safe-top); }
+    .pb-tma-safe { padding-bottom: var(--tma-safe-bottom); }
+    .pt-tma-content { padding-top: var(--tma-content-top); }
+    .pt-safe { padding-top: var(--tma-safe-top); }
+    .pb-safe { padding-bottom: var(--tma-safe-bottom); }
 
     /* ─── Platform Adaptations ─── */
     .os-ios {
         --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
     }
-
     .os-android {
         --font-sans: "Roboto", "Helvetica", "Arial", sans-serif;
     }
-
-    /* iOS: Active Opacity */
     .os-ios button:active {
         opacity: 0.7;
     }
-
-    /* Android: Ripple Effect (Simulated via active scale/bg) */
     .os-android button:active {
         transform: scale(0.98);
     }
@@ -184,7 +162,6 @@
         scrollbar-width: none;
         -ms-overflow-style: none;
     }
-
     .scrollbar-hide::-webkit-scrollbar {
         display: none;
     }

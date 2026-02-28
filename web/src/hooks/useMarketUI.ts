@@ -25,14 +25,10 @@ export const useMarketUI = (items: MarketItem[]) => {
     // Group items by Store for Distribution Mode
     const distributionSections = useMemo(() => {
         const groups: Record<string, { item: MarketItem, qty: number }[]> = {};
-
         items.forEach(item => {
             item.breakdown.forEach(b => {
                 if (!groups[b.store_name]) groups[b.store_name] = [];
-                groups[b.store_name].push({
-                    item: item,
-                    qty: b.quantity
-                });
+                groups[b.store_name].push({ item, qty: b.quantity });
             });
         });
         return groups;
@@ -40,14 +36,10 @@ export const useMarketUI = (items: MarketItem[]) => {
 
     const storeKeys = useMemo(() => Object.keys(distributionSections).sort(), [distributionSections]);
 
-    // Group items by Stall for Pre-Order Sharing
+    // Group items by Stall
     const stallSections = useMemo(() => {
-        // Items might not have a stall loaded in the backend response yet, 
-        // but typically categories can map to stalls or we group 'Unassigned'
         const groups: Record<string, MarketItem[]> = {};
-
         items.forEach(item => {
-            // Assume category is a proxy for stall if stall_id isn't directly attached to ConsolidatedItem
             const stallName = item.category_name?.en || 'General';
             if (!groups[stallName]) groups[stallName] = [];
             groups[stallName].push(item);

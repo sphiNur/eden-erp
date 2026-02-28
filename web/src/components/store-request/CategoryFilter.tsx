@@ -1,62 +1,56 @@
 import { cn } from '../../lib/utils';
-import { Badge } from '@/components/ui/badge';
-
+import { haptic } from '../../lib/telegram';
 
 interface CategoryFilterProps {
     categories: string[];
     activeCategory: string;
     onSelectCategory: (category: string) => void;
-    categoryCounts: Record<string, number>; // How many items selected in this category
-    totalSelectedCount: number;
-    allLabel: string;
+    categoryCounts?: Record<string, number>;
+    totalSelectedCount?: number;
+    allLabel?: string;
 }
 
 export const CategoryFilter = ({
     categories,
     activeCategory,
     onSelectCategory,
-    categoryCounts,
-    totalSelectedCount,
-    allLabel
+    categoryCounts = {},
+    totalSelectedCount = 0,
+    allLabel = 'All',
 }: CategoryFilterProps) => {
-
-    // Auto-scroll active category into view if needed? 
-    // For now simple rendering is fine.
-
     return (
-        <div className="bg-card border-b border-border">
-            <div className="overflow-x-auto px-3 py-2 scrollbar-hide">
-                <div className="flex gap-1.5">
-                    {categories.map(cat => {
-                        const isAll = cat === allLabel;
-                        const count = isAll ? totalSelectedCount : (categoryCounts[cat] || 0);
-
-                        return (
-                            <Badge
-                                key={cat}
-                                variant={activeCategory === cat ? "default" : "secondary"}
-                                onClick={() => onSelectCategory(cat)}
-                                className={cn(
-                                    "px-4 py-2 h-9 text-sm cursor-pointer whitespace-nowrap transition-colors flex items-center gap-2",
-                                    activeCategory !== cat && "bg-accent hover:bg-accent/80 text-muted-foreground hover:text-foreground"
-                                )}
-                            >
-                                {cat}
-                                {count > 0 && (
-                                    <span className={cn(
-                                        "min-w-[16px] h-[16px] rounded-full text-[9px] font-bold inline-flex items-center justify-center",
-                                        activeCategory === cat
-                                            ? "bg-primary-foreground text-primary"
-                                            : "bg-primary/20 text-foreground"
-                                    )}>
-                                        {count}
-                                    </span>
-                                )}
-                            </Badge>
-                        );
-                    })}
-                </div>
-            </div>
+        <div className="flex gap-1.5 py-0.5 overflow-x-auto scrollbar-hide whitespace-nowrap">
+            {categories.map((cat) => {
+                const isActive = cat === activeCategory;
+                const count = cat === allLabel ? totalSelectedCount : (categoryCounts[cat] || 0);
+                return (
+                    <button
+                        key={cat}
+                        type="button"
+                        onClick={() => {
+                            haptic.selection();
+                            onSelectCategory(cat);
+                        }}
+                        className={cn(
+                            "px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 shrink-0 border",
+                            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                            isActive
+                                ? "bg-primary text-primary-foreground border-primary/20 shadow-sm"
+                                : "bg-card/80 text-muted-foreground border-border hover:bg-accent hover:text-foreground"
+                        )}
+                    >
+                        {cat}
+                        {count > 0 && (
+                            <span className={cn(
+                                "ml-1 text-[9px] font-bold align-middle px-1 rounded-full",
+                                isActive ? "bg-primary-foreground/20" : "bg-primary/10 text-primary"
+                            )}>
+                                {count}
+                            </span>
+                        )}
+                    </button>
+                );
+            })}
         </div>
     );
 };

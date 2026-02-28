@@ -3,6 +3,7 @@
  * Single source of truth for all backend communication.
  */
 import { getInitData } from '../lib/telegram';
+import { toast } from 'sonner';
 import type {
     Product,
     ProductCreate,
@@ -26,9 +27,7 @@ import type {
     ParsedOrderResponse,
 } from '../types';
 
-// If VITE_API_URL isn't injected at build time (e.g., standard Docker build),
-// use a placeholder that will be replaced by docker-entrypoint.sh at container startup.
-// In local dev, it falls back to '/api' which Vite proxies.
+// API base URL resolution
 const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '__RUNTIME_VITE_API_URL__' : '/api');
 
 type RequestOptions = {
@@ -37,7 +36,7 @@ type RequestOptions = {
     headers?: Record<string, string>;
 };
 
-class ApiError extends Error {
+export class ApiError extends Error {
     status: number;
     detail: string;
 
@@ -53,7 +52,6 @@ function getAuthHeaders(): Record<string, string> {
     if (initData) {
         return { 'X-Telegram-Init-Data': initData };
     }
-    // Development / Admin Simulation fallback
     const mock = localStorage.getItem('dev_mock_user');
     if (mock) {
         try {
@@ -65,12 +63,6 @@ function getAuthHeaders(): Record<string, string> {
     }
     return {};
 }
-
-let globalToast: ((msg: string, type?: 'success' | 'error' | 'info') => void) | null = null;
-
-export const setApiToast = (toastFn: typeof globalToast) => {
-    globalToast = toastFn;
-};
 
 async function request<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
     const { method = 'GET', body, headers = {} } = options;
@@ -98,8 +90,8 @@ async function request<T>(endpoint: string, options: RequestOptions = {}): Promi
         } catch {
             // ignore parse errors
         }
-        if (globalToast && res.status >= 400) {
-            globalToast(detail, 'error');
+        if (res.status >= 400) {
+            toast.error(detail);
         }
         throw new ApiError(res.status, detail);
     }
@@ -107,7 +99,7 @@ async function request<T>(endpoint: string, options: RequestOptions = {}): Promi
     return res.json();
 }
 
-// --- Products ---
+// ─── Products ───
 
 export const productsApi = {
     list: () => request<Product[]>('/products/'),
@@ -119,13 +111,13 @@ export const productsApi = {
         request<void>(`/products/${id}`, { method: 'DELETE' }),
 };
 
-// --- Categories ---
+// ─── Categories ───
 
 export const categoriesApi = {
     list: () => request<Category[]>('/categories/'),
 };
 
-// --- Orders ---
+// ─── Orders ───
 
 export const ordersApi = {
     create: (data: { store_id: string; delivery_date: string; items: OrderItemInput[] }) =>
@@ -141,7 +133,7 @@ export const ordersApi = {
         request<OrderResponse>(`/orders/${id}`),
 };
 
-// --- Purchases ---
+// ─── Purchases ───
 
 export const purchasesApi = {
     getConsolidation: () =>
@@ -154,7 +146,7 @@ export const purchasesApi = {
         request<BatchResponse>('/purchases/', { method: 'POST', body: data }),
 };
 
-// --- Users ---
+// ─── Users ───
 
 export const usersApi = {
     me: () => request<User>('/users/me'),
@@ -165,7 +157,7 @@ export const usersApi = {
         request<{ ok: boolean; role: string }>(`/users/switch-role?role=${role}`, { method: 'POST' }),
 };
 
-// --- Stores ---
+// ─── Stores ───
 
 export const storesApi = {
     list: () => request<Store[]>('/stores/'),
@@ -175,7 +167,7 @@ export const storesApi = {
         request<Store>(`/stores/${id}`, { method: 'PUT', body: data }),
 };
 
-// --- Templates ---
+// ─── Templates ───
 
 export const templatesApi = {
     list: (store_id: string) => request<OrderTemplate[]>(`/templates/?store_id=${store_id}`),
@@ -183,7 +175,7 @@ export const templatesApi = {
     delete: (id: string) => request<void>(`/templates/${id}`, { method: 'DELETE' }),
 };
 
-// --- Stalls ---
+// ─── Stalls ───
 
 export const stallsApi = {
     list: () => request<Stall[]>('/stalls/'),
@@ -194,7 +186,7 @@ export const stallsApi = {
     delete: (id: string) => request<{ ok: boolean }>(`/stalls/${id}`, { method: 'DELETE' }),
 };
 
-// --- Shared Expenses ---
+// ─── Shared Expenses ───
 
 export const expensesApi = {
     list: (date?: string) => {
@@ -206,7 +198,7 @@ export const expensesApi = {
     delete: (id: string) => request<{ ok: boolean }>(`/expenses/${id}`, { method: 'DELETE' }),
 };
 
-// --- Daily Bills ---
+// ─── Daily Bills ───
 
 export const billsApi = {
     generate: (date: string) =>
@@ -221,12 +213,11 @@ export const billsApi = {
     get: (id: string) => request<DailyBillResponse>(`/bills/${id}`),
 };
 
-// --- AI Tools ---
+// ─── AI Tools ───
 
 export const aiApi = {
     parseOrder: (raw_text: string) =>
         request<ParsedOrderResponse>('/ai/parse-order', { method: 'POST', body: { raw_text } }),
 };
 
-export { ApiError };
 export default { productsApi, ordersApi, purchasesApi, usersApi, storesApi, categoriesApi, templatesApi, stallsApi, expensesApi, billsApi, aiApi };

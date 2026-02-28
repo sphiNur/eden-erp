@@ -1,6 +1,6 @@
 /**
  * Centralized UI string translations for Eden Core ERP.
- * 
+ *
  * Product/category names use JSONB i18n from the backend.
  * These translations are for static UI labels, buttons, and messages.
  */
@@ -10,7 +10,7 @@ import { I18nString } from '../types';
 export type TranslationKey = keyof typeof translations;
 
 const translations = {
-    // --- Common ---
+    // ─── Common ───
     search: { en: 'Search...', ru: 'Поиск...', uz: 'Qidirish...', cn: '搜索...' },
     name: { en: 'Name', ru: 'Название', uz: 'Nomi', cn: '名称' },
     loading: { en: 'Loading...', ru: 'Загрузка...', uz: 'Yuklanmoqda...', cn: '加载中...' },
@@ -28,7 +28,7 @@ const translations = {
     accessDeniedMsg: { en: 'Could not verify your identity. Please contact support.', ru: 'Не удалось подтвердить вашу личность.', uz: 'Shaxsingiz tasdiqlanmadi.', cn: '无法验证您的身份，请联系支持。' },
     noResults: { en: 'No results found', ru: 'Ничего не найдено', uz: 'Hech narsa topilmadi', cn: '未找到结果' },
 
-    // --- StoreRequest ---
+    // ─── StoreRequest ───
     storeRequest: { en: 'Store Request', ru: 'Заявка магазина', uz: 'Do\'kon buyurtmasi', cn: '门店需求' },
     selectedItems: { en: 'Selected Items', ru: 'Выбранные товары', uz: 'Tanlangan mahsulotlar', cn: '已选商品' },
     cartEmpty: { en: 'Cart is empty', ru: 'Корзина пуста', uz: 'Savat bo\'sh', cn: '购物车为空' },
@@ -39,15 +39,10 @@ const translations = {
     failedLoadProducts: { en: 'Failed to load products', ru: 'Не удалось загрузить товары', uz: 'Mahsulotlarni yuklab bo\'lmadi', cn: '加载商品失败' },
     dailyRequest: { en: 'Daily Request', ru: 'Ежедневная заявка', uz: 'Kunlik buyurtma', cn: '每日需求' },
 
-    // --- MarketRun ---
+    // ─── MarketRun ───
     marketRun: { en: 'Market Run', ru: 'Закупка', uz: 'Bozor xaridi', cn: '市场采购' },
     qty: { en: 'Qty', ru: 'Кол-во', uz: 'Soni', cn: '数量' },
-    unitPrice: {
-        en: 'Unit Price',
-        ru: 'Цена за ед.',
-        uz: 'Birlik narxi',
-        cn: '单价'
-    },
+    unitPrice: { en: 'Unit Price', ru: 'Цена за ед.', uz: 'Birlik narxi', cn: '单价' },
     totalCost: { en: 'Total Cost', ru: 'Общая стоимость', uz: 'Umumiy narx', cn: '总费用' },
     noItemsFound: { en: 'No Items Found', ru: 'Товары не найдены', uz: 'Mahsulotlar topilmadi', cn: '未找到商品' },
     finalizeBatch: { en: 'Finalize Batch', ru: 'Завершить закупку', uz: 'Xaridni yakunlash', cn: '完成批次' },
@@ -58,7 +53,7 @@ const translations = {
     enterValidCost: { en: 'Please enter valid total cost for', ru: 'Введите стоимость для', uz: 'Narxni kiriting:', cn: '请输入有效总费用：' },
     enterValidQty: { en: 'Please enter valid quantity for', ru: 'Введите количество для', uz: 'Sonini kiriting:', cn: '请输入有效数量：' },
 
-    // --- Admin ---
+    // ─── Admin ───
     inventory: { en: 'Inventory', ru: 'Инвентарь', uz: 'Inventar', cn: '库存' },
     itemsFound: { en: 'Items found', ru: 'Товаров найдено', uz: 'Mahsulotlar topildi', cn: '件商品' },
     searchProducts: { en: 'Search products...', ru: 'Поиск товаров...', uz: 'Mahsulotlarni qidirish...', cn: '搜索商品...' },
@@ -76,7 +71,7 @@ const translations = {
     active: { en: 'Active', ru: 'Активен', uz: 'Faol', cn: '活跃' },
     updateFailed: { en: 'Failed to update user', ru: 'Ошибка обновления', uz: 'Yangilab bo\'lmadi', cn: '更新用户失败' },
 
-    // --- ProductForm ---
+    // ─── ProductForm ───
     saveFailed: { en: 'Failed to save', ru: 'Ошибка сохранения', uz: 'Saqlab bo\'lmadi', cn: '保存失败' },
     editProduct: { en: 'Edit Product', ru: 'Редактировать товар', uz: 'Mahsulotni tahrirlash', cn: '编辑商品' },
     addProduct: { en: 'Add Product', ru: 'Добавить товар', uz: 'Mahsulot qo\'shish', cn: '添加商品' },
@@ -92,7 +87,7 @@ const translations = {
     required: { en: 'Required', ru: 'Обязательно', uz: 'Majburiy', cn: '必填' },
     optional: { en: 'Optional', ru: 'Необязательно', uz: 'Ixtiyoriy', cn: '可选' },
 
-    // --- Shared ---
+    // ─── Shared ───
     retry: { en: 'Retry', ru: 'Повторить', uz: 'Qayta urinish', cn: '重试' },
     errorOccurred: { en: 'Something went wrong', ru: 'Что-то пошло не так', uz: 'Xatolik yuz berdi', cn: '出现错误' },
     estimatedTotal: { en: 'Est. Total', ru: 'Ориент. итого', uz: 'Taxminiy jami', cn: '预估合计' },

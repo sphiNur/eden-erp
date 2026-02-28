@@ -102,7 +102,7 @@ export const StoreFormPage = () => {
             <PageLayout toolbar={toolbar}>
                 <div className="flex justify-center p-8"><Loader2 className="animate-spin text-muted-foreground" /></div>
             </PageLayout>
-        )
+        );
     }
 
     return (
@@ -122,10 +122,9 @@ export const StoreFormPage = () => {
 
                     <div className="space-y-2">
                         <Label htmlFor="location">Map Coordinates (Optional)</Label>
-                        <Input id="location" {...form.register('location')} placeholder="olat,long" className="bg-muted/50 border-border" />
+                        <Input id="location" {...form.register('location')} placeholder="lat,long" className="bg-muted/50 border-border" />
                     </div>
                 </div>
-
             </form>
         </PageLayout>
     );

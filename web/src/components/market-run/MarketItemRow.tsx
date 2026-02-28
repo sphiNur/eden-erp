@@ -1,183 +1,154 @@
-import { memo, useState } from 'react';
-import { ChevronDown, ChevronUp } from 'lucide-react';
-import { Checkbox } from '../ui/checkbox';
-import { Input } from '../ui/input';
-import { cn } from '../../lib/utils';
-import { MarketItem } from '../../hooks/useMarketRun';
+import { useState, useCallback } from 'react';
+import { ChevronDown, ChevronUp, Check } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useMarketRunContext } from '../../contexts/MarketRunContext';
-import { hapticFeedback } from '@telegram-apps/sdk-react';
+import { Input } from '@/components/ui/input';
+import { cn } from '../../lib/utils';
+import type { MarketItem } from '../../hooks/useMarketData';
+import { haptic } from '../../lib/telegram';
 
 interface MarketItemRowProps {
     item: MarketItem;
 }
 
-export const MarketItemRow = memo(({ item }: MarketItemRowProps) => {
+export const MarketItemRow = ({ item }: MarketItemRowProps) => {
     const { t, ui } = useLanguage();
     const {
+        toggleBought,
+        expandedBreakdown,
+        toggleBreakdown,
         getPriceInput,
         getUnitPriceInput,
         setPriceInput,
         setUnitPriceInput,
-        expandedBreakdown,
-        updateStoreQuantity,
-        toggleBought,
-        toggleBreakdown
+        updateStoreQuantity
     } = useMarketRunContext();
 
-    const isExpanded = !!expandedBreakdown[item.product_id];
-    const qtyNum = item.purchase_quantity || 0;
+    const [localPrice, setLocalPrice] = useState(() => getPriceInput(item.product_id));
+    const [localUnitPrice, setLocalUnitPrice] = useState(() => getUnitPriceInput(item.product_id));
 
-    // Local State for slick immediate rendering
-    const [localTotal, setLocalTotal] = useState(() => getPriceInput(item.product_id));
-    const [localUnit, setLocalUnit] = useState(() => getUnitPriceInput(item.product_id));
+    const isBought = item.status === 'bought';
+    const isExpanded = expandedBreakdown[item.product_id];
+    const name = t(item.product_name);
+    const unit = t(item.unit);
 
-    // If context changed behind our back (e.g. stores qty changed recalculating total)
-    // we could sync it, but usually user is typing here directly.
-
-    const handleLocalUnitChange = (val: string) => {
-        setLocalUnit(val);
-        setUnitPriceInput(item.product_id, val);
-        const unitNum = parseFloat(val);
-        if (!isNaN(unitNum) && qtyNum > 0) {
-            const newTotal = Math.round(unitNum * qtyNum).toString();
-            setLocalTotal(newTotal);
-            setPriceInput(item.product_id, newTotal);
-        } else if (val === '') {
-            setLocalTotal('');
-            setPriceInput(item.product_id, '');
-        }
-    };
-
-    const handleLocalTotalChange = (val: string) => {
-        setLocalTotal(val);
+    const handlePriceChange = useCallback((val: string) => {
+        setLocalPrice(val);
         setPriceInput(item.product_id, val);
-        const totalNum = parseFloat(val);
-        if (!isNaN(totalNum) && qtyNum > 0) {
-            const newUnit = Math.round(totalNum / qtyNum).toString();
-            setLocalUnit(newUnit);
-            setUnitPriceInput(item.product_id, newUnit);
-        } else if (val === '') {
-            setLocalUnit('');
-            setUnitPriceInput(item.product_id, '');
+
+        const numVal = parseFloat(val);
+        const quantity = item.purchase_quantity || item.total_quantity_needed;
+        if (!isNaN(numVal) && numVal > 0 && quantity > 0) {
+            const unitP = Math.round(numVal / quantity).toString();
+            setLocalUnitPrice(unitP);
+            setUnitPriceInput(item.product_id, unitP);
         }
-    };
+    }, [item.product_id, item.purchase_quantity, item.total_quantity_needed, setPriceInput, setUnitPriceInput]);
+
+    const handleUnitPriceChange = useCallback((val: string) => {
+        setLocalUnitPrice(val);
+        setUnitPriceInput(item.product_id, val);
+
+        const numVal = parseFloat(val);
+        const quantity = item.purchase_quantity || item.total_quantity_needed;
+        if (!isNaN(numVal) && numVal > 0) {
+            const totalP = Math.round(numVal * quantity).toString();
+            setLocalPrice(totalP);
+            setPriceInput(item.product_id, totalP);
+        }
+    }, [item.product_id, item.purchase_quantity, item.total_quantity_needed, setPriceInput, setUnitPriceInput]);
 
     return (
-        <div className={cn(
-            "px-3 py-3 flex flex-col gap-2.5 transition-colors border-b border-border last:border-0",
-            item.status === 'bought' ? "bg-success/10" : "bg-card"
-        )}>
-            {/* 1. Header Row (Name, Qty, Tick) */}
-            <div className="flex items-start gap-3">
+        <div className={cn("transition-colors", isBought && "bg-primary/[0.03]")}>
+            <div className="px-3 py-2.5 flex items-center gap-3">
+                {/* Checkbox */}
                 <button
                     type="button"
-                    className="flex-1 min-w-0 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-md"
-                    onClick={() => toggleBreakdown(item.product_id)}
-                    aria-expanded={isExpanded}
+                    onClick={() => toggleBought(item.product_id, !isBought)}
+                    className={cn(
+                        "h-5 w-5 rounded border-2 flex items-center justify-center shrink-0 transition-all",
+                        isBought
+                            ? "bg-primary border-primary text-primary-foreground"
+                            : "border-border hover:border-primary/50"
+                    )}
                 >
-                    <div className="flex flex-col gap-0.5">
-                        <span className={cn(
-                            "font-bold text-[14px] leading-tight text-foreground line-clamp-2 pr-2",
-                            item.status === 'bought' && "text-success line-through"
-                        )}>
-                            {t(item.product_name)}
-                        </span>
-                        <div className="flex items-center gap-2 mt-0.5">
-                            <span className="text-xs font-semibold text-muted-foreground bg-accent px-1.5 py-0.5 rounded">
-                                {qtyNum} {t(item.unit)}
-                            </span>
-                            {item.breakdown.length > 0 && (
-                                <div className="flex items-center gap-0.5 text-[10px] font-bold text-primary bg-primary/10 px-1.5 py-0.5 rounded-full border border-primary/20">
-                                    {item.breakdown.length} {ui('stores')}
-                                    {isExpanded ? <ChevronUp size={10} /> : <ChevronDown size={10} />}
-                                </div>
-                            )}
-                        </div>
-                    </div>
+                    {isBought && <Check size={12} strokeWidth={3} />}
                 </button>
 
+                {/* Name & info */}
+                <div className="flex-1 min-w-0">
+                    <div className={cn("text-sm font-semibold truncate", isBought ? "text-foreground" : "text-foreground")}>
+                        {name}
+                    </div>
+                    <div className="text-[11px] text-muted-foreground">
+                        {item.purchase_quantity ?? item.total_quantity_needed} {unit}
+                        {item.price_reference ? ` · ~${item.price_reference.toLocaleString()}` : ''}
+                    </div>
+                </div>
+
+                {/* Expand toggle */}
                 <button
                     type="button"
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        if (hapticFeedback.isSupported()) {
-                            hapticFeedback.selectionChanged();
-                        }
-                        toggleBought(item.product_id, item.status !== 'bought');
+                    onClick={() => {
+                        haptic.selection();
+                        toggleBreakdown(item.product_id);
                     }}
-                    className="shrink-0 h-10 w-10 flex items-center justify-center -mr-2 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                    aria-label={t(item.product_name)}
+                    className="p-1 text-muted-foreground hover:text-foreground shrink-0"
                 >
-                    <Checkbox
-                        checked={item.status === 'bought'}
-                        // Prevent internal checkbox click from double-firing since the button wrapper handles it
-                        className="h-6 w-6 rounded-full border-2 border-border data-[state=checked]:bg-success data-[state=checked]:border-success transition-all pointer-events-none"
-                        tabIndex={-1}
-                    />
+                    {isExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                 </button>
             </div>
 
-            {/* 2. Breakdown stores (Hidden by default) */}
-            <div className={cn(
-                "grid transition-[grid-template-rows] duration-200 ease-out",
-                isExpanded ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
-            )}>
-                <div className="overflow-hidden">
-                    <div className="bg-accent/50 rounded-lg p-2 space-y-1.5 mb-1 mt-1 border border-border">
-                        {item.breakdown.map((b, idx) => (
-                            <div key={idx} className="flex justify-between items-center gap-2">
-                                <span className="text-foreground font-medium text-[11px] flex-1 truncate">{b.store_name}</span>
-                                <div className="flex items-center gap-1">
+            {/* Expanded: price inputs + breakdown */}
+            {isExpanded && (
+                <div className="px-3 pb-3 space-y-2 border-t border-border mx-3 pt-2">
+                    <div className="grid grid-cols-2 gap-2">
+                        <div>
+                            <label className="text-[10px] text-muted-foreground uppercase font-bold">{ui('totalCost')}</label>
+                            <Input
+                                type="number"
+                                inputMode="numeric"
+                                placeholder="0"
+                                className="h-8 bg-accent border-none text-xs font-mono"
+                                value={localPrice}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handlePriceChange(e.target.value)}
+                            />
+                        </div>
+                        <div>
+                            <label className="text-[10px] text-muted-foreground uppercase font-bold">{ui('unitPrice')}</label>
+                            <Input
+                                type="number"
+                                inputMode="numeric"
+                                placeholder="0"
+                                className="h-8 bg-accent border-none text-xs font-mono"
+                                value={localUnitPrice}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleUnitPriceChange(e.target.value)}
+                            />
+                        </div>
+                    </div>
+
+                    {/* Store breakdown */}
+                    {item.breakdown.length > 0 && (
+                        <div className="space-y-1">
+                            <span className="text-[10px] text-muted-foreground uppercase font-bold">Breakdown</span>
+                            {item.breakdown.map(b => (
+                                <div key={b.store_name} className="flex items-center gap-2 text-xs">
+                                    <span className="text-foreground flex-1 truncate">{b.store_name}</span>
                                     <Input
                                         type="number"
-                                        className="h-6 w-16 text-right text-[11px] font-mono font-bold bg-card border-border focus:border-primary px-1 placeholder:font-normal placeholder:text-muted"
-                                        value={b.quantity}
-                                        onChange={(e) => {
-                                            updateStoreQuantity(item.product_id, b.store_name, e.target.value);
-                                            setTimeout(() => {
-                                                setLocalTotal(getPriceInput(item.product_id));
-                                            }, 50);
-                                        }}
+                                        inputMode="decimal"
+                                        className="h-7 w-16 bg-accent border-none text-xs font-mono text-right"
+                                        defaultValue={b.quantity}
+                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                                            updateStoreQuantity(item.product_id, b.store_name, e.target.value)
+                                        }
                                     />
-                                    <span className="text-[10px] text-muted-foreground font-medium w-5">{t(item.unit)}</span>
                                 </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </div>
-
-            {/* 3. Inputs Row (Only if not bought) */}
-            <div className={cn(
-                "grid transition-[grid-template-rows] duration-200 ease-out",
-                item.status !== 'bought' ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
-            )}>
-                <div className="overflow-hidden">
-                    <div className="flex items-center gap-2 pt-1 border-t border-border border-dashed mt-1">
-                        <div className="flex-1 flex items-center bg-accent rounded-lg focus-within:ring-1 focus-within:ring-primary overflow-hidden min-h-[40px]">
-                            <span className="text-[10px] font-bold text-muted-foreground pl-3 pr-1 uppercase select-none w-12">{ui('unitPrice') || 'UNIT'}</span>
-                            <Input
-                                type="number"
-                                placeholder="..."
-                                className="flex-1 h-10 bg-transparent text-right font-mono font-bold text-[13px] border-none shadow-none focus-visible:ring-0 rounded-sm pr-3 text-foreground"
-                                value={localUnit}
-                                onChange={(e) => handleLocalUnitChange(e.target.value)}
-                            />
+                            ))}
                         </div>
-                        <div className="flex-1 flex items-center bg-accent rounded-lg focus-within:ring-1 focus-within:ring-primary overflow-hidden min-h-[40px]">
-                            <span className="text-[10px] font-bold text-muted-foreground pl-3 pr-1 uppercase select-none w-14">{ui('totalCost') || 'TOTAL'}</span>
-                            <Input
-                                type="number"
-                                placeholder="..."
-                                className="flex-1 h-10 bg-transparent text-right font-mono font-bold text-[13px] border-none shadow-none focus-visible:ring-0 rounded-sm pr-3 text-foreground"
-                                value={localTotal}
-                                onChange={(e) => handleLocalTotalChange(e.target.value)}
-                            />
-                        </div>
-                    </div>
+                    )}
                 </div>
-            </div>
+            )}
         </div>
     );
-});
+};

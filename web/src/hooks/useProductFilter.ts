@@ -11,7 +11,7 @@ export const useProductFilter = (products: Product[]) => {
     const otherLabel = ui('other');
     const [activeCategory, setActiveCategory] = useState<string>(allLabel);
 
-    // Reset filtering when language changes (since labels change)
+    // Reset when language changes
     useEffect(() => {
         setActiveCategory(allLabel);
     }, [allLabel]);

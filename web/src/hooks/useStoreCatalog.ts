@@ -28,7 +28,6 @@ export const useStoreCatalog = () => {
             ]);
             setProducts(productData);
 
-            // Filter stores by user permissions
             let filteredStores = storeData;
             if (user?.role === 'store_manager' && user.allowed_store_ids?.length) {
                 filteredStores = storeData.filter(s => user.allowed_store_ids!.includes(s.id));
@@ -45,6 +44,7 @@ export const useStoreCatalog = () => {
     useEffect(() => {
         fetchData();
     }, [fetchData]);
+
     return {
         products,
         stores,

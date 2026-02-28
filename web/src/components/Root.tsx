@@ -1,15 +1,12 @@
 import App from '../App.tsx';
 import { ErrorBoundary } from './ErrorBoundary';
 
-/**
- * Root fallback UI
- */
 function ErrorFallback({ error }: { error: unknown }) {
     return (
         <div className="p-6 bg-destructive/10 text-destructive rounded-lg m-4 shadow-sm border border-destructive/20">
             <h2 className="text-xl font-bold mb-2">Application Error</h2>
-            <p className="mb-4 opacity-80 underline">An unexpected error occurred during initialization or runtime.</p>
-            <blockquote className="p-3 bg-card/50 rounded code text-sm font-mono overflow-auto max-h-40 mb-4 text-foreground">
+            <p className="mb-4 opacity-80">An unexpected error occurred during initialization or runtime.</p>
+            <blockquote className="p-3 bg-card/50 rounded text-sm font-mono overflow-auto max-h-40 mb-4 text-foreground">
                 <code>
                     {error instanceof Error
                         ? error.message
@@ -38,10 +35,6 @@ function ErrorFallback({ error }: { error: unknown }) {
     );
 }
 
-/**
- * Root component that wraps the app with required providers and boundaries.
- * Note: SDKProvider removed in v3.x in favor of direct init() call in main.tsx.
- */
 export function Root() {
     return (
         <ErrorBoundary fallback={ErrorFallback}>

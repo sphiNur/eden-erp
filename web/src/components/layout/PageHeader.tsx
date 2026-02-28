@@ -5,7 +5,6 @@ interface PageHeaderProps {
     title?: ReactNode;
     startAction?: ReactNode;
     endAction?: ReactNode;
-    bottomClass?: string;
     children?: ReactNode;
     className?: string;
 }

@@ -1,6 +1,7 @@
 import { useEffect, ReactNode } from 'react';
 import { retrieveLaunchParams, themeParams, useSignal } from '@telegram-apps/sdk-react';
 import { HashRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { Toaster } from '@/components/ui/sonner';
 import {
     StoreRequest,
     MarketRun,
@@ -19,7 +20,8 @@ import { UserProvider, useUser } from './contexts/UserContext';
 import { ToastProvider } from './contexts/ToastContext';
 import { Loader2 } from 'lucide-react';
 
-// Dispatcher: match role to route
+// ─── Dispatcher: match role to route ───
+
 const AppDispatcher = () => {
     const { user, loading } = useUser();
     const { ui } = useLanguage();
@@ -52,7 +54,7 @@ const AppDispatcher = () => {
             const lp = retrieveLaunchParams() as any;
             displayId = lp.initData?.user?.id?.toString() || 'unknown';
         } catch (e) {
-            console.warn('Failed to retrieve launch params in AppDispatcher:', e);
+            console.warn('Failed to retrieve launch params:', e);
         }
 
         return (
@@ -66,6 +68,8 @@ const AppDispatcher = () => {
 
     return <div className="min-h-screen bg-background" />;
 };
+
+// ─── Protected Route ───
 
 const ProtectedRoute = ({ children, allowedRoles }: { children: ReactNode; allowedRoles: string[] }) => {
     const { user, loading } = useUser();
@@ -85,13 +89,15 @@ const ProtectedRoute = ({ children, allowedRoles }: { children: ReactNode; allow
     return <>{children}</>;
 };
 
+// ─── App ───
+
 function App() {
     useEffect(() => {
         try {
             const platform = (retrieveLaunchParams() as { platform?: string })?.platform ?? 'unknown';
             document.body.classList.add(`os-${platform}`);
         } catch (e) {
-            console.warn('Failed to apply platform class or retrieve parameters:', e);
+            console.warn('Failed to apply platform class:', e);
         }
     }, []);
 
@@ -200,6 +206,12 @@ function App() {
                             <Route path="*" element={<Navigate to="/" replace />} />
                         </Routes>
                     </HashRouter>
+                    <Toaster
+                        position="bottom-center"
+                        toastOptions={{
+                            className: 'bg-card text-card-foreground border-border shadow-lg',
+                        }}
+                    />
                 </ToastProvider>
             </UserProvider>
         </LanguageProvider>

@@ -1,46 +1,56 @@
-import { type ReactNode } from 'react';
-import { ShoppingCart, Store } from 'lucide-react';
-import { useLanguage } from '../../contexts/LanguageContext';
 import { useMarketRunContext } from '../../contexts/MarketRunContext';
-import { PageHeader } from '../layout/PageHeader';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import type { ViewMode } from '../../hooks/useMarketRun';
-
-const VIEW_OPTIONS: { value: ViewMode; label: string; icon: ReactNode }[] = [
-    { value: 'shopping', label: 'Shopping', icon: <ShoppingCart size={14} aria-hidden /> },
-    { value: 'distribution', label: 'Distribution', icon: <Store size={14} aria-hidden /> },
-];
+import { useLanguage } from '../../contexts/LanguageContext';
+import { cn } from '../../lib/utils';
+import { ShoppingCart, Truck } from 'lucide-react';
+import { haptic } from '../../lib/telegram';
 
 export const MarketHeader = () => {
     const { ui } = useLanguage();
-    const { items, viewMode, setViewMode, estimatedTotal } = useMarketRunContext();
+    const { viewMode, setViewMode, items, estimatedTotal } = useMarketRunContext();
+    const boughtCount = items.filter(i => i.status === 'bought').length;
 
     return (
-        <PageHeader>
-            <Tabs value={viewMode} onValueChange={(val) => setViewMode(val as ViewMode)} className="mb-2 w-full">
-                <TabsList className="grid w-full grid-cols-2">
-                    {VIEW_OPTIONS.map(opt => (
-                        <TabsTrigger key={opt.value} value={opt.value} className="flex items-center gap-2 text-xs">
-                            {opt.icon}
-                            {opt.label}
-                        </TabsTrigger>
-                    ))}
-                </TabsList>
-            </Tabs>
-
-            {viewMode === 'shopping' && (
-                <div className="flex justify-between items-end px-1 mt-3">
-                    <div className="flex flex-col">
-                        <span className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">Estimated Budget</span>
-                        <span className="text-lg font-black text-foreground">
-                            {estimatedTotal > 0 ? `${estimatedTotal.toLocaleString('en-US')} UZS` : '---'}
-                        </span>
-                    </div>
-                    <span className="text-xs font-medium text-muted-foreground mb-1">
-                        {ui('progress')}: <span className="text-foreground">{items.filter(i => i.status === 'bought').length}</span> / {items.length}
-                    </span>
+        <div className="w-full">
+            {/* Summary and Tab Row */}
+            <div className="flex items-center justify-between px-4 py-3">
+                <div>
+                    <h1 className="text-lg font-bold text-foreground">{ui('marketRun')}</h1>
+                    <p className="text-xs text-muted-foreground">
+                        {items.length} items · {boughtCount} bought
+                        {estimatedTotal > 0 && ` · ~${estimatedTotal.toLocaleString()} UZS`}
+                    </p>
                 </div>
-            )}
-        </PageHeader>
+            </div>
+
+            {/* Tabs */}
+            <div className="flex border-b border-border">
+                <button
+                    type="button"
+                    onClick={() => { haptic.selection(); setViewMode('shopping'); }}
+                    className={cn(
+                        "flex-1 py-2 flex items-center justify-center gap-1.5 text-sm font-medium transition-colors border-b-2",
+                        viewMode === 'shopping'
+                            ? "border-primary text-primary"
+                            : "border-transparent text-muted-foreground hover:text-foreground"
+                    )}
+                >
+                    <ShoppingCart size={14} />
+                    Shopping
+                </button>
+                <button
+                    type="button"
+                    onClick={() => { haptic.selection(); setViewMode('distribution'); }}
+                    className={cn(
+                        "flex-1 py-2 flex items-center justify-center gap-1.5 text-sm font-medium transition-colors border-b-2",
+                        viewMode === 'distribution'
+                            ? "border-primary text-primary"
+                            : "border-transparent text-muted-foreground hover:text-foreground"
+                    )}
+                >
+                    <Truck size={14} />
+                    Distribution
+                </button>
+            </div>
+        </div>
     );
 };

@@ -44,18 +44,18 @@ const StoreRequestContext = createContext<StoreRequestContextProps | undefined>(
 export const StoreRequestProvider = ({ children }: { children: ReactNode }) => {
     const { ui } = useLanguage();
 
-    // Data Hooks
+    // Data hooks
     const { products, stores, loading, error, refresh } = useStoreCatalog();
     const { groupedProducts, searchTerm, setSearchTerm, activeCategory, setActiveCategory, categories } = useProductFilter(products);
     const { quantities, setQty, cartItems, totalCount, estimatedTotal, reset: resetCart } = useCart(products);
 
-    // Local State
+    // Local state
     const [selectedStore, setSelectedStore] = useState('');
     const [showCart, setShowCart] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
 
-    // Default Date (Tomorrow)
+    // Default date (tomorrow)
     const defaultDate = useMemo(() => {
         const d = new Date();
         d.setDate(d.getDate() + 1);
@@ -63,7 +63,7 @@ export const StoreRequestProvider = ({ children }: { children: ReactNode }) => {
     }, []);
     const [deliveryDate, setDeliveryDate] = useState(defaultDate);
 
-    // Auto-select first store if none selected
+    // Auto-select first store
     useMemo(() => {
         if (stores.length > 0 && !selectedStore) {
             setSelectedStore(stores[0].id);

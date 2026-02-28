@@ -12,7 +12,7 @@ interface TabItem {
     key: string;
     icon: LucideIcon;
     path: string;
-    shortLabel?: string;  // Override for bottom tab (shorter than i18n)
+    shortLabel?: string;
 }
 
 const ADMIN_TABS: TabItem[] = [
@@ -31,14 +31,10 @@ const PURCHASER_TABS: TabItem[] = [
 
 function getTabsForRole(role?: string): TabItem[] {
     switch (role) {
-        case 'admin':
-            return ADMIN_TABS;
-        case 'store_manager':
-            return STORE_MANAGER_TABS;
-        case 'global_purchaser':
-            return PURCHASER_TABS;
-        default:
-            return [];
+        case 'admin': return ADMIN_TABS;
+        case 'store_manager': return STORE_MANAGER_TABS;
+        case 'global_purchaser': return PURCHASER_TABS;
+        default: return [];
     }
 }
 
@@ -52,7 +48,6 @@ export const BottomTabBar = () => {
     if (!user) return null;
 
     const tabs = getTabsForRole(user.role);
-    // Don't render if somehow no tabs and no settings
     if (tabs.length === 0) return null;
 
     const handleNav = (path: string) => {
@@ -72,7 +67,6 @@ export const BottomTabBar = () => {
                 paddingBottom: 'var(--tma-safe-bottom)',
             }}
         >
-            {/* Navigation tabs */}
             <div className={cn(
                 "flex flex-1",
                 isSingleTab ? "justify-start pl-4" : "justify-around"
@@ -80,8 +74,8 @@ export const BottomTabBar = () => {
                 {tabs.map((tab) => {
                     const isActive = location.pathname === tab.path ||
                         location.pathname.startsWith(tab.path);
-
                     const tabLabel = tab.shortLabel ?? ui(tab.key as Parameters<typeof ui>[0]);
+
                     return (
                         <button
                             key={tab.path}
@@ -111,7 +105,6 @@ export const BottomTabBar = () => {
                 })}
             </div>
 
-            {/* Settings tab — always present, triggers SettingsMenu */}
             <SettingsMenu open={settingsOpen} onOpenChange={setSettingsOpen}>
                 <button
                     type="button"

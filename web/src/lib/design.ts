@@ -4,7 +4,7 @@
  */
 
 export const LAYOUT = {
-    NAV_HEIGHT: 56,     // base nav height (bottom safe area added via CSS)
+    NAV_HEIGHT: 56,
 } as const;
 
 export const SPRING = {

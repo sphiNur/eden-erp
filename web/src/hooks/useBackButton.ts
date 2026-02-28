@@ -23,7 +23,6 @@ export function useBackButton() {
     }, [navigate]);
 
     useEffect(() => {
-        // Show the back button if we are not at the root or a main tab
         const path = location.pathname;
         const isMainTab = ['/store', '/market', '/admin/products', '/admin/users', '/admin/stores'].includes(path);
 

@@ -117,4 +117,3 @@ export const UserList = () => {
         </PageLayout>
     );
 };
-

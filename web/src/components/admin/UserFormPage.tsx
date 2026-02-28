@@ -27,8 +27,7 @@ export const UserFormPage = () => {
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
 
-    // Form State
-    const [role, setRole] = useState<UserRole>(USER_ROLES.STORE_MANAGER);
+    const [role, setRole] = useState<UserRole>(USER_ROLES.STORE_MANAGER as UserRole);
     const [storeId, setStoreId] = useState<string>('');
 
     useEffect(() => {
@@ -127,7 +126,7 @@ export const UserFormPage = () => {
 
                     <div className="space-y-2">
                         <Label>{ui('role')}</Label>
-                        <Select value={role} onValueChange={(r: UserRole) => setRole(r)}>
+                        <Select value={role} onValueChange={(r: string) => setRole(r as UserRole)}>
                             <SelectTrigger className="bg-muted/50 border-border">
                                 <SelectValue />
                             </SelectTrigger>
@@ -158,7 +157,6 @@ export const UserFormPage = () => {
                     )}
                 </div>
             </div>
-
         </PageLayout>
     );
 };

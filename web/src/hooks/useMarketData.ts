@@ -16,7 +16,6 @@ export const useMarketData = () => {
     const [loading, setLoading] = useState(true);
     const [estimatedTotal, setEstimatedTotal] = useState(0);
 
-    // Use Refs for form inputs to prevent global re-renders on every keystroke
     const priceInputsRef = useRef<Record<string, string>>({});
     const unitPriceInputsRef = useRef<Record<string, string>>({});
     const [marketLocation] = useState('Chorsu');
@@ -31,7 +30,6 @@ export const useMarketData = () => {
                 if (i.price_reference) {
                     calcTotal += (i.price_reference * i.total_quantity_needed);
                 }
-
                 return {
                     ...i,
                     status: 'pending',
@@ -56,7 +54,6 @@ export const useMarketData = () => {
         fetchConsolidation();
     }, [fetchConsolidation]);
 
-    // Context consumers will call these, but they won't trigger global re-renders
     const getPriceInput = useCallback((id: string) => priceInputsRef.current[id] || '', []);
     const getUnitPriceInput = useCallback((id: string) => unitPriceInputsRef.current[id] || '', []);
 
@@ -84,7 +81,6 @@ export const useMarketData = () => {
 
             const newTotal = newBreakdown.reduce((sum, b) => sum + b.quantity, 0);
 
-            // Auto-update total price in ref if unit price exists
             const unitPrice = parseFloat(unitPriceInputsRef.current[productId] || '0');
             if (unitPrice > 0) {
                 priceInputsRef.current[productId] = Math.round(unitPrice * newTotal).toString();
@@ -118,7 +114,6 @@ export const useMarketData = () => {
         for (const item of boughtItems) {
             const priceVal = priceInputsRef.current[item.product_id] || '';
             const qtyVal = item.purchase_quantity || 0;
-
             const finalPrice = parseFloat(priceVal || '0');
 
             if (finalPrice <= 0) {
@@ -146,16 +141,13 @@ export const useMarketData = () => {
             tgMainButton.showProgress(true);
             await purchasesApi.submitBatch(payload);
 
-            // Automatically split costs proportionally into DailyBill
             try {
                 const todayStr = new Date().toISOString().split('T')[0];
                 await billsApi.generate(todayStr);
             } catch (billErr) {
                 console.error("Auto-bill generation error:", billErr);
-                // Non-fatal, batch is still saved
             }
 
-            // Also reload the page data
             tgAlert(ui('batchFinalized'));
             priceInputsRef.current = {};
             unitPriceInputsRef.current = {};

@@ -10,107 +10,95 @@ import {
 } from '@telegram-apps/sdk-react';
 
 /**
- * Initializes the application and configures its dependencies.
+ * Initializes the Telegram Mini App and configures its dependencies.
  */
 export async function init(options: {
     debug?: boolean;
     eruda?: boolean;
-    mockForMacOS?: boolean;
 }): Promise<void> {
-    const { debug, eruda, mockForMacOS } = options;
+    const { debug, eruda } = options;
 
-    // Set debug mode if requested.
     if (debug) {
         setDebug(true);
     }
 
-    // Initialize special event handlers for Telegram Desktop, Windows 10+, etc.
+    // Initialize SDK event handlers
     try {
         initSDK();
     } catch (e) {
-        console.warn('Telegram SDK initialization failed (safely ignored):', e);
+        console.warn('[TMA] SDK init failed (safe):', e);
     }
 
-    // Check if we should use Eruda.
+    // Eruda mobile debugger
     if (eruda) {
         try {
             await import('eruda').then((lib) => lib.default.init());
         } catch (e) {
-            console.warn('Eruda not available:', e);
+            console.warn('[TMA] Eruda not available:', e);
         }
     }
 
-    /**
-     * Safe mount helper for v3 components
-     */
+    // Safe mount helper
     const safeMount = async (component: any) => {
         try {
             if (typeof component.mount === 'function' && !component.isMounted()) {
                 await component.mount();
             }
         } catch (e) {
-            console.warn(`Failed to mount component:`, e);
+            console.warn('[TMA] Mount failed:', e);
         }
     };
 
-    // Define components-related to the user interface.
+    // Mount and bind CSS vars for mini app & theme
     await safeMount(miniApp);
-    if (miniApp.bindCssVars.isAvailable()) miniApp.bindCssVars();
+    try { if (miniApp.bindCssVars.isAvailable()) miniApp.bindCssVars(); } catch { /* noop */ }
 
     await safeMount(themeParams);
-    if (themeParams.bindCssVars.isAvailable()) themeParams.bindCssVars();
+    try { if (themeParams.bindCssVars.isAvailable()) themeParams.bindCssVars(); } catch { /* noop */ }
 
+    // Viewport: mount, bind CSS vars, expand, fullscreen
     try {
         if (!viewport.isMounted()) {
             await viewport.mount();
         }
         if (viewport.bindCssVars.isAvailable()) viewport.bindCssVars();
 
-        // Add the viewport expansion if it's not already expanded.
         if (viewport.isMounted()) {
             if (!viewport.isExpanded()) {
                 viewport.expand();
             }
-            // Request true fullscreen for immersive experience on iPhone 12/13/Pixel 7, if available
             try {
-                // @ts-ignore - The method exists in newer SDKs but type might not reflect it locally
+                // @ts-ignore - requestFullscreen may not be typed yet
                 if (typeof viewport.requestFullscreen === 'function') {
                     viewport.requestFullscreen();
                 }
             } catch (e) {
-                console.warn('Request fullscreen failed:', e);
+                console.warn('[TMA] Fullscreen request failed:', e);
             }
         }
     } catch (e) {
-        console.warn('Viewport error:', e);
+        console.warn('[TMA] Viewport error:', e);
     }
 
-    // Define components-related to the mini app state.
+    // Restore init data
     try {
         if (initData.restore) {
             initData.restore();
         }
     } catch (e) {
-        console.warn('InitData restore error:', e);
+        console.warn('[TMA] InitData restore error:', e);
     }
 
-    // Define components-related to the navigation and actions.
+    // Mount navigation components
     await safeMount(backButton);
     await safeMount(mainButton);
 
-    // HapticFeedback is available for use directly without mounting in v3+
-
-    // In case, we are running the application on macOS, we should mock the
-    // environment.
-    if (mockForMacOS) {
-        await import('./mockEnv.ts');
-    }
-
+    // Signal app is ready
     try {
         if (miniApp.isMounted()) {
             miniApp.ready();
         }
     } catch (e) {
-        console.warn('MiniApp ready failed:', e);
+        console.warn('[TMA] MiniApp ready failed:', e);
     }
 }

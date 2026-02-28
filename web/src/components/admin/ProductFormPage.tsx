@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { useNavigate, useParams } from 'react-router-dom'; // Changed from onClose
+import { useNavigate, useParams } from 'react-router-dom';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
@@ -13,7 +13,7 @@ import { useLanguage } from '../../contexts/LanguageContext';
 import { productsApi, categoriesApi } from '../../api/client';
 import { useToast } from '../../contexts/ToastContext';
 import { PRODUCT_UNITS } from '../../constants/units';
-import { PageLayout } from '../layout/PageLayout'; // Added PageLayout
+import { PageLayout } from '../layout/PageLayout';
 
 const productSchema = z.object({
     name_cn: z.string().optional(),
@@ -70,7 +70,7 @@ export const ProductFormPage = () => {
 
     const fetchProduct = async (productId: string) => {
         try {
-            const products = await productsApi.list(); // Ideally should be getById
+            const products = await productsApi.list();
             const product = products.find(p => p.id === productId);
             if (product) {
                 form.reset({
@@ -149,7 +149,7 @@ export const ProductFormPage = () => {
             <PageLayout toolbar={toolbar}>
                 <div className="flex justify-center p-8"><Loader2 className="animate-spin text-muted-foreground" /></div>
             </PageLayout>
-        )
+        );
     }
 
     return (
@@ -160,7 +160,6 @@ export const ProductFormPage = () => {
                     <div className="bg-card p-4 rounded-xl shadow-sm border border-border space-y-4">
                         <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-2">📦 {ui('basicInfo')}</h3>
 
-                        {/* Category */}
                         <FormField
                             control={form.control}
                             name="category_id"
@@ -184,7 +183,6 @@ export const ProductFormPage = () => {
                             )}
                         />
 
-                        {/* Unit & Price */}
                         <div className="grid grid-cols-2 gap-4">
                             <FormField
                                 control={form.control}

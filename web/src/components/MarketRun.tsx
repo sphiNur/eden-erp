@@ -1,13 +1,12 @@
 import { useEffect } from 'react';
-import { Loader2 } from 'lucide-react';
+import { mainButton } from '@telegram-apps/sdk-react';
 import { useLanguage } from '../contexts/LanguageContext';
-import { Button } from './ui/button';
 import { MarketRunProvider, useMarketRunContext } from '../contexts/MarketRunContext';
+import { MarketHeader } from './market-run/MarketHeader';
 import { MarketShoppingList } from './market-run/MarketShoppingList';
 import { MarketDistributionList } from './market-run/MarketDistributionList';
-import { MarketHeader } from './market-run/MarketHeader';
 import { PageLayout } from './layout/PageLayout';
-import { mainButton } from '@telegram-apps/sdk-react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export const MarketRun = () => {
     return (
@@ -19,72 +18,58 @@ export const MarketRun = () => {
 
 const MarketRunContent = () => {
     const { ui } = useLanguage();
-    const {
-        loading,
-        viewMode,
-        handleFinalize
-    } = useMarketRunContext();
+    const { loading, viewMode, handleFinalize, items } = useMarketRunContext();
 
-    // Telegram MainButton Integration
+    const boughtCount = items.filter(i => i.status === 'bought').length;
+
     useEffect(() => {
-        if (loading) return;
+        if (mainButton.mount.isAvailable()) {
+            try { mainButton.mount(); } catch { /* noop */ }
+        }
 
-        if (mainButton.isMounted()) {
-            if (viewMode === 'shopping') {
+        if (boughtCount > 0) {
+            try {
                 mainButton.setParams({
-                    text: ui('finalizeBatch'),
+                    text: `${ui('finalizeBatch')} (${boughtCount})`,
                     isVisible: true,
                     isEnabled: true,
                 });
-
-                const onClick = () => handleFinalize();
-                mainButton.onClick(onClick);
-
-                return () => {
-                    mainButton.offClick(onClick);
-                };
-            } else {
+            } catch { /* noop */ }
+        } else {
+            try {
                 mainButton.setParams({ isVisible: false });
-            }
+            } catch { /* noop */ }
         }
-    }, [viewMode, loading, ui, handleFinalize]);
 
-    if (loading) {
-        return (
-            <div className="flex justify-center items-center min-h-screen">
-                <Loader2 className="animate-spin text-primary" size={48} />
-            </div>
-        );
-    }
+        const handler = () => handleFinalize();
+        try { mainButton.onClick(handler); } catch { /* noop */ }
 
-    const isTgMainButtonAvailable = mainButton.isMounted();
+        return () => {
+            try { mainButton.offClick(handler); } catch { /* noop */ }
+            try { mainButton.setParams({ isVisible: false }); } catch { /* noop */ }
+        };
+    }, [boughtCount, handleFinalize, ui]);
 
-    const bottomBar = (!isTgMainButtonAvailable && viewMode === 'shopping') ? (
-        <div className="p-4 bg-card border-t border-border shadow-md pb-safe">
-            <Button
-                size="lg"
-                onClick={handleFinalize}
-                className="w-full text-base font-bold py-6 rounded-xl shadow-lg active:scale-95 transition-transform"
-            >
-                {ui('finalizeBatch')}
-            </Button>
-        </div>
-    ) : undefined;
+    const header = <MarketHeader />;
 
     return (
-        <PageLayout
-            header={<MarketHeader />}
-            bottomBar={bottomBar}
-            className="bg-secondary h-full flex flex-col"
-            noPadding
-        >
-            <div className="flex-1 w-full relative">
-                {viewMode === 'shopping' ? (
-                    <MarketShoppingList />
-                ) : (
-                    <MarketDistributionList />
-                )}
-            </div>
+        <PageLayout header={header} className="bg-secondary">
+            {loading ? (
+                <div className="space-y-4 p-3">
+                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-16 w-full rounded-lg" />
+                    <Skeleton className="h-16 w-full rounded-lg" />
+                    <Skeleton className="h-16 w-full rounded-lg" />
+                </div>
+            ) : items.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-16 text-center text-muted-foreground">
+                    <p className="text-sm font-medium">{ui('noItemsFound')}</p>
+                </div>
+            ) : viewMode === 'shopping' ? (
+                <MarketShoppingList />
+            ) : (
+                <MarketDistributionList />
+            )}
         </PageLayout>
     );
 };

@@ -27,7 +27,6 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     const [language, setLanguage] = useState<LanguageCode>('en');
 
     useEffect(() => {
-        // Initialize from Telegram if available
         try {
             const tgUser = getTelegramUser();
             const tgLang = tgUser?.language_code;
@@ -44,7 +43,6 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
         }
     }, []);
 
-    // Sync <html lang=""> for accessibility and i18n
     useEffect(() => {
         const langMap: Record<LanguageCode, string> = { en: 'en', ru: 'ru', uz: 'uz', cn: 'zh-CN' };
         document.documentElement.lang = langMap[language];

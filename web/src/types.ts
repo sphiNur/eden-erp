@@ -1,11 +1,18 @@
+/** Localized string from backend JSONB */
 export type I18nString = Record<string, string>;
+
+/** Supported UI languages */
 export type LanguageCode = 'en' | 'ru' | 'uz' | 'cn';
+
+// ─── Category ───
 
 export interface Category {
     id: string;
     name_i18n: Record<string, string>;
     sort_order: number;
 }
+
+// ─── Stall ───
 
 export interface Stall {
     id: string;
@@ -20,6 +27,8 @@ export interface StallCreate {
     location?: string;
     sort_order?: number;
 }
+
+// ─── Product ───
 
 export interface Product {
     id: string;
@@ -41,6 +50,8 @@ export interface ProductCreate {
     is_active?: boolean;
 }
 
+// ─── Store ───
+
 export interface Store {
     id: string;
     name: string;
@@ -50,6 +61,8 @@ export interface Store {
     is_active?: boolean;
     created_at?: string;
 }
+
+// ─── Order ───
 
 export interface OrderItemInput {
     product_id: string;
@@ -77,6 +90,8 @@ export interface OrderResponse {
     items: OrderItemResponse[];
 }
 
+// ─── Consolidation ───
+
 export interface ConsolidatedItem {
     product_id: string;
     product_name: I18nString;
@@ -87,7 +102,7 @@ export interface ConsolidatedItem {
     breakdown: Array<{ store_name: string; quantity: number }>;
 }
 
-// --- Stall-based Consolidation ---
+// ─── Stall Consolidation ───
 
 export interface StallConsolidatedProduct {
     product_id: string;
@@ -103,6 +118,8 @@ export interface StallConsolidation {
     stall_name: string;
     items: StallConsolidatedProduct[];
 }
+
+// ─── Batch (Market Run) ───
 
 export interface BatchItemInput {
     product_id: string;
@@ -131,6 +148,8 @@ export interface BatchResponse {
     items: BatchItemResponse[];
 }
 
+// ─── User ───
+
 export type UserRole = 'admin' | 'store_manager' | 'global_purchaser';
 
 export interface User {
@@ -144,6 +163,8 @@ export interface User {
     allowed_store_ids?: string[];
     is_active?: boolean;
 }
+
+// ─── Template ───
 
 export interface TemplateItem {
     product_id: string;
@@ -165,7 +186,7 @@ export interface TemplateCreate {
     items: TemplateItem[];
 }
 
-// --- Shared Expenses ---
+// ─── Shared Expenses ───
 
 export type SplitMethod = 'equal' | 'proportional';
 
@@ -188,7 +209,7 @@ export interface SharedExpenseResponse {
     created_at: string;
 }
 
-// --- Daily Bills ---
+// ─── Daily Bills ───
 
 export interface BillItemDetail {
     product_name: I18nString;
@@ -231,7 +252,8 @@ export interface DailyBillSummary {
     bills: DailyBillResponse[];
 }
 
-// --- AI Procurement ---
+// ─── AI Procurement ───
+
 export interface ParsedItem {
     product_id: string | null;
     original_text: string;
@@ -243,5 +265,3 @@ export interface ParsedItem {
 export interface ParsedOrderResponse {
     items: ParsedItem[];
 }
-
-

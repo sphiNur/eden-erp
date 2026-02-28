@@ -12,9 +12,7 @@ export default {
 		},
 		extend: {
 			fontFamily: {
-				sans: [
-					'var(--font-sans)'
-				]
+				sans: ['var(--font-sans)']
 			},
 			colors: {
 				border: 'var(--border)',
@@ -50,12 +48,6 @@ export default {
 					DEFAULT: 'var(--card)',
 					foreground: 'var(--card-foreground)'
 				},
-				eden: {
-					'50': 'hsl(var(--eden-50))',
-					'500': 'hsl(var(--eden-500))',
-					'600': 'hsl(var(--eden-600))',
-					'700': 'hsl(var(--eden-700))'
-				},
 				success: 'hsl(var(--success))',
 				warning: 'hsl(var(--warning))',
 				danger: 'hsl(var(--danger))',
@@ -90,28 +82,16 @@ export default {
 			},
 			keyframes: {
 				'accordion-down': {
-					from: {
-						height: '0'
-					},
-					to: {
-						height: 'var(--radix-accordion-content-height)'
-					}
+					from: { height: '0' },
+					to: { height: 'var(--radix-accordion-content-height)' }
 				},
 				'accordion-up': {
-					from: {
-						height: 'var(--radix-accordion-content-height)'
-					},
-					to: {
-						height: '0'
-					}
+					from: { height: 'var(--radix-accordion-content-height)' },
+					to: { height: '0' }
 				},
 				shimmer: {
-					'0%': {
-						backgroundPosition: '-200% 0'
-					},
-					'100%': {
-						backgroundPosition: '200% 0'
-					}
+					'0%': { backgroundPosition: '-200% 0' },
+					'100%': { backgroundPosition: '200% 0' }
 				}
 			},
 			animation: {

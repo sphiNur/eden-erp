@@ -8,6 +8,7 @@ import { PageLayout } from '../layout/PageLayout';
 import { PageHeader } from '../layout/PageHeader';
 import { useNavigate } from 'react-router-dom';
 import { Input } from '../ui/input';
+import { Skeleton } from '../ui/skeleton';
 
 export const InventoryMaster = () => {
     const { t, ui } = useLanguage();
@@ -54,7 +55,7 @@ export const InventoryMaster = () => {
                     placeholder={ui('searchProducts')}
                     className="w-full bg-accent border-none h-9 focus:ring-1 focus:ring-primary text-foreground placeholder:text-muted-foreground"
                     value={search}
-                    onChange={(e) => setSearch(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearch(e.target.value)}
                 />
             </div>
         </PageHeader>
@@ -75,8 +76,10 @@ export const InventoryMaster = () => {
     return (
         <PageLayout header={header} floatingAction={floatingAction} className="bg-secondary">
             {loading ? (
-                <div className="flex justify-center items-center py-12">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                <div className="space-y-4 px-3">
+                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-14 w-full rounded-lg" />
+                    <Skeleton className="h-14 w-full rounded-lg" />
                 </div>
             ) : Object.keys(groupedProducts).length === 0 ? (
                 <div className="text-center py-10 text-muted-foreground text-sm">{ui('noProductsFound')}</div>
@@ -97,13 +100,10 @@ export const InventoryMaster = () => {
                                     }}
                                 >
                                     <div className="flex-1 min-w-0 pr-3">
-                                        {/* Primary: Multi-lang Name */}
                                         <div className="font-semibold text-foreground text-[13px] leading-tight mb-0.5 break-words">
                                             {Object.values(product.name_i18n).join(' / ')}
                                         </div>
                                     </div>
-
-                                    {/* Right: Price/Unit */}
                                     <div className="text-right shrink-0">
                                         <div className="font-mono text-xs text-muted-foreground">
                                             {product.price_reference ? product.price_reference.toLocaleString() : '-'}

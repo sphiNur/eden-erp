@@ -4,7 +4,8 @@
  * crashes when running outside the Telegram WebView.
  */
 
-// Safe reference to the global Telegram WebApp object
+// ─── WebApp Instance ───
+
 function getWebApp() {
     try {
         return (window as any).Telegram?.WebApp || null;
@@ -46,7 +47,6 @@ export function getPlatform(): Platform {
         if (p === 'android') return 'android';
         if (['macos', 'tdesktop', 'weba', 'webk', 'unigram'].includes(p)) return 'desktop';
     }
-    // Fallback to User Agent
     const ua = navigator.userAgent.toLowerCase();
     if (/iphone|ipad|ipod/.test(ua)) return 'ios';
     if (/android/.test(ua)) return 'android';
@@ -57,17 +57,15 @@ export function getPlatform(): Platform {
 export const isIOS = () => getPlatform() === 'ios';
 export const isAndroid = () => getPlatform() === 'android';
 
-// ─── Version and Capability ───
+// ─── Version & Capability ───
 
 export function getVersion(): string {
     return tg()?.version || '0.0';
 }
 
-/** Check if the current Telegram version supports Fullscreen (v8.0+) */
 export function isFullscreenSupported(): boolean {
     try {
-        const v = parseFloat(getVersion());
-        return v >= 8.0;
+        return parseFloat(getVersion()) >= 8.0;
     } catch {
         return false;
     }
@@ -101,7 +99,7 @@ export function exitFullscreen() {
     } catch { /* noop */ }
 }
 
-// ─── Haptic Feedback (safe) ───
+// ─── Haptic Feedback ───
 
 export const haptic = {
     impact(style: 'light' | 'medium' | 'heavy' | 'rigid' | 'soft' = 'light') {
@@ -115,7 +113,7 @@ export const haptic = {
     },
 };
 
-// ─── UI Methods (safe) ───
+// ─── UI Methods ───
 
 export function tgAlert(message: string): void {
     try {
