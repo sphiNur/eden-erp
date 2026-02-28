@@ -4,7 +4,6 @@ import {
     themeParams,
     miniApp,
     mainButton,
-    hapticFeedback,
     initData,
     setDebug,
     init as initSDK,
