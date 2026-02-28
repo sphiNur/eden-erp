@@ -5,7 +5,7 @@ import * as z from 'zod';
 import { useNavigate, useParams } from 'react-router-dom'; // Changed from onClose
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
-import { Label } from '../ui/label';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Category } from '../../types';
 import { Loader2, ArrowLeft, Save } from 'lucide-react';
@@ -154,87 +154,152 @@ export const ProductFormPage = () => {
 
     return (
         <PageLayout toolbar={toolbar}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 max-w-2xl mx-auto py-2">
-                {/* Basic Info Group */}
-                <div className="bg-card p-4 rounded-xl shadow-sm border border-border space-y-4">
-                    <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-2">📦 {ui('basicInfo')}</h3>
+            <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 max-w-2xl mx-auto py-4 px-3">
+                    {/* Basic Info Group */}
+                    <div className="bg-card p-4 rounded-xl shadow-sm border border-border space-y-4">
+                        <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-2">📦 {ui('basicInfo')}</h3>
 
-                    {/* Category */}
-                    <div className="space-y-2">
-                        <Label>{ui('category')} <span className="text-destructive">*</span></Label>
-                        <Select onValueChange={(val: string) => form.setValue('category_id', val)} value={form.watch('category_id')}>
-                            <SelectTrigger className="bg-muted/50 border-border">
-                                <SelectValue placeholder={ui('select')} />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {categories.map(c => (
-                                    <SelectItem key={c.id} value={c.id}>{t(c.name_i18n)}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                        {form.formState.errors.category_id && <p className="text-xs text-destructive">{form.formState.errors.category_id.message}</p>}
+                        {/* Category */}
+                        <FormField
+                            control={form.control}
+                            name="category_id"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>{ui('category')} <span className="text-destructive">*</span></FormLabel>
+                                    <Select onValueChange={field.onChange} value={field.value}>
+                                        <FormControl>
+                                            <SelectTrigger className="bg-muted/50 border-border">
+                                                <SelectValue placeholder={ui('select')} />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            {categories.map(c => (
+                                                <SelectItem key={c.id} value={c.id}>{t(c.name_i18n)}</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        {/* Unit & Price */}
+                        <div className="grid grid-cols-2 gap-4">
+                            <FormField
+                                control={form.control}
+                                name="unit_ru"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>{ui('unit')} <span className="text-destructive">*</span></FormLabel>
+                                        <Select
+                                            onValueChange={(val: string) => {
+                                                const unit = PRODUCT_UNITS.find(u => u.value === val);
+                                                if (unit) {
+                                                    form.setValue('unit_cn', unit.label_cn);
+                                                    field.onChange(unit.label_ru);
+                                                }
+                                            }}
+                                            value={PRODUCT_UNITS.find(u => u.label_ru === field.value)?.value}
+                                        >
+                                            <FormControl>
+                                                <SelectTrigger className="bg-muted/50 border-border">
+                                                    <SelectValue placeholder={ui('select')} />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                {PRODUCT_UNITS.map(u => (
+                                                    <SelectItem key={u.value} value={u.value}>
+                                                        {`${u.label_en} (${u.label_cn}/${u.label_ru})`}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <FormField
+                                control={form.control}
+                                name="price_reference"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>{ui('referencePrice')} (UZS)</FormLabel>
+                                        <FormControl>
+                                            <Input type="number" {...field} placeholder="0" className="bg-muted/50 border-border" />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
                     </div>
 
-                    {/* Unit & Price */}
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                            <Label>{ui('unit')} <span className="text-destructive">*</span></Label>
-                            <Select onValueChange={(val: string) => {
-                                const unit = PRODUCT_UNITS.find(u => u.value === val);
-                                if (unit) {
-                                    form.setValue('unit_cn', unit.label_cn);
-                                    form.setValue('unit_ru', unit.label_ru);
-                                }
-                            }} value={PRODUCT_UNITS.find(u => u.label_ru === form.watch('unit_ru'))?.value}>
-                                <SelectTrigger className="bg-muted/50 border-border">
-                                    <SelectValue placeholder={ui('select')} />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {PRODUCT_UNITS.map(u => (
-                                        <SelectItem key={u.value} value={u.value}>
-                                            {`${u.label_en} (${u.label_cn}/${u.label_ru})`}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
+                    {/* Translations Group */}
+                    <div className="bg-card p-4 rounded-xl shadow-sm border border-border space-y-4">
+                        <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-2">🌐 {ui('translations')}</h3>
 
-                        <div className="space-y-2">
-                            <Label htmlFor="price">{ui('referencePrice')} (UZS)</Label>
-                            <Input id="price" type="number" {...form.register('price_reference')} placeholder="0" className="bg-muted/50 border-border" />
+                        <div className="space-y-4">
+                            <FormField
+                                control={form.control}
+                                name="name_ru"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>🇷🇺 Русское <span className="text-destructive">*</span></FormLabel>
+                                        <FormControl>
+                                            <Input {...field} placeholder="e.g. Картофель (Required)" className="bg-muted/50 border-border" />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <FormField
+                                control={form.control}
+                                name="name_cn"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>🇨🇳 中文 (Optional)</FormLabel>
+                                        <FormControl>
+                                            <Input {...field} placeholder="e.g. 土豆" className="bg-muted/50 border-border" />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <FormField
+                                control={form.control}
+                                name="name_en"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>🇬🇧 English (Optional)</FormLabel>
+                                        <FormControl>
+                                            <Input {...field} placeholder="e.g. Potato" className="bg-muted/50 border-border" />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <FormField
+                                control={form.control}
+                                name="name_uz"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>🇺🇿 O'zbekcha (Optional)</FormLabel>
+                                        <FormControl>
+                                            <Input {...field} placeholder="e.g. Kartoshka" className="bg-muted/50 border-border" />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
                         </div>
                     </div>
-                </div>
-
-                {/* Translations Group */}
-                <div className="bg-card p-4 rounded-xl shadow-sm border border-border space-y-4">
-                    <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-2">🌐 {ui('translations')}</h3>
-
-                    <div className="space-y-4">
-                        <div className="space-y-1">
-                            <Label htmlFor="name_ru">🇷🇺 Русское <span className="text-destructive">*</span></Label>
-                            <Input id="name_ru" {...form.register('name_ru')} placeholder="e.g. Картофель (Required)" className="bg-muted/50 border-border" />
-                            {form.formState.errors.name_ru && <p className="text-xs text-destructive">{form.formState.errors.name_ru.message}</p>}
-                        </div>
-
-                        <div className="space-y-1">
-                            <Label htmlFor="name_cn">🇨🇳 中文 (Optional)</Label>
-                            <Input id="name_cn" {...form.register('name_cn')} placeholder="e.g. 土豆" className="bg-muted/50 border-border" />
-                        </div>
-
-                        <div className="space-y-1">
-                            <Label htmlFor="name_en">🇬🇧 English (Optional)</Label>
-                            <Input id="name_en" {...form.register('name_en')} placeholder="e.g. Potato" className="bg-muted/50 border-border" />
-                        </div>
-
-                        <div className="space-y-1">
-                            <Label htmlFor="name_uz">🇺🇿 O'zbekcha (Optional)</Label>
-                            <Input id="name_uz" {...form.register('name_uz')} placeholder="e.g. Kartoshka" className="bg-muted/50 border-border" />
-                        </div>
-                    </div>
-                </div>
-
-            </form>
+                </form>
+            </Form>
         </PageLayout>
     );
 };

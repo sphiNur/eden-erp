@@ -6,6 +6,7 @@ import { cn } from '../../lib/utils';
 import { MarketItem } from '../../hooks/useMarketRun';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useMarketRunContext } from '../../contexts/MarketRunContext';
+import { hapticFeedback } from '@telegram-apps/sdk-react';
 
 interface MarketItemRowProps {
     item: MarketItem;
@@ -96,14 +97,25 @@ export const MarketItemRow = memo(({ item }: MarketItemRowProps) => {
                     </div>
                 </button>
 
-                <div onClick={(e) => e.stopPropagation()} className="shrink-0 mt-0.5">
+                <button
+                    type="button"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        if (hapticFeedback.isSupported()) {
+                            hapticFeedback.selectionChanged();
+                        }
+                        toggleBought(item.product_id, item.status !== 'bought');
+                    }}
+                    className="shrink-0 h-10 w-10 flex items-center justify-center -mr-2 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    aria-label={t(item.product_name)}
+                >
                     <Checkbox
                         checked={item.status === 'bought'}
-                        onCheckedChange={(c) => toggleBought(item.product_id, c as boolean)}
-                        className="h-6 w-6 rounded-full border-2 border-border data-[state=checked]:bg-success data-[state=checked]:border-success transition-all"
-                        aria-label={t(item.product_name)}
+                        // Prevent internal checkbox click from double-firing since the button wrapper handles it
+                        className="h-6 w-6 rounded-full border-2 border-border data-[state=checked]:bg-success data-[state=checked]:border-success transition-all pointer-events-none"
+                        tabIndex={-1}
                     />
-                </div>
+                </button>
             </div>
 
             {/* 2. Breakdown stores (Hidden by default) */}
@@ -143,22 +155,22 @@ export const MarketItemRow = memo(({ item }: MarketItemRowProps) => {
             )}>
                 <div className="overflow-hidden">
                     <div className="flex items-center gap-2 pt-1 border-t border-border border-dashed mt-1">
-                        <div className="flex-1 flex items-center bg-accent rounded-lg focus-within:ring-1 focus-within:ring-primary overflow-hidden">
-                            <span className="text-[10px] font-bold text-muted-foreground pl-2 pr-1 uppercase select-none w-10">{ui('unitPrice') || 'UNIT'}</span>
+                        <div className="flex-1 flex items-center bg-accent rounded-lg focus-within:ring-1 focus-within:ring-primary overflow-hidden min-h-[40px]">
+                            <span className="text-[10px] font-bold text-muted-foreground pl-3 pr-1 uppercase select-none w-12">{ui('unitPrice') || 'UNIT'}</span>
                             <Input
                                 type="number"
                                 placeholder="..."
-                                className="flex-1 h-8 bg-transparent text-right font-mono font-bold text-[13px] border-none shadow-none focus-visible:ring-0 rounded-sm pr-2 text-foreground"
+                                className="flex-1 h-10 bg-transparent text-right font-mono font-bold text-[13px] border-none shadow-none focus-visible:ring-0 rounded-sm pr-3 text-foreground"
                                 value={localUnit}
                                 onChange={(e) => handleLocalUnitChange(e.target.value)}
                             />
                         </div>
-                        <div className="flex-1 flex items-center bg-accent rounded-lg focus-within:ring-1 focus-within:ring-primary overflow-hidden">
-                            <span className="text-[10px] font-bold text-muted-foreground pl-2 pr-1 uppercase select-none w-12">{ui('totalCost') || 'TOTAL'}</span>
+                        <div className="flex-1 flex items-center bg-accent rounded-lg focus-within:ring-1 focus-within:ring-primary overflow-hidden min-h-[40px]">
+                            <span className="text-[10px] font-bold text-muted-foreground pl-3 pr-1 uppercase select-none w-14">{ui('totalCost') || 'TOTAL'}</span>
                             <Input
                                 type="number"
                                 placeholder="..."
-                                className="flex-1 h-8 bg-transparent text-right font-mono font-bold text-[13px] border-none shadow-none focus-visible:ring-0 rounded-sm pr-2 text-foreground"
+                                className="flex-1 h-10 bg-transparent text-right font-mono font-bold text-[13px] border-none shadow-none focus-visible:ring-0 rounded-sm pr-3 text-foreground"
                                 value={localTotal}
                                 onChange={(e) => handleLocalTotalChange(e.target.value)}
                             />

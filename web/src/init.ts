@@ -3,6 +3,8 @@ import {
     viewport,
     themeParams,
     miniApp,
+    mainButton,
+    hapticFeedback,
     initData,
     setDebug,
     init as initSDK,
@@ -93,8 +95,11 @@ export async function init(options: {
         console.warn('InitData restore error:', e);
     }
 
-    // Define components-related to the navigation.
+    // Define components-related to the navigation and actions.
     await safeMount(backButton);
+    await safeMount(mainButton);
+
+    // HapticFeedback is available for use directly without mounting in v3+
 
     // In case, we are running the application on macOS, we should mock the
     // environment.

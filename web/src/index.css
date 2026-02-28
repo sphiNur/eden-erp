@@ -6,14 +6,11 @@
 
 @layer base {
     :root {
-        /* ─── TMA Safe Area ───
-           Official Telegram variables. */
+        /* ─── TMA Safe Area ─── */
         --tma-safe-top: var(--tg-safe-area-inset-top, env(safe-area-inset-top, 0px));
         --tma-safe-bottom: var(--tg-safe-area-inset-bottom, env(safe-area-inset-bottom, 0px));
         --tma-safe-left: var(--tg-safe-area-inset-left, env(safe-area-inset-left, 0px));
         --tma-safe-right: var(--tg-safe-area-inset-right, env(safe-area-inset-right, 0px));
-
-        /* Content safe area (covers Telegram UI buttons) */
         --tma-content-top: var(--tg-content-safe-area-inset-top, var(--tma-safe-top));
         --tma-content-bottom: var(--tg-content-safe-area-inset-bottom, var(--tma-safe-bottom));
 
@@ -30,48 +27,55 @@
         --z-overlay: 60;
         --z-alert: 70;
 
-        /* ─── Radius (12px standard) ─── */
-        --radius: 0.5rem;
+        /* ─── Radius (12px standard for iOS feel) ─── */
+        --radius: 0.75rem;
 
-        /* ─── Brand: Eden Premium ─── */
-        --eden-50: 249 95% 97%;
-        --eden-500: 249 72% 51%;
-        --eden-600: 249 72% 46%;
-        --eden-700: 249 72% 38%;
+        /* ─── Web Fallbacks (Light Mode) ─── */
+        --wb-bg: #ffffff;
+        --wb-text: #000000;
+        --wb-hint: #999999;
+        --wb-link: #2481cc;
+        --wb-button: #2481cc;
+        --wb-button-text: #ffffff;
+        --wb-secondary-bg: #f4f4f5;
+        --wb-header-bg: #ffffff;
+        --wb-accent-text: #2481cc;
+        --wb-section-bg: #ffffff;
+        --wb-section-header-text: #6d6d71;
+        --wb-subtitle-text: #999999;
+        --wb-destructive: #ff3b30;
+        --wb-separator: #e4e4e7;
 
-        /* ─── Surfaces (Light Mode: Slate 50 Background) ─── */
-        --background: 0 0% 100%;
-        --foreground: 0 0% 3.9%;
+        /* ─── Surfaces (Mapped directly to TMA variables) ─── */
+        --background: var(--tg-theme-bg-color, var(--wb-bg));
+        --foreground: var(--tg-theme-text-color, var(--wb-text));
 
-        --card: 0 0% 100%;
-        --card-foreground: 0 0% 3.9%;
+        --card: var(--tg-theme-section-bg-color, var(--wb-section-bg));
+        --card-foreground: var(--tg-theme-text-color, var(--wb-text));
 
-        --popover: 0 0% 100%;
-        --popover-foreground: 0 0% 3.9%;
+        --popover: var(--tg-theme-bg-color, var(--wb-bg));
+        --popover-foreground: var(--tg-theme-text-color, var(--wb-text));
 
-        /* ─── Primary: Deep Indigo ─── */
-        --primary: 0 0% 9%;
-        --primary-foreground: 0 0% 98%;
+        --primary: var(--tg-theme-button-color, var(--wb-button));
+        --primary-foreground: var(--tg-theme-button-text-color, var(--wb-button-text));
 
-        /* ─── Secondary: Slate 100 ─── */
-        --secondary: 0 0% 96.1%;
-        --secondary-foreground: 0 0% 9%;
+        --secondary: var(--tg-theme-secondary-bg-color, var(--wb-secondary-bg));
+        --secondary-foreground: var(--tg-theme-text-color, var(--wb-text));
 
-        /* ─── Muted: Slate 100 ─── */
-        --muted: 0 0% 96.1%;
-        --muted-foreground: 0 0% 45.1%;
+        --muted: var(--tg-theme-secondary-bg-color, var(--wb-secondary-bg));
+        --muted-foreground: var(--tg-theme-hint-color, var(--wb-hint));
 
-        --accent: 0 0% 96.1%;
-        --accent-foreground: 0 0% 9%;
+        --accent: var(--tg-theme-secondary-bg-color, var(--wb-secondary-bg));
+        --accent-foreground: var(--tg-theme-text-color, var(--wb-text));
 
-        --destructive: 0 84.2% 60.2%;
-        --destructive-foreground: 0 0% 98%;
+        --destructive: var(--tg-theme-destructive-text-color, var(--wb-destructive));
+        --destructive-foreground: #ffffff;
 
-        --border: 0 0% 89.8%;
-        --input: 0 0% 89.8%;
-        --ring: 0 0% 3.9%;
+        --border: var(--tg-theme-section-separator-color, var(--wb-separator));
+        --input: var(--tg-theme-section-separator-color, var(--wb-separator));
+        --ring: var(--tg-theme-button-color, var(--wb-button));
 
-        /* ─── Semantic Colors ─── */
+        /* ─── Semantic Colors (Still HSL if needed, or just HEX) ─── */
         --success: 142 71% 45%;
         --warning: 38 92% 50%;
         --danger: 0 84% 60%;
@@ -89,33 +93,21 @@
     }
 
     .dark {
-        --background: 0 0% 3.9%;
-        --foreground: 0 0% 98%;
-
-        --card: 0 0% 3.9%;
-        --card-foreground: 0 0% 98%;
-
-        --popover: 0 0% 3.9%;
-        --popover-foreground: 0 0% 98%;
-
-        --primary: 0 0% 98%;
-        --primary-foreground: 0 0% 9%;
-
-        --secondary: 0 0% 14.9%;
-        --secondary-foreground: 0 0% 98%;
-
-        --muted: 0 0% 14.9%;
-        --muted-foreground: 0 0% 63.9%;
-
-        --accent: 0 0% 14.9%;
-        --accent-foreground: 0 0% 98%;
-
-        --destructive: 0 62.8% 30.6%;
-        --destructive-foreground: 0 0% 98%;
-
-        --border: 0 0% 14.9%;
-        --input: 0 0% 14.9%;
-        --ring: 0 0% 83.1%;
+        --wb-bg: #000000;
+        --wb-text: #ffffff;
+        --wb-hint: #98989d;
+        --wb-link: #59b5f6;
+        --wb-button: #59b5f6;
+        --wb-button-text: #ffffff;
+        --wb-secondary-bg: #1c1c1d;
+        --wb-header-bg: #1c1c1d;
+        --wb-accent-text: #59b5f6;
+        --wb-section-bg: #1c1c1d;
+        --wb-section-header-text: #7d7d83;
+        --wb-subtitle-text: #98989d;
+        --wb-destructive: #ff3b30;
+        --wb-separator: #27272a;
+        
         --chart-1: 220 70% 50%;
         --chart-2: 160 60% 45%;
         --chart-3: 30 80% 55%;
@@ -136,9 +128,9 @@
         -moz-osx-font-smoothing: grayscale;
         -webkit-tap-highlight-color: transparent;
 
-        /* Override with Telegram Dynamic Themes if available */
-        background-color: var(--tg-theme-bg-color, hsl(var(--background)));
-        color: var(--tg-theme-text-color, hsl(var(--foreground)));
+        /* Fallback mapping directly just in case */
+        background-color: var(--background);
+        color: var(--foreground);
 
         /* Full screen adaptation */
         min-height: 100dvh;

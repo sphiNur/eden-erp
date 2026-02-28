@@ -1,7 +1,10 @@
 import { Outlet } from 'react-router-dom';
 import { BottomTabBar } from './BottomTabBar';
+import { useBackButton } from '../../hooks/useBackButton';
 
 export const AppLayout = () => {
+    useBackButton();
+
     return (
         <div className="flex h-[100dvh] w-full flex-col bg-background overflow-hidden relative">
             {/* Main content — top/bottom padding from TMA safe area (no fixed header) */}

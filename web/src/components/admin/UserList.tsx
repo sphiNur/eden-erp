@@ -6,9 +6,15 @@ import { haptic } from '../../lib/telegram';
 import { PageLayout } from '../layout/PageLayout';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Search } from 'lucide-react';
+import { Search, Loader2, MoreVertical, Edit, Shield } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu';
 
 export const UserList = () => {
     const { ui } = useLanguage();
@@ -42,9 +48,9 @@ export const UserList = () => {
 
     return (
         <PageLayout toolbar={
-            <div className="flex items-center px-3 py-2 bg-card border-b border-border min-h-[50px]">
+            <div className="flex items-center px-4 py-3 bg-card border-b border-border min-h-[50px]">
                 <div className="relative flex-1">
-                    <Search className="absolute left-2.5 top-[9px] h-4 w-4 text-muted-foreground" />
+                    <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
                     <Input
                         placeholder={ui('search')}
                         value={search}
@@ -61,30 +67,49 @@ export const UserList = () => {
             ) : filteredUsers.length === 0 ? (
                 <div className="text-center py-10 text-muted-foreground text-sm">{ui('noResults')}</div>
             ) : (
-                <div className="bg-card rounded-lg shadow-sm border border-border overflow-hidden divide-y divide-border space-y-0">
+                <div className="bg-card rounded-lg shadow-sm border border-border overflow-hidden divide-y divide-border m-3">
                     {filteredUsers.map(user => (
                         <div
                             key={user.id}
-                            className="px-3 py-3 flex items-center justify-between cursor-pointer hover:bg-accent active:bg-accent/80 transition-colors"
-                            onClick={() => {
-                                haptic.impact('light');
-                                navigate(`/admin/users/${user.id}`);
-                            }}
+                            className="px-4 py-3 flex items-center justify-between hover:bg-accent transition-colors"
                         >
-                            <div className="flex items-center gap-3">
-                                <div className="h-8 w-8 rounded-full bg-accent flex items-center justify-center text-muted-foreground font-bold text-xs uppercase">
+                            <div
+                                className="flex items-center gap-3 flex-1 cursor-pointer active:opacity-70"
+                                onClick={() => {
+                                    haptic.impact('light');
+                                    navigate(`/admin/users/${user.id}`);
+                                }}
+                            >
+                                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm uppercase ring-1 ring-primary/20">
                                     {user.username?.[0] || 'U'}
                                 </div>
                                 <div>
-                                    <div className="font-semibold text-[13px] text-foreground leading-none mb-1">
+                                    <div className="font-semibold text-sm text-foreground leading-none mb-1.5">
                                         {user.username || `User ${user.telegram_id}`}
                                     </div>
-                                    <Badge variant="secondary" className="text-[9px] px-1.5 py-0 leading-none h-[18px] uppercase tracking-wider">{user.role}</Badge>
+                                    <Badge variant={user.role === 'admin' ? "default" : "secondary"} className="text-[10px] px-1.5 py-0 leading-none h-[18px] uppercase tracking-wider">
+                                        {user.role}
+                                    </Badge>
                                 </div>
                             </div>
-                            <div className="text-primary">
-                                <span className="text-xs font-medium px-2 py-1 bg-primary/10 rounded-full">{ui('edit')}</span>
-                            </div>
+
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground">
+                                        <MoreVertical size={16} />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="w-[160px] rounded-xl shadow-lg border-border">
+                                    <DropdownMenuItem onClick={() => navigate(`/admin/users/${user.id}`)} className="gap-2 cursor-pointer font-medium py-2">
+                                        <Edit size={14} className="text-muted-foreground" />
+                                        <span>{ui('edit')}</span>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => navigate(`/admin/users/${user.id}`)} className="gap-2 cursor-pointer font-medium py-2">
+                                        <Shield size={14} className="text-muted-foreground" />
+                                        <span>Change Role</span>
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
                         </div>
                     ))}
                 </div>

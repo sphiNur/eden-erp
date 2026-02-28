@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Loader2 } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Button } from './ui/button';
@@ -6,6 +7,7 @@ import { MarketShoppingList } from './market-run/MarketShoppingList';
 import { MarketDistributionList } from './market-run/MarketDistributionList';
 import { MarketHeader } from './market-run/MarketHeader';
 import { PageLayout } from './layout/PageLayout';
+import { mainButton } from '@telegram-apps/sdk-react';
 
 export const MarketRun = () => {
     return (
@@ -23,6 +25,30 @@ const MarketRunContent = () => {
         handleFinalize
     } = useMarketRunContext();
 
+    // Telegram MainButton Integration
+    useEffect(() => {
+        if (loading) return;
+
+        if (mainButton.isMounted()) {
+            if (viewMode === 'shopping') {
+                mainButton.setParams({
+                    text: ui('finalizeBatch'),
+                    isVisible: true,
+                    isEnabled: true,
+                });
+
+                const onClick = () => handleFinalize();
+                mainButton.onClick(onClick);
+
+                return () => {
+                    mainButton.offClick(onClick);
+                };
+            } else {
+                mainButton.setParams({ isVisible: false });
+            }
+        }
+    }, [viewMode, loading, ui, handleFinalize]);
+
     if (loading) {
         return (
             <div className="flex justify-center items-center min-h-screen">
@@ -31,8 +57,10 @@ const MarketRunContent = () => {
         );
     }
 
-    const bottomBar = viewMode === 'shopping' ? (
-        <div className="p-3 bg-card border-t border-border shadow-md">
+    const isTgMainButtonAvailable = mainButton.isMounted();
+
+    const bottomBar = (!isTgMainButtonAvailable && viewMode === 'shopping') ? (
+        <div className="p-4 bg-card border-t border-border shadow-md pb-safe">
             <Button
                 size="lg"
                 onClick={handleFinalize}

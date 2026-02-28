@@ -199,13 +199,14 @@ const StoreRequestContent = () => {
                             <span className="bg-primary/10 text-primary text-xs px-2 py-0.5 rounded-full">{totalCount} items</span>
                         </SheetTitle>
                     </SheetHeader>
-                    <div className="flex-1 overflow-y-auto mt-2 pb-safe">
+                    <div className="flex-1 overflow-y-hidden mt-2 pb-safe">
                         <CartSheet
                             cartItems={cartItems}
                             estimatedTotal={estimatedTotal}
                             submitting={submitting}
                             onSubmit={handleSubmit}
                             onUpdateQty={setQty}
+                            isCartOpen={showCart}
                         />
                     </div>
                 </SheetContent>

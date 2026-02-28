@@ -32,15 +32,15 @@ export const ProductListItem = memo(({ product, quantity, onChange }: ProductLis
                 </div>
             </div>
 
-            <div className="flex items-center gap-1 shrink-0">
+            <div className="flex items-center gap-1.5 shrink-0">
                 <Button
                     variant="outline"
                     size="icon"
-                    className="h-8 w-8 rounded-full shadow-none border-border"
+                    className="h-10 w-10 rounded-full shadow-none border-border"
                     onClick={() => onChange(Math.max(0, quantity - 1))}
                     disabled={quantity <= 0}
                 >
-                    <Minus size={14} />
+                    <Minus size={16} />
                 </Button>
                 <div className="w-8 text-center font-bold text-sm tabular-nums">
                     {quantity}
@@ -48,10 +48,10 @@ export const ProductListItem = memo(({ product, quantity, onChange }: ProductLis
                 <Button
                     variant="outline"
                     size="icon"
-                    className="h-8 w-8 rounded-full border-primary/20 bg-primary/5 text-primary hover:bg-primary/20"
+                    className="h-10 w-10 rounded-full border-primary/20 bg-primary/10 text-primary hover:bg-primary/20"
                     onClick={() => onChange(quantity + 1)}
                 >
-                    <Plus size={14} />
+                    <Plus size={16} />
                 </Button>
             </div>
         </div>

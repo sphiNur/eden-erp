@@ -45,11 +45,11 @@ export const StoreBill = () => {
                 <Receipt className="text-primary" size={20} />
                 <h1 className="text-lg font-bold">每日账单</h1>
                 <div className="flex-1" />
-                <div className="flex items-center bg-accent px-2 py-1.5 rounded-lg shrink-0 focus-within:ring-2 focus-within:ring-primary/20">
-                    <Calendar size={14} className="text-muted-foreground mr-1.5" aria-hidden />
+                <div className="flex items-center bg-accent px-3 py-2 rounded-lg shrink-0 focus-within:ring-2 focus-within:ring-primary/20 min-h-[40px]">
+                    <Calendar size={16} className="text-muted-foreground mr-2" aria-hidden />
                     <Input
                         type="date"
-                        className="h-8 border-none bg-transparent text-[13px] font-medium outline-none focus-visible:ring-0 shadow-none px-0"
+                        className="h-10 border-none bg-transparent text-sm font-medium outline-none focus-visible:ring-0 shadow-none px-0"
                         value={selectedDate}
                         onChange={(e) => setSelectedDate(e.target.value)}
                     />

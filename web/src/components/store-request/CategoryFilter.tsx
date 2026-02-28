@@ -37,7 +37,7 @@ export const CategoryFilter = ({
                                 variant={activeCategory === cat ? "default" : "secondary"}
                                 onClick={() => onSelectCategory(cat)}
                                 className={cn(
-                                    "px-3 py-1 cursor-pointer whitespace-nowrap transition-colors flex items-center gap-1.5",
+                                    "px-4 py-2 h-9 text-sm cursor-pointer whitespace-nowrap transition-colors flex items-center gap-2",
                                     activeCategory !== cat && "bg-accent hover:bg-accent/80 text-muted-foreground hover:text-foreground"
                                 )}
                             >

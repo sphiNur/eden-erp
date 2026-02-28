@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Plus } from 'lucide-react';
+import { Plus, Store as StoreIcon, MapPin, MoreVertical } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Store } from '../../types';
 import { useLanguage } from '../../contexts/LanguageContext';
@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
 
 export const StoreList = () => {
     const { ui } = useLanguage();
@@ -42,9 +43,9 @@ export const StoreList = () => {
     }, [stores, search]);
 
     const toolbar = (
-        <div className="flex items-center gap-2 px-3 py-2 bg-card border-b border-border min-h-[50px]">
+        <div className="flex items-center gap-2 px-4 py-3 bg-card border-b border-border min-h-[50px]">
             <div className="relative flex-1">
-                <Search className="absolute left-2.5 top-[9px] h-4 w-4 text-muted-foreground" />
+                <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
                     placeholder={ui('search')}
                     value={search}
@@ -72,28 +73,43 @@ export const StoreList = () => {
                     <Loader2 className="animate-spin text-primary" size={32} />
                 </div>
             ) : filteredStores.length === 0 ? (
-                <div className="text-center py-10 text-muted-foreground text-sm">{ui('noResults')}</div>
+                <div className="text-center py-12 text-muted-foreground">
+                    <StoreIcon size={48} className="mx-auto mb-4 opacity-50" />
+                    <p className="text-sm font-medium">{ui('noResults')}</p>
+                </div>
             ) : (
-                <div className="bg-card rounded-lg shadow-sm border border-border overflow-hidden divide-y divide-border">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 p-3">
                     {filteredStores.map(store => (
-                        <div
+                        <Card
                             key={store.id}
-                            className="px-3 py-3 flex items-center justify-between cursor-pointer hover:bg-accent active:bg-accent/80 transition-colors"
+                            className="cursor-pointer hover:border-primary/50 transition-colors active:scale-[0.98] border-border shadow-sm"
                             onClick={() => {
                                 haptic.impact('light');
                                 navigate(`/admin/stores/${store.id}`);
                             }}
                         >
-                            <div>
-                                <div className="font-semibold text-foreground text-[13px]">{store.name}</div>
-                                {store.address && (
-                                    <div className="text-xs text-muted-foreground mt-0.5">{store.address}</div>
-                                )}
-                            </div>
-                            <div className="text-primary">
-                                <span className="text-xs font-medium px-2 py-1 bg-primary/10 rounded-full">{ui('edit')}</span>
-                            </div>
-                        </div>
+                            <CardContent className="p-4 flex items-start gap-4">
+                                <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 ring-1 ring-primary/20">
+                                    <StoreIcon className="text-primary" size={24} />
+                                </div>
+                                <div className="flex-1 min-w-0 pt-0.5">
+                                    <h3 className="font-bold text-foreground text-[15px] truncate tracking-tight">{store.name}</h3>
+                                    {store.address ? (
+                                        <div className="flex items-center text-xs text-muted-foreground mt-1 bg-accent/50 rounded-md px-1.5 py-0.5 inline-flex max-w-full">
+                                            <MapPin size={12} className="mr-1 shrink-0" />
+                                            <span className="truncate font-medium">{store.address}</span>
+                                        </div>
+                                    ) : (
+                                        <div className="text-xs text-muted-foreground mt-1 opacity-60">No address</div>
+                                    )}
+                                </div>
+                                <div className="shrink-0 text-muted-foreground">
+                                    <Button variant="ghost" size="icon" className="h-8 w-8 -mr-2 bg-transparent hover:bg-accent/50 text-muted-foreground hover:text-foreground">
+                                        <MoreVertical size={16} />
+                                    </Button>
+                                </div>
+                            </CardContent>
+                        </Card>
                     ))}
                 </div>
             )}
